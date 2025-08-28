@@ -1,0 +1,2 @@
+test:
+  typst watch --root=.. tests.typ tests.pdf

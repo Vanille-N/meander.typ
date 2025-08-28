@@ -1,76 +1,94 @@
-#let clamp(val, min: none, max: none) = {
-  let val = val
-  if min != none and min > val { val = min }
-  if max != none and max < val { val = max }
-  val
+#import "default.typ": *
+
+#let fakeimg(align, dx: 0pt, dy: 0pt, fill: white, width: 1cm, height: 1cm) = {
+  place(align, dx: dx, dy: dy)[#box(fill: fill.transparentize(70%), width: width, height: height, radius: 5mm)]
 }
 
-#let fill-boxes(body, ..containers, size: (:)) = {
-  let full = ()
-  let body = body
-  for cont in containers.pos() {
-    if body == none {
-      full.push((cont, none))
-      continue
-    }
-    import "bisect.typ"
-    let max-dims = measure(box(height: cont.height, width: cont.width), ..size)
-    let (fits, overflow) = bisect.fill-box(max-dims)[#body]
-    full.push((cont, fits))
-    body = overflow
-  }
-  full
-}
+#let filler = lorem(1000)
+//#let filler = range(1000).map(str).join(" ")
 
-#let try-stretch(container, content, iterations: 10, err: 1%, bounds: (-10%, 20%), par-leading: (:)) = {
-  // If there's a small discrepancy between the height of the box and the height of the content,
-  // we try to fix it by adjusting some parameters.
-  let par-leading = {
-    let default = (default: 0.65em, min: 0.5em, max: 1em, weight: 100%)
-    for (field,_) in default {
-      if field in par-leading {
-        default.at(field) = par-leading.at(field)
-      }
+#set par(justify: false)
+#context tile[
+  #fakeimg(top + left, width: 5cm, height: 3cm, fill: green)
+  #fakeimg(bottom + left, width: 3cm, height: 6cm, fill: red)
+  #fakeimg(bottom + right, width: 2cm, height: 5cm, fill: blue)
+  #fakeimg(top + right, width: 5cm, height: 8cm, fill: orange)
+  #box(place({}))
+  #filler
+]
+#pagebreak()
+#context tile[
+  #fakeimg(top + right, width: 8cm, height: 2cm, fill: orange)
+  #fakeimg(top + left, dy: 5cm, height: 3cm, width: 3cm, fill: blue)
+  #fakeimg(left + horizon, height: 1cm, width: 6cm, fill: green)
+  #fakeimg(bottom + right, height: 6cm, width: 5cm, fill: red)
+  #box(place({}))
+  #filler
+]
+#pagebreak()
+#context tile[
+  #fakeimg(center + horizon, dx: 5%, dy: 10%, width: 7cm, height: 5cm, fill: green)
+  #fakeimg(top + left, fill: blue, width: 6cm, height: 6cm)
+  #fakeimg(bottom + right, fill: orange, width: 5cm, height: 3cm)
+  #box(width: 47%, place({}))
+  #box(width: 47%, place(top + right, {}))
+  #filler
+]
+#pagebreak()
+#context tile[
+  #fakeimg(top + left, width: 7cm, height: 7cm, fill: green)
+  #fakeimg(top + left, dx: 5cm, dy: 5cm, width: 6cm, height: 6cm, fill: orange)
+  #box(width: 40%, place({}))
+  #box(width: 55%, place(top + right, {}))
+  #filler
+]
+#pagebreak()
+#context tile[
+  #fakeimg(top + center, width: 8cm, height: 2cm, fill: orange)
+  #fakeimg(top + center, dy: 5cm, height: 3cm, width: 3cm, fill: blue)
+  #fakeimg(center + horizon, height: 1cm, width: 6cm, fill: green)
+  #fakeimg(bottom, height: 6cm, width: 5cm, fill: red)
+  #box(width: 47%, place({}))
+  #box(width: 47%, place(top + right, {}))
+  #filler
+]
+#pagebreak()
+#context tile[
+  #{for i in range(11) {
+    fakeimg(top + left, dy: i * 2.2cm, width: i * 1cm, height: 2cm, fill: orange)
+    if i <= 8 {
+      fakeimg(top + right, dy: i * 2.2cm, width: (8 - i) * 1cm, height: 2cm, fill: orange)
     }
-    default
-  }
-  let weight-stretch-clamp(stretch: 100%, default: 1em, min: 0cm, max: 100em, weight: 100%) = {
-    clamp(default * (100% + stretch * weight), min: min, max: max)
-  }
-  let (min-stretch, max-stretch) = bounds
-  let stretched-content(stretch, content) = {
-    let par-leading-value = weight-stretch-clamp(stretch: stretch, ..par-leading)
-    {
-      set par(leading: par-leading-value)
-      content
-    }
-  }
-  for _ in range(iterations) {
-    let stretch = (min-stretch + max-stretch) / 2
-    let stretched = stretched-content(stretch, content)
-    if measure(box(width: container.width)[#stretched]).height > container.height {
-      max-stretch = stretch
-    } else {
-      min-stretch = stretch
-    }
-  }
-  let stretch = min-stretch
-  let stretched = stretched-content(stretch, content)
-  let final-height = measure(box(width: container.width)[#stretched]).height
-  if final-height > container.height * (100% + err) { return none }
-  if final-height < container.height * (100% - err) { return none }
-  stretched  
-}
+  }}
+  #box(place({}))
+  #filler
+]
+#pagebreak()
+#context tile[
+  #let vradius = 12.2cm
+  #let vcount = 50
+  #let hradius = 5cm
+  #{for i in range(vcount) {
+    let frac = (2 * (i + 0.5) / vcount) - 1
+    let width = calc.sqrt(1 - frac * frac) * 10cm
+    fakeimg(top + left, dy: i * (2 * vradius / vcount), width: width, height: 2 * vradius / vcount, fill: red)
+  }}
+  #box(place(top + left, {}))
+  #filler
+]
+#pagebreak()
+#context tile[
+  #{for i in range(30) {
+    fakeimg(top + left, dy: -i * 4mm + 14cm, width: i * 3mm, height: 3mm, fill: blue)
+    fakeimg(top + right, dy: -i * 4mm + 14cm, width: i * 3mm, height: 3mm, fill: blue)
+    fakeimg(bottom + left, dy: i * 4mm - 14cm, width: i * 3mm, height: 3mm, fill: blue)
+    fakeimg(bottom + right, dy: i * 4mm - 14cm, width: i * 3mm, height: 3mm, fill: blue)
+  }}
+  #box(place(top + left, {}))
+  #filler
+]
 
-#let auto-stretch(container, content, iterations: 10, err: 1%, bounds: (-10%, 20%), par-leading: (:)) = {
-  let stretched = try-stretch(container, content, iterations: iterations, err: err, bounds: bounds, par-leading: par-leading)
-  if stretched != none {
-    stretched
-  } else {
-    content
-  }
-}
-
+/*
 #let test-content = [
   #lorem(50)
   - #lorem(30)
@@ -200,3 +218,10 @@
 //#layout(size => panic(measure(box(width: 100%), ..size)))
 
 #test-case[#lorem(35)]
+*/
+
+// TODO: count previous allowed boxes when splitting new ones
+// TODO: allow controling the alignment inside boxes
+// TODO: forbid stretching the boxes beyond major containers
+// TODO: handle pagebreaks
+// TODO: hyphenation
