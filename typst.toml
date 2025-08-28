@@ -11,5 +11,5 @@ repository = "https://github.com/Vanille-N/typst-reflow"
 keywords = ["wrapping", "threading", "float", "layout"]
 categories = ["layout"]
 
-exclude = "**/*.pdf"
+exclude = ["**/*.pdf"]
 
