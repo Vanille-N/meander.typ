@@ -8,7 +8,7 @@
 //#let filler = range(1000).map(str).join(" ")
 
 #set par(justify: false)
-#context tile[
+#context reflow[
   #fakeimg(top + left, width: 5cm, height: 3cm, fill: green)
   #fakeimg(bottom + left, width: 3cm, height: 6cm, fill: red)
   #fakeimg(bottom + right, width: 2cm, height: 5cm, fill: blue)
@@ -17,7 +17,7 @@
   #filler
 ]
 #pagebreak()
-#context tile[
+#context reflow[
   #fakeimg(top + right, width: 8cm, height: 2cm, fill: orange)
   #fakeimg(top + left, dy: 5cm, height: 3cm, width: 3cm, fill: blue)
   #fakeimg(left + horizon, height: 1cm, width: 6cm, fill: green)
@@ -26,7 +26,7 @@
   #filler
 ]
 #pagebreak()
-#context tile[
+#context reflow[
   #fakeimg(center + horizon, dx: 5%, dy: 10%, width: 7cm, height: 5cm, fill: green)
   #fakeimg(top + left, fill: blue, width: 6cm, height: 6cm)
   #fakeimg(bottom + right, fill: orange, width: 5cm, height: 3cm)
@@ -35,7 +35,7 @@
   #filler
 ]
 #pagebreak()
-#context tile[
+#context reflow[
   #fakeimg(top + left, width: 7cm, height: 7cm, fill: green)
   #fakeimg(top + left, dx: 5cm, dy: 5cm, width: 6cm, height: 6cm, fill: orange)
   #box(width: 40%, place({}))
@@ -43,7 +43,7 @@
   #filler
 ]
 #pagebreak()
-#context tile[
+#context reflow[
   #fakeimg(top + center, width: 8cm, height: 2cm, fill: orange)
   #fakeimg(top + center, dy: 5cm, height: 3cm, width: 3cm, fill: blue)
   #fakeimg(center + horizon, height: 1cm, width: 6cm, fill: green)
@@ -53,7 +53,7 @@
   #filler
 ]
 #pagebreak()
-#context tile[
+#context reflow[
   #{for i in range(11) {
     fakeimg(top + left, dy: i * 2.2cm, width: i * 1cm, height: 2cm, fill: orange)
     if i <= 8 {
@@ -64,7 +64,7 @@
   #filler
 ]
 #pagebreak()
-#context tile[
+#context reflow[
   #let vradius = 12.2cm
   #let vcount = 50
   #let hradius = 5cm
@@ -77,7 +77,7 @@
   #filler
 ]
 #pagebreak()
-#context tile[
+#context reflow[
   #{for i in range(30) {
     fakeimg(top + left, dy: -i * 4mm + 14cm, width: i * 3mm, height: 3mm, fill: blue)
     fakeimg(top + right, dy: -i * 4mm + 14cm, width: i * 3mm, height: 3mm, fill: blue)
@@ -85,6 +85,12 @@
     fakeimg(bottom + right, dy: i * 4mm - 14cm, width: i * 3mm, height: 3mm, fill: blue)
   }}
   #box(place(top + left, {}))
+  #filler
+]
+#pagebreak()
+#place(center + horizon)[#box(width: 5cm, height: 5cm, fill: blue)]
+#context reflow[
+  #box(width: 5cm, height: 5cm, place(center + horizon, {}))
   #filler
 ]
 

@@ -10,6 +10,7 @@
 /// It will be appended in order to the `free` field as a block,
 /// i.e. a dictionary with the fields `x`, `y`, `width`, `height` describing
 /// the upper left corner and the dimensions of the container.
+/// See the helper function `container` that constructs a container directly.
 ///
 /// Everything that is neither obstacle nor container is flowing text,
 /// and will end in the field `flow`.
@@ -25,12 +26,13 @@
 /// ]
 /// ```
 ///
-/// -> (flow: array(block), placed: array(content), free: content)
+/// -> (flow: (..block,), obstacles: (..content,), containers: content)
 #let separate(
   /// -> content
   ct
 ) = {
   let flow = []
+  // TODO: rename
   let placed = ()
   let free = ()
   assert(ct.func() == [].func(), message: "`separate` expects sequence-like content.")
@@ -39,29 +41,17 @@
       panic("Pagebreaks are not supported inside `separate`")
     } else if child.func() == place {
       placed.push(child)
-    } else if child.func() == box{
+    } else if child.func() == box {
       // The box is eligible if its body is only a `place` and the place itself is empty
+      let outer = child
       let inner = child.body
       if inner.func() == place and inner.body == [] {
-        let width = child.fields().at("width", default: 100%)
-        let height = child.fields().at("height", default: 100%)
+        let width = outer.fields().at("width", default: 100%)
+        let height = outer.fields().at("height", default: 100%)
         let alignment = inner.fields().at("alignment", default: top + left)
         let dx = inner.at("dx", default: 0pt)
         let dy = inner.at("dy", default: 0pt)
-        let x = if alignment.x == left {
-          0% + dx
-        } else if alignment.x == right {
-          100% + dx - width
-        } else {
-          50% + dx - width/2
-        }
-        let y = if alignment.y == top {
-          0% + dy
-        } else if alignment.y == bottom {
-          100% + dy - height
-        } else {
-          50% + dy - height/2
-        }
+        let (x, y) = geometry.align(alignment, dx: dx, dy: dy, width: width, height: height)
         free.push((x: x, y: y, width: width, height: height))
       } else {
         flow += child
@@ -69,66 +59,91 @@
     } else if child.func() == [].func() {
       let child-sep = separate(child)
       flow += child-sep.flow
-      placed += child-sep.placed
+      placed += child-sep.obstacles
+      free += child-sep.containers
     } else {
       flow += child
     }
   }
-  // TODO: rename to obstacles and containers
-  (flow: flow, placed: placed, free: free)
+  (flow: flow, obstacles: placed, containers: free)
+}
+
+#let container(..args) = {
+  let named = args.named()
+  let pos = args.pos()
+  if pos.len() > 1 { panic("`container` expects at most an alignment as positional argument") }
+
+  let box-named = (:)
+  let place-named = (:)
+  for arg in ("dx", "dy") {
+    if arg in args.named() {
+      place-named.insert(arg, named.at(arg))
+    }
+  }
+  for arg in ("width", "height") {
+    if arg in args.named() {
+      box-named.insert(arg, named.at(arg))
+    }
+  }
+  box(..box-named, place(..pos, ..place-named, {}))
 }
 
 /// Pattern with red crosses to display forbidden zones.
+/// -> pattern
 #let pat-forbidden = tiling(size: (30pt, 30pt))[
   #place(box(width: 100%, height: 100%, stroke: none, fill: red.transparentize(95%)))
   #place(line(start: (25%, 25%), end: (75%, 75%), stroke: red))
   #place(line(start: (25%, 75%), end: (75%, 25%), stroke: red))
 ]
 
-/// Pattern with blue pluses to display allowed zones.
+/// Pattern with green pluses to display allowed zones.
+/// -> pattern
 #let pat-allowed = tiling(size: (30pt, 30pt))[
   #place(box(width: 100%, height: 100%, stroke: none, fill: green.transparentize(95%)))
   #place(line(start: (33%, 50%), end: (66%, 50%), stroke: green))
   #place(line(start: (50%, 33%), end: (50%, 66%), stroke: green))
 ]
 
-#let forbidden-rectangles(placed, margin: 0pt, size: none) = {
+/// From a set of obstacles (see `separate`: an obstacle is any `place`d content
+/// at the toplevel, so excluding `place`s that are inside `box`, `rect`, etc.),
+/// construct the blocks `(x: length, y: length, width: length, height: length)`
+/// that surround the obstacles.
+///
+/// The return value is as follows:
+/// - `rects`, a list of `block`s `(x: length, y: length, width: length, height: length)`
+/// - `display`, show this to include the placed content in the final output
+/// - `debug`, show this to include helper boxes to visualize the layout
+///
+/// -> (rects: (..block,), display: content, debug: content)
+#let forbidden-rectangles(
+  /// Array of all the obstacles that are placed on this document.
+  /// -> (..content,)
+  obstacles,
+  /// Add padding around the obstacles.
+  /// -> length
+  margin: 0pt,
+  /// Dimensions of the parent container, as provided by `layout`.
+  /// -> (width: length, height: length)
+  size: none
+) = {
   if size == none { panic("Need to provide a size") }
   let forbidden = ()
   let display = []
   let debug = []
-  for elem in placed {
+  for elem in obstacles {
     let fields = elem.fields()
     let inner = fields.body
-    let horiz = fields.at("alignment", default: top + left).x
-    let vert = fields.at("alignment", default: top + left).y
+    let alignment = fields.at("alignment", default: top + left)
     let dx = fields.at("dx", default: 0pt)
     let dy = fields.at("dy", default: 0pt)
     let (width, height) = measure(inner, ..size)
-    let real-x = {
-      if horiz == left {
-        0% + dx
-      } else if horiz == right {
-        100% + dx - width
-      } else {
-        50% + dx - width/2
-      }
-    }
-    let real-y = {
-      if vert == top {
-        0% + dy
-      } else if vert == bottom {
-        100% + dy - height
-      } else {
-        50% + dy - height/2
-      }
-    }
-    let dims = geometry.resolve(size, x: real-x, y: real-y, width: width, height: height)
+    let (x, y) = geometry.align(alignment, dx: dx, dy: dy, width: width, height: height)
+    let dims = geometry.resolve(size, x: x, y: y, width: width, height: height)
     display += place(top + left)[#move(dx: dims.x, dy: dims.y)[#inner]]
 
     let padded = (x: none, y: none, width: none, height: none)
-    padded.x = calc.max(0pt, dims.x - margin)
-    padded.y = calc.max(0pt, dims.y - margin)
+    padded.x = geometry.clamp(dims.x - margin, min: 0pt)
+    padded.y = geometry.clamp(dims.y - margin, min: 0pt)
     padded.width = calc.min(size.width, dims.x + dims.width + margin) - padded.x
     padded.height = calc.min(size.height, dims.y + dims.height + margin) - padded.y
 
@@ -140,10 +155,34 @@
   (rects: forbidden, display: display, debug: debug)
 }
 
-#let tolerable-rectangles(free, avoid: (), size: (:)) = {
+/// Partition the complement of `avoid` into `containers` as a series of rectangles.
+///
+/// The algorithm is roughly as follows:
+/// ```
+/// for container in containers {
+///   horizontal-cuts = sorted(top and bottom of zone for zone in avoid)
+///   for (top, bottom) in horizontal-cuts.windows(2) {
+///     vertical-cuts = sorted(
+///       left and right of zone for zone in avoid
+///       if zone intersects (top, bottom)
+///     )
+///     new zone (top, bottom, left, right)
+///   }
+/// }
+/// ```
+/// The main difficulty is in bookkeeping and handling edge cases
+/// (weird intersections, margins of error, containers that overflow the page, etc.)
+/// There are no heuristics to exclude zones that are too small,
+/// and no worries about zones that intersect vertically.
+/// That would be the threading algorithm's job.
+///
+/// -> (rects: (..block,), debug: content)
+#let tolerable-rectangles(containers, avoid: (), size: none) = {
+  if size == none { panic("Need to provide a size") }
   let zones-to-fill = ()
   let debug = []
-  for zone in free {
+  // TODO: include previous zones when cutting horizontally
+  for zone in containers {
     let zone = geometry.resolve(size, ..zone)
     // Cut the zone horizontally
     let horizontal-marks = (zone.y, zone.y + zone.height)
@@ -182,11 +221,12 @@
           valid-zones.push((x: l, width: r - l))
         }
       }
+      let bounds = zone
       for zone in valid-zones {
         assert(lo >= hi)
         assert(zone.width >= 0pt)
         debug += place(dx: zone.x, dy: hi)[#box(width: zone.width, height: lo - hi, fill: pat-allowed, stroke: green)]
-        zones-to-fill.push((dx: zone.x, dy: hi, height: lo - hi, width: zone.width))
+        zones-to-fill.push((dx: zone.x, dy: hi, height: lo - hi, width: zone.width, bounds: bounds))
       }
     }
   }

@@ -1,5 +1,25 @@
 // Generalist functions for 1D and 2D geometry
 
+/// Bound a value between `min` and `max`.
+/// No constraints on types as long as they support inequality testing.
+/// -> any
+#let clamp(
+  /// Base value.
+  /// -> any
+  val,
+  /// Lower bound.
+  /// -> any | none
+  min: none,
+  /// Upper bound.
+  /// -> any | none
+  max: none,
+) = {
+  let val = val
+  if min != none and min > val { val = min }
+  if max != none and max < val { val = max }
+  val
+}
+
 /// Testing `a <= b <= c`, helps only computing `b` once.
 /// -> bool
 #let between(
@@ -75,6 +95,43 @@
     }
   }
   ans
+}
+
+/// Compute the position of the upper left corner, taking into account the
+/// alignment and displacement.
+/// -> (x: relative, y: relative)
+#let align(
+  /// Absolute alignment.
+  /// -> alignment
+  alignment,
+  /// Horizontal displacement.
+  /// -> relative
+  dx: 0pt,
+  /// Vertical displacement.
+  /// -> relative
+  dy: 0pt,
+  /// Object width.
+  /// -> relative
+  width: 0pt,
+  /// Object height.
+  /// -> relative
+  height: 0pt,
+) = {
+  let x = if alignment.x == left {
+    0% + dx
+  } else if alignment.x == right {
+    100% + dx - width
+  } else {
+    50% + dx - width / 2
+  }
+  let y = if alignment.y == top {
+    0% + dy
+  } else if alignment.y == bottom {
+    100% + dy - height
+  } else {
+    50% + dy - height / 2
+  }
+  (x: x, y: y)
 }
 
 

@@ -1,12 +1,5 @@
 #import "../geometry.typ"
 
-#let clamp(val, min: none, max: none) = {
-  let val = val
-  if min != none and min > val { val = min }
-  if max != none and max < val { val = max }
-  val
-}
-
 #let fill-boxes(body, ..containers, size: (:)) = {
   let full = ()
   let body = body
@@ -36,7 +29,7 @@
     // 1em margin at the bottom to let it potentially add an extra line
     let old-lo = cont.dy + cont.height
     let new-lo = old-lo + geometry.resolve(size, y: 0.5em).y
-    new-lo = calc.min(new-lo, geometry.resolve(size, height: 100%).height)
+    new-lo = calc.min(new-lo, cont.bounds.y + cont.bounds.height)
     for no-box in avoid {
       if geometry.intersects((cont.dx, cont.dx + cont.width), (no-box.x, no-box.x + no-box.width), tolerance: 1mm) {
         if geometry.intersects((old-lo, new-lo), (no-box.y, no-box.y), tolerance: 0mm) {
@@ -47,7 +40,7 @@
     cont.height = new-lo - cont.dy
     // As much as it wants on the top to fill previously unused space
     let old-hi = cont.dy
-    let new-hi = 0pt
+    let new-hi = cont.bounds.y
     let lineskip = geometry.resolve(size, y: 0.65em).y
     let lo = cont.dy + cont.height
     for no-box in avoid {
@@ -84,17 +77,14 @@
   full
 }
 
-#let tile(ct) = layout(size => {
+#let reflow(ct) = layout(size => {
   import "../tiling/default.typ" as tiling
-  let (flow, placed, free) = tiling.separate(ct)
-  let forbidden = tiling.forbidden-rectangles(placed, margin: 5pt, size: size)
-  //forbidden.debug
+  let (flow, obstacles, containers) = tiling.separate(ct)
+  let forbidden = tiling.forbidden-rectangles(obstacles, margin: 5pt, size: size)
   forbidden.display
 
-  let allowed = tiling.tolerable-rectangles(free, avoid: forbidden.rects, size: size)
-  //allowed.debug
+  let allowed = tiling.tolerable-rectangles(containers, avoid: forbidden.rects, size: size)
 
-  //return
   for (container, content) in smart-fill-boxes(
     size: size,
     avoid: forbidden.rects,
