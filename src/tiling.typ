@@ -1,4 +1,4 @@
-#import "../geometry.typ"
+#import "geometry.typ"
 
 /// Splits content into obstacles, containers, and flowing text.
 ///
@@ -26,7 +26,7 @@
 /// ]
 /// ```
 ///
-/// -> (flow: (..block,), obstacles: (..content,), containers: content)
+/// -> (containers: (..block,), obstacles: (..content,), flow: content)
 #let separate(
   /// -> content
   ct
@@ -68,7 +68,20 @@
   (flow: flow, obstacles: placed, containers: free)
 }
 
-#let container(..args) = {
+/// Creates a standard container.
+/// This is not obscure, it's simply a `box(place({}))`, which is by convention
+/// recognized by `separate` as a container.
+/// -> content
+#let container(
+  /// Accepts the parameters:
+  /// - `alignment` (positional, default top + left), passed to `place`
+  /// - `dx: relative` (named, default `0%`), passed to `place`
+  /// - `dy: relative` (named, default `0%`), passed to `place`
+  /// - `width: relative` (named, default `100%`), passed to `box`
+  /// - `height: relative` (named, default `100%`), passed to `box`
+  /// -> args
+  ..args,
+) = {
   let named = args.named()
   let pos = args.pos()
   if pos.len() > 1 { panic("`container` expects at most an alignment as positional argument") }
@@ -90,18 +103,24 @@
 
 /// Pattern with red crosses to display forbidden zones.
 /// -> pattern
-#let pat-forbidden = tiling(size: (30pt, 30pt))[
+#let pat-forbidden(
+  /// Size of the tiling
+  sz,
+) = tiling(size: (sz, sz))[
   #place(box(width: 100%, height: 100%, stroke: none, fill: red.transparentize(95%)))
-  #place(line(start: (25%, 25%), end: (75%, 75%), stroke: red))
-  #place(line(start: (25%, 75%), end: (75%, 25%), stroke: red))
+  #place(line(start: (25%, 25%), end: (75%, 75%), stroke: red + 0.1pt))
+  #place(line(start: (25%, 75%), end: (75%, 25%), stroke: red + 0.1pt))
 ]
 
 /// Pattern with green pluses to display allowed zones.
 /// -> pattern
-#let pat-allowed = tiling(size: (30pt, 30pt))[
+#let pat-allowed(
+  /// Size of the tiling
+  sz,
+) = tiling(size: (sz, sz))[
   #place(box(width: 100%, height: 100%, stroke: none, fill: green.transparentize(95%)))
-  #place(line(start: (33%, 50%), end: (66%, 50%), stroke: green))
-  #place(line(start: (50%, 33%), end: (50%, 66%), stroke: green))
+  #place(line(start: (25%, 50%), end: (75%, 50%), stroke: green + 0.1pt))
+  #place(line(start: (50%, 25%), end: (50%, 75%), stroke: green + 0.1pt))
 ]
 
 /// From a set of obstacles (see `separate`: an obstacle is any `place`d content
@@ -139,6 +158,7 @@
     let (width, height) = measure(inner, ..size)
     let (x, y) = geometry.align(alignment, dx: dx, dy: dy, width: width, height: height)
     let dims = geometry.resolve(size, x: x, y: y, width: width, height: height)
+    // TODO: does this correctly handle obstacles that go below 0% ?
     display += place(top + left)[#move(dx: dims.x, dy: dims.y)[#inner]]
 
     let padded = (x: none, y: none, width: none, height: none)
@@ -150,7 +170,7 @@
     assert(padded.width >= 0pt)
     assert(padded.height >= 0pt)
     forbidden.push(padded)
-    debug += place(top + left)[#move(dx: padded.x, dy: padded.y)[#box(stroke: red, fill: pat-forbidden, width: padded.width, height: padded.height)]]
+    debug += place(top + left)[#move(dx: padded.x, dy: padded.y)[#box(stroke: red, fill: pat-forbidden(10pt), width: padded.width, height: padded.height)]]
   }
   (rects: forbidden, display: display, debug: debug)
 }
@@ -175,6 +195,10 @@
 /// There are no heuristics to exclude zones that are too small,
 /// and no worries about zones that intersect vertically.
 /// That would be the threading algorithm's job.
+///
+/// Blocks are given an additional field `bounds` that dictate the upper
+/// limit of how much this block is allowed to stretch vertically, set to
+/// the dimensions of the container that produced this block.
 ///
 /// -> (rects: (..block,), debug: content)
 #let tolerable-rectangles(containers, avoid: (), size: none) = {
@@ -225,7 +249,7 @@
       for zone in valid-zones {
         assert(lo >= hi)
         assert(zone.width >= 0pt)
-        debug += place(dx: zone.x, dy: hi)[#box(width: zone.width, height: lo - hi, fill: pat-allowed, stroke: green)]
+        debug += place(dx: zone.x, dy: hi)[#box(width: zone.width, height: lo - hi, fill: pat-allowed(10pt), stroke: green)]
         zones-to-fill.push((dx: zone.x, dy: hi, height: lo - hi, width: zone.width, bounds: bounds))
       }
     }
@@ -233,3 +257,18 @@
   (rects: zones-to-fill, debug: debug)
 }
 
+/// Debug version of the toplevel `reflow`,
+/// that only displays the partitioned layout.
+/// -> content
+#let debug-reflow(
+  /// Content to be segmented and have its layout displayed.
+  /// -> content
+  ct
+) = layout(size => {
+  let (obstacles, containers) = separate(ct)
+  let forbidden = forbidden-rectangles(obstacles, margin: 5pt, size: size)
+  forbidden.debug
+
+  let allowed = tolerable-rectangles(containers, avoid: forbidden.rects, size: size)
+  allowed.debug
+})

@@ -1,4 +1,4 @@
-#import "default.typ": *
+#import "/src/tiling.typ": *
 
 #let tile(ct) = layout(size => {
   let (flow, obstacles, containers) = separate(ct)

@@ -1,4 +1,4 @@
-#import "default.typ": *
+#import "/src/bisect.typ": *
 
 #let test-case(ct) = {
   let dims = (width: 5cm, height: 5cm)

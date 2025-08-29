@@ -87,7 +87,7 @@ More complex text outlines can be achieved by playing with obstacles.
   #let hradius = 60%
   #for i in range(vcount) {
     let frac = 2 * (i+0.5) / vcount - 1
-    let width = hradius * calc.sqrt(1 - frac - frac)
+    let width = hradius * calc.sqrt(1 - frac * frac)
     place(
       left + horizon,
       dy: (i - vcount / 2) * (2 * vradius / vcount),

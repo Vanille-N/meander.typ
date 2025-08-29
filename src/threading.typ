@@ -1,4 +1,4 @@
-#import "../geometry.typ"
+#import "geometry.typ"
 
 #let fill-boxes(body, ..containers, size: (:)) = {
   let full = ()
@@ -17,7 +17,34 @@
   full
 }
 
-#let smart-fill-boxes(body, avoid: (), boxes: (), extend: 1em, size: (:)) = {
+/// Thread text through a list of boxes in order,
+/// allowing the boxes to stretch vertically to accomodate for uneven tiling.
+///
+/// -> (..content,)
+#let smart-fill-boxes(
+  /// Flowing text.
+  /// -> content
+  body,
+  /// Obstacles to avoid.
+  /// A list of `(x: length, y: length, width: length, height: length)`.
+  /// -> (..block,)
+  avoid: (),
+  /// Boxes to fill.
+  /// A list of `(x: length, y: length, width: length, height: length, bound: block)`.
+  ///
+  /// `bound` is the upper limit of how much to stretch the container,
+  /// i.e. also `(x: length, y: length, width: length, height: length)`.
+  ///
+  /// -> (..block,)
+  boxes: (),
+  /// How much the baseline can extend downwards (within the limits of `bounds`).
+  /// -> length
+  extend: 1em,
+  /// Dimensions of the container as given by `layout`.
+  /// -> (width: length, height: length)
+  size: none,
+) = {
+  assert(size != none)
   let full = ()
   let body = body
   for cont in boxes {
@@ -63,7 +90,7 @@
     cont.dy = new-hi
     cont.height = lo - new-hi
 
-    import "../bisect/default.typ" as bisect
+    import "bisect.typ" as bisect
     let max-dims = measure(box(height: cont.height, width: cont.width), ..size)
     let (fits, overflow) = bisect.fill-box(max-dims)[#body]
     if fits == none { continue }
@@ -77,8 +104,16 @@
   full
 }
 
-#let reflow(ct) = layout(size => {
-  import "../tiling/default.typ" as tiling
+/// Segment the input content according to the tiling algorithm,
+/// then thread the flowing text through it.
+///
+/// -> content
+#let reflow(
+  /// See module `tiling` for how to format this content.
+  /// -> content
+  ct,
+) = layout(size => {
+  import "tiling.typ" as tiling
   let (flow, obstacles, containers) = tiling.separate(ct)
   let forbidden = tiling.forbidden-rectangles(obstacles, margin: 5pt, size: size)
   forbidden.display
@@ -99,8 +134,3 @@
   }
 })
 
-// TODO: count previous allowed boxes when splitting new ones
-// TODO: allow controling the alignment inside boxes
-// TODO: forbid stretching the boxes beyond major containers
-// TODO: handle pagebreaks
-// TODO: hyphenation

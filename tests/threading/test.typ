@@ -1,4 +1,4 @@
-#import "default.typ": *
+#import "/src/threading.typ": *
 
 #let fakeimg(align, dx: 0pt, dy: 0pt, fill: white, width: 1cm, height: 1cm) = {
   place(align, dx: dx, dy: dy)[#box(fill: fill.transparentize(70%), width: width, height: height, radius: 5mm)]
@@ -64,6 +64,10 @@
   #filler
 ]
 #pagebreak()
+#[
+  #set text(hyphenate: false)
+  #set par(justify: true)
+  #set linebreak(justify: true)
 #context reflow[
   #let vradius = 12.2cm
   #let vcount = 50
@@ -75,6 +79,7 @@
   }}
   #box(place(top + left, {}))
   #filler
+]
 ]
 #pagebreak()
 #context reflow[

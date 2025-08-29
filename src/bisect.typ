@@ -1,6 +1,6 @@
 /// Content splitting algorithm
 
-#import "../geometry.typ"
+#import "geometry.typ"
 
 /// Tests if content fits inside a box.
 ///
@@ -108,6 +108,7 @@
   // Construct the closure
   let rebuild(inner) = {
     let pos = (inner, ..number, ..styles)
+    //if ct.func() == [#set text(size: 30pt)].func() { panic(ct.fields().styles, pos) }
     ct.func()(..fields, ..pos)
   }
   (inner, rebuild)
@@ -174,8 +175,12 @@
 ) = {
   let (inner, rebuild) = default-rebuild(ct, "child")
   let (left, right) = split-dispatch(inner, ct => fits-inside(rebuild(ct)), cfg)
-  assert(fits-inside(rebuild(left)))
-  (rebuild(left), rebuild(right))
+  if left != none {
+    assert(fits-inside(rebuild(left)))
+    (rebuild(left), rebuild(right))
+  } else {
+    (none, rebuild(right))
+  }
 }
 
 /// Split content with a `"children"` main field.
@@ -201,17 +206,18 @@
       let hanging = inner.at(i)
       let (left, right) = split-dispatch(hanging, ct => fits-inside(rebuild((..inner.slice(0, i), ct))), cfg)
       assert(fits-inside(rebuild((..inner.slice(0, i), left))))
-      let left = rebuild({
+      let left = {
         if left == none {
           if i == 0 {
-            return (none, rebuild(inner))
+            let right = rebuild(inner)
+            return (none, right)
           } else {
-            inner.slice(0, i)
+            rebuild(inner.slice(0, i))
           }
         } else {
-          (..inner.slice(0, i), left)
+          rebuild((..inner.slice(0, i), left))
         }
-      })
+      }
       let right = rebuild({
         if right == none {
           inner.slice(i + 1)
@@ -342,8 +348,12 @@
   } else if ct.func() in (strong, emph, underline, stroke, overline, highlight) {
     let (inner, rebuild) = default-rebuild(ct, "body")
     let (left, right) = split-dispatch(inner, ct => fits-inside(rebuild(ct)), cfg)
-    assert(fits-inside(rebuild(left)))
-    (rebuild(left), rebuild(right))
+    if left != none {
+      assert(fits-inside(rebuild(left)))
+      (rebuild(left), rebuild(right))
+    } else {
+      (none, rebuild(right))
+    }
   } else {
     take-it-or-leave-it(ct, fits-inside)
   }

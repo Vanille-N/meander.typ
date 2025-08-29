@@ -1,2 +1,0 @@
-test:
-  typst watch tests.typ tests.pdf

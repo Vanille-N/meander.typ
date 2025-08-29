@@ -3,11 +3,10 @@
   #text(size: 25pt)[User guide]
 ]
 
-= Description
+#show link: set text(fill: blue.darken(20%))
 
-Meander implements a content layout algorithm to provide text threading
-(when text from one box spills into a different box if it overflows)
-and image wrap-around.
+//#show raw.where(lang: "typ", block: true): box.with(baseline: 1pt, radius: 2pt, inset: 1pt, fill: gray.transparentize(85%))
+//#show raw.where(lang: "typ", block: false): highlight.with(radius: 2pt, fill: gray.transparentize(85%))
 
 #import "../src/lib.typ" as meander
 
@@ -15,36 +14,77 @@ and image wrap-around.
   place(alignment, dx: dx, dy: dy)[#box(fill: fill.transparentize(70%), width: width, height: height, radius: 2mm)[#align(center + horizon)[#label]]]
 }
 
-#align(center)[
-  #let filler = [
-    = Lorem
-
-    _#lorem(12)_
-
-    #lorem(150)
-
-    = Ipsum
-    #lorem(350)
+#let pseudopage(content) = {
+  box(width: 7cm, height: 11cm, stroke: 1pt, inset: 5mm)[
+    #set text(size: 5pt)
+    #context { content }
   ]
-  #box(height: 50%, width: 50%, stroke: black, inset: 5mm)[
-    #set text(size: 4pt)
-    #context meander.reflow[
-      #fakeimg(top + left, width: 2cm, height: 3cm, fill: green)
-      #fakeimg(bottom + left, width: 2cm, height: 4cm, fill: red)
-      #fakeimg(bottom + right, width: 1cm, height: 3cm, fill: blue)
-      #fakeimg(top + right, width: 3cm, height: 4cm, fill: orange)
-      #meander.container()
-      #filler
+}
+
+#v(2cm)
+
+#table(columns: 2, stroke: none)[
+  *Abstract* \
+  Meander implements a content layout algorithm to provide text threading
+  (when text from one box spills into a different box if it overflows),
+  uneven columns, and image wrap-around.
+
+  *Feature requests* \
+  For as long as the feature doesn't exist natively in Typst
+  (see issue: #link("https://github.com/typst/typst/issues/5181")[`github:typst/typst #5181`]),
+  feel free to submit test cases of layouts you would like to see supported
+  by opening a new #link("https://github.com/Vanille-N/meander.typ/issues")[issue].
+
+  *Versions* \
+  - #link("https://github.com/Vanille-N/meander.typ")[`dev`]
+  - #link("https://typst.app/universe/package/meander")[`0.1.0`]
+][
+  #align(center)[
+    #let filler = [
+      #set heading(outlined: false)
+      = Lorem
+
+      _#lorem(12)_
+
+      #lorem(150)
+
+      = Ipsum
+      #lorem(350)
+    ]
+    #pseudopage[
+      #meander.reflow[
+        #fakeimg(top + left, width: 1.5cm, height: 3cm, fill: green)
+        #fakeimg(bottom + left, width: 2cm, height: 2cm, fill: red)
+        #fakeimg(bottom + right, width: 1cm, height: 2cm, fill: blue)
+        #fakeimg(top + right, width: 2cm, height: 4cm, fill: orange)
+        #meander.container()
+        #filler
+      ]
     ]
   ]
 ]
 
+#align(bottom)[
+  #line(length: 100%)
+  #outline(depth: 2)
+]
+#set heading(numbering: (..nums) => {
+  let nums = nums.pos()
+  if nums.len() <= 2 {
+    return numbering("A.1 -", ..nums)
+  } else {
+    return ""
+  }
+})
+
+#pagebreak()
+
 = Quick start
 
-The main function provided is `meander.reflow`, which takes as input some content,
+The main function provided is ```typ meander.reflow```, which takes as input some content,
 and auto-splits it into "containers", "obstacles", and "flowing text".
-Obstacles are `content` that are placed on the page with a fixed layout.
-Containers are created by the function `meander.container`, and everything
+Obstacles are ```typ content``` that are placed on the page with a fixed layout.
+Containers are created by the function ```typ meander.container```, and everything
 else is flowing text.
 
 After excluding the zones forbidden by obstacles and segmenting the containers
@@ -54,8 +94,8 @@ containers to wrap around the forbidden regions.
 == A simple example
 
 #table(columns: (1fr, 1fr), stroke: none)[
-  `meander.reflow` is contextual, so the invocation needs to be wrapped in a
-  `context { ... }` block. Currently multi-page setups are not supported,
+  ```typ meander.reflow``` is contextual, so the invocation needs to be wrapped in a
+  ```typ context { ... }``` block. Currently multi-page setups are not supported,
   but this is definitely a desired feature.
 
   ```typ
@@ -71,9 +111,8 @@ containers to wrap around the forbidden regions.
   ]
   ```
 ][
-  #box(height: 45%, width: 100%, stroke: black, inset: 5mm)[
-    #set text(size: 5pt)
-    #context meander.reflow[
+  #pseudopage[
+    #meander.reflow[
       #fakeimg(top + left, width: 3cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
       #meander.container()
       #lorem(600)
@@ -84,7 +123,7 @@ containers to wrap around the forbidden regions.
 == Multiple obstacles
 
 #table(columns: (1fr, 1fr), stroke: none)[
-  `meander.reflow` can handle as many obstacles as you provide
+  ```typ meander.reflow``` can handle as many obstacles as you provide
   (at the cost of potentially performance issues if there are too many,
   but experiments have shown that up to \~100 obstacles is no problem).
 
@@ -103,9 +142,8 @@ containers to wrap around the forbidden regions.
   ]
   ```
 ][
-  #box(height: 45%, width: 100%, stroke: black, inset: 5mm)[
-    #set text(size: 5pt)
-    #context meander.reflow[
+  #pseudopage[
+    #meander.reflow[
       #fakeimg(top + left, width: 3cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
       #fakeimg(top + right, width: 2cm, height: 1cm, fill: blue, label: text(size: 14pt)[`2`])
       #fakeimg(right, width: 4cm, height: 2cm, fill: green, label: text(size: 14pt)[`3`])
@@ -121,7 +159,7 @@ containers to wrap around the forbidden regions.
 
 #table(columns: (1fr, 1fr), stroke: none)[
   In order to simulate a multi-column layout, you can provide several
-  `container` invocations. They will be filled in the order provided.
+  ```typ container``` invocations. They will be filled in the order provided.
 
   ```typ
   #context meander.reflow[
@@ -139,9 +177,8 @@ containers to wrap around the forbidden regions.
   ]
   ```
 ][
-  #box(height: 45%, width: 100%, stroke: black, inset: 5mm)[
-    #set text(size: 5pt)
-    #context meander.reflow[
+  #pseudopage[
+    #meander.reflow[
       #fakeimg(bottom + right, width: 3cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
       #fakeimg(center + horizon, dy: -1cm, width: 2cm, fill: blue, label: text(size: 14pt)[`2`])
       #fakeimg(top + right, width: 4cm, height: 2cm, fill: green, label: text(size: 14pt)[`3`])
@@ -160,20 +197,21 @@ containers to wrap around the forbidden regions.
   The same page setup as the previous example will internally be separated into
   - obstacles `my-image-1`, `my-image-2`, and `my-image-3`.
     They are shown on the right in red.
-  - containers `(x: 0%, y: 0%, width: 55%, height: 100%)`
-    and `(x: 60%, y: 0%, width: 40%, height: 100%)`
-  - flowing text `lorem(600)`, not shown here.
+  - containers ```typ (x: 0%, y: 0%, width: 55%, height: 100%)```
+    and ```typ (x: 60%, y: 0%, width: 40%, height: 100%)```
+  - flowing text ```typ lorem(600)```, not shown here.
 
   Respecting the horizontal separations of the obstacles, and staying within
   the bounds of the containers, the page is split into the subcontainers
   shown to the right in green.
   These boxes will be filled in order, including heuristics to properly provide
   vertical spacing between these boxes.
+
+  This debug view is visible by simply replacing ```typ reflow```
+  with ```typ debug-reflow```.
 ][
-  #box(height: 45%, width: 100%, stroke: black, inset: 5mm)[
-    #set text(size: 5pt)
-    #import "../src/tiling/tests.typ" as tiling
-    #context tiling.tile[
+  #pseudopage[
+    #meander.debug-reflow[
       #fakeimg(bottom + right, width: 3cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
       #fakeimg(center + horizon, dy: -1cm, width: 2cm, fill: blue, label: text(size: 14pt)[`2`])
       #fakeimg(top + right, width: 4cm, height: 2cm, fill: green, label: text(size: 14pt)[`3`])
@@ -199,17 +237,13 @@ containers to wrap around the forbidden regions.
     #for i in range(vcount) {
       let frac = 2 * (i+0.5) / vcount - 1
       let width = hradius *
-        calc.sqrt(1 - frac - frac)
-      place(
-        left + horizon,
+        calc.sqrt(1 - frac * frac)
+      place(left + horizon,
         dy: (i - vcount / 2) *
           (2 * vradius / vcount)
-      )[
-        #box(
-          width: width,
-          height: 2 * vradius / vcount
-        )
-      ]
+      )[#box(width: width,
+        height: 2 * vradius / vcount
+      )]
     }
 
     // Then do the usual
@@ -218,9 +252,8 @@ containers to wrap around the forbidden regions.
   ]
   ```
 ][
-  #box(height: 45%, width: 100%, stroke: black, inset: 5mm)[
-    #set text(size: 5pt)
-    #context meander.reflow[
+  #pseudopage[
+    #meander.reflow[
       #let vradius = 45%
       #let vcount = 50
       #let hradius = 60%
@@ -281,14 +314,18 @@ there are plans to provide
   Generalist functions for 1D and 2D geometry.
 ]
 
-#parse-and-show("tiling/default.typ")[
-  == Tiling (`tiling/default.typ`)
+#parse-and-show("tiling.typ")[
+  == Tiling (`tiling.typ`)
   Page splitting algorithm.
 ]
 
-#parse-and-show("bisect/default.typ")[
-  = Bisection (`bisect/default.typ`)
+#parse-and-show("bisect.typ")[
+  == Bisection (`bisect.typ`)
   Content splitting algorithm.
 ]
 
+#parse-and-show("threading.typ")[
+  == Threading (`threading.typ`)
+  Filling and stretches boxes iteratively.
+]
 

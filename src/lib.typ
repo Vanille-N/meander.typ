@@ -1,7 +1,7 @@
-#import "bisect/default.typ" as bisect
+#import "bisect.typ"
 
-#import "tiling/default.typ" as tiling
-#import tiling: container
+#import "tiling.typ"
+#import tiling: container, debug-reflow
 
-#import "threading/default.typ" as threading
+#import "threading.typ"
 #import threading: reflow

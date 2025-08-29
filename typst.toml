@@ -3,7 +3,7 @@ name = "meander"
 version = "0.1.0"
 entrypoint = "src/lib.typ"
 
-authors = ["Neven Villani <neven@crans.org> <https://github.com/Vanille-N>"]
+authors = ["Neven Villani <neven@crans.org>"]
 description = "Page layout engine with image wrap-around and text threading."
 license = "MIT"
 
