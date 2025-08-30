@@ -32,6 +32,7 @@
   ct
 ) = {
   let flow = []
+  let flow-has-par = false
   // TODO: rename
   let placed = ()
   let free = ()
@@ -63,6 +64,19 @@
       free += child-sep.containers
     } else {
       flow += child
+      /*
+      if child.func() == parbreak {
+        if flow-has-par {
+          flow += child
+          flow-has-par = false
+        }
+      } else {
+        flow += child
+        if flow not in ([ ], []) {
+          flow-has-par = true
+        }
+      }
+      */
     }
   }
   (flow: flow, obstacles: placed, containers: free)

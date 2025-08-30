@@ -205,11 +205,6 @@
   let (inner, rebuild) = default-rebuild(ct, "children")
   if not fits-inside([]) { return (none, ct) }
   for i in range(inner.len()) {
-    // Magically substitute parbreaks for vertical spaces
-    // which behave better w.r.t splitting.
-    if inner.at(i).func() == parbreak {
-      inner.at(i) = [#linebreak()#v(par.spacing)]
-    }
     // If inner.at(i) fits, take it
     if fits-inside(rebuild(inner.slice(0, i + 1))) {
       continue
@@ -458,9 +453,6 @@
     cfg.insert("enum-numbering", ("1.",) * 6)
   }
   cfg.insert("enum-depth", 0)
-  /*if "allow-horiz-overflow" not in cfg {
-    cfg.insert("allow-horiz-overflow", false)
-  }*/
   // TODO: include vertical and horizontal spacing here.
   let (left, right) = dispatch(ct, ct => fits-inside(dims, ct, size: size), cfg)
   let extra = box(width: 1pt, height: 1mm, stroke: blue, baseline: -1pt)
@@ -469,12 +461,6 @@
   } else {
     let left = push-linebreak-if-fits(dims, left, size: size)
     (left, right)
-    //if measure(box(width: dims.width)[#left], ..size).height + 1pt < measure(box(width: dims.width)[#left#extra], ..size).height {
-    //(highlight(left), right)
-    //} else {
-    //  (left + extra, right)
-      //(left + extra + linebreak(justify: par.justify), right)
-    //}
   }
 }
 
