@@ -58,6 +58,7 @@
         #fakeimg(bottom + right, width: 1cm, height: 2cm, fill: blue)
         #fakeimg(top + right, width: 2cm, height: 4cm, fill: orange)
         #meander.container()
+        #set par(justify: true)
         #filler
       ]
     ]
@@ -107,18 +108,49 @@ containers to wrap around the forbidden regions.
     #meander.container()
 
     // Flowing text
-    #lorem(500)
+    #set heading(numbering: "1.")
+    = Lorem
+    _#lorem(30)_
+
+    = Ipsum
+    #[
+      #set par(justify: true)
+      #lorem(200)
+    ]
+
+    = Dolor
+    #lorem(100)
   ]
   ```
 ][
   #pseudopage[
     #meander.reflow[
-      #fakeimg(top + left, width: 3cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
+      #fakeimg(top + left, width: 2.5cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
       #meander.container()
-      #lorem(600)
+      #text(size: 8pt)[*1. Lorem*] \
+      _#lorem(30)_
+
+      #text(size: 8pt)[*2. Ipsum*] \
+      #[
+        #set par(justify: true)
+        #lorem(200)
+      ]
+
+      #text(size: 8pt)[*3. Dolor*] \
+      #lorem(100)
     ]
   ]
 ]
+
+Meander is expected to respect the majority of styling options,
+including headings, paragraph justification, font size, etc.
+If you find a discrepancy make sure to file it as a
+#link("https://github.com/Vanille-N/meander.typ/issues")[bug report]
+if it is not already part of the
+#link("https://github.com/Vanille-N/meander.typ/tree/master/KNOWN-ISSUES.md")[known limitations].
+
+Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if needed.
+
 
 == Multiple obstacles
 
@@ -138,18 +170,20 @@ containers to wrap around the forbidden regions.
       dx: 2cm)
 
     #meander.container()
+    #set par(justify: true)
     #lorem(500)
   ]
   ```
 ][
   #pseudopage[
     #meander.reflow[
-      #fakeimg(top + left, width: 3cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
+      #fakeimg(top + left, width: 2.5cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
       #fakeimg(top + right, width: 2cm, height: 1cm, fill: blue, label: text(size: 14pt)[`2`])
       #fakeimg(right, width: 4cm, height: 2cm, fill: green, label: text(size: 14pt)[`3`])
       #fakeimg(bottom + left, width: 2cm, height: 2cm, fill: red, label: text(size: 14pt)[`4`])
       #fakeimg(bottom + left, dx: 2.1cm, width: 1.5cm, height: 1cm, fill: yellow, label: text(size: 14pt)[`5`])
       #meander.container()
+      #set par(justify: true)
       #lorem(600)
     ]
   ]
@@ -179,13 +213,11 @@ containers to wrap around the forbidden regions.
 ][
   #pseudopage[
     #meander.reflow[
-      #fakeimg(bottom + right, width: 3cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
+      #fakeimg(bottom + right, width: 2.5cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
       #fakeimg(center + horizon, dy: -1cm, width: 2cm, fill: blue, label: text(size: 14pt)[`2`])
       #fakeimg(top + right, width: 4cm, height: 2cm, fill: green, label: text(size: 14pt)[`3`])
-
       #meander.container(width: 55%)
       #meander.container(right, width: 40%)
-
       #lorem(600)
     ]
   ]
@@ -225,8 +257,7 @@ containers to wrap around the forbidden regions.
 = Advanced techniques
 
 #table(columns: (1fr, 1fr), stroke: none)[
-  Here is a way to achieve text that follows a special shape.
-
+  Here is a way to achieve a complex outline:
   ```typ
   #context meander.reflow[
     // Draw a half circle of empty boxes
@@ -248,7 +279,8 @@ containers to wrap around the forbidden regions.
 
     // Then do the usual
     #meander.container()
-    #lorem(600)
+    #set par(justify: true)
+    #lorem(400)
   ]
   ```
 ][
@@ -263,7 +295,8 @@ containers to wrap around the forbidden regions.
         fakeimg(left + horizon, dy: (i - vcount / 2) * (2 * vradius / vcount), width: width, height: 2 * vradius / vcount, fill: white)
       }}
       #meander.container()
-      #lorem(600)
+      #set par(justify: true)
+      #lorem(400)
     ]
   ]
 ]

@@ -394,7 +394,24 @@
   }
 }
 
-#let push-linebreak-if-fits(dims, ct, size: none) = {
+/// Attempt to push a `linebreak` with the justification of the paragraph.
+///
+/// If the content has not reached the end of the box, we try to see if
+/// it will accept a linebreak, and we give that linebreak the same justification
+/// as the paragraph so that even boxes cut in many pieces are correctly
+/// justified.
+#let push-linebreak-if-fits(
+  /// Dimensions of the container
+  /// -> (width: length, height: length)
+  dims,
+  /// Content to fit
+  /// -> content
+  ct,
+  /// Size of the parent, as given by `layout`
+  /// -> (width: length, height: length)
+  size: none,
+) = {
+  // Recurse inside `sequence`
   if ct.func() == [::].func() {
     let (inner, rebuild) = default-rebuild(ct, "children")
     if inner.len() > 0 {
@@ -402,11 +419,14 @@
     }
     return rebuild(inner)
   }
+  // Recurse inside `styled`
   let styled = [#set text(size: 15pt);].func()
   if ct.func() == styled {
     let (inner, rebuild) = default-rebuild(ct, "child")
     return rebuild(push-linebreak-if-fits(dims, inner, size: size))
   }
+  // If the content would accept a small `box`, then the end of the line is not
+  // reached and we push a `linebreak`.
   assert(size != none)
   let extra = box(width: 1pt, height: 1mm, stroke: blue, baseline: -1pt)
   let baseline = box(width: dims.width)[#ct]
