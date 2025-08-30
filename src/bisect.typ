@@ -146,7 +146,7 @@
 ) = {
   let (inner, rebuild) = default-rebuild(ct, "text")
   let inner = inner.split(" ")
-  if not fits-inside([]) {
+  if not fits-inside([#inner.at(0) #box(width: 1pt, height: 1mm)]) {
     return (none, ct)
   }
   for i in range(inner.len()) {
@@ -428,7 +428,7 @@
   // If the content would accept a small `box`, then the end of the line is not
   // reached and we push a `linebreak`.
   assert(size != none)
-  let extra = box(width: 1pt, height: 1mm, stroke: blue, baseline: -1pt)
+  let extra = box(width: 0.5pt, height: 1mm, stroke: 0.5pt + blue, baseline: -1pt)
   let baseline = box(width: dims.width)[#ct]
   let testing = box(width: dims.width)[#ct#extra]
   let final = [#ct#context[#linebreak(justify: par.justify)]]
@@ -452,7 +452,7 @@
   ct,
   /// Parent container size.
   /// -> (width: length, height: length)
-  size: (:),
+  size: none,
   /// Configuration options.
   ///
   /// - `list-markers: (..content,)`, default value #{([•], [‣], [–]) * 2}.
@@ -465,6 +465,7 @@
   /// -> dictionary
   cfg: (:),
 ) = {
+  assert(size != none)
   if "list-markers" not in cfg {
     cfg.insert("list-markers", ([•], [‣], [–]) * 2)
   }

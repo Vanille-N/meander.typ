@@ -42,7 +42,7 @@
       panic("Pagebreaks are not supported inside `separate`")
     } else if child.func() == place {
       placed.push(child)
-    } else if child.func() == box {
+    } else if child.func() == box and child.has("body") {
       // The box is eligible if its body is only a `place` and the place itself is empty
       let outer = child
       let inner = child.body
@@ -81,6 +81,9 @@
   }
   (flow: flow, obstacles: placed, containers: free)
 }
+
+/// Marks the contents as not an obstacle.
+#let phantom(ct) = place(ct)
 
 /// Creates a standard container.
 /// This is not obscure, it's simply a `box(place({}))`, which is by convention
@@ -164,6 +167,13 @@
   let display = []
   let debug = []
   for elem in obstacles {
+    let (elem, reflow) = {
+      if elem.fields().body.func() == place {
+        (elem.fields().body, false)
+      } else {
+        (elem, true)
+      }
+    }
     let fields = elem.fields()
     let inner = fields.body
     let alignment = fields.at("alignment", default: top + left)
@@ -173,18 +183,20 @@
     let (x, y) = geometry.align(alignment, dx: dx, dy: dy, width: width, height: height)
     let dims = geometry.resolve(size, x: x, y: y, width: width, height: height)
     // TODO: does this correctly handle obstacles that go below 0% ?
-    display += place(top + left)[#move(dx: dims.x, dy: dims.y)[#inner]]
+    display += place[#move(dx: dims.x, dy: dims.y)[#inner]]
 
-    let padded = (x: none, y: none, width: none, height: none)
-    padded.x = geometry.clamp(dims.x - margin, min: 0pt)
-    padded.y = geometry.clamp(dims.y - margin, min: 0pt)
-    padded.width = calc.min(size.width, dims.x + dims.width + margin) - padded.x
-    padded.height = calc.min(size.height, dims.y + dims.height + margin) - padded.y
+    if reflow {
+      let padded = (x: none, y: none, width: none, height: none)
+      padded.x = geometry.clamp(dims.x - margin, min: 0pt)
+      padded.y = geometry.clamp(dims.y - margin, min: 0pt)
+      padded.width = calc.min(size.width, dims.x + dims.width + margin) - padded.x
+      padded.height = calc.min(size.height, dims.y + dims.height + margin) - padded.y
 
-    assert(padded.width >= 0pt)
-    assert(padded.height >= 0pt)
-    forbidden.push(padded)
-    debug += place(top + left)[#move(dx: padded.x, dy: padded.y)[#box(stroke: red, fill: pat-forbidden(10pt), width: padded.width, height: padded.height)]]
+      assert(padded.width >= 0pt)
+      assert(padded.height >= 0pt)
+      forbidden.push(padded)
+      debug += place(top + left)[#move(dx: padded.x, dy: padded.y)[#box(stroke: red, fill: pat-forbidden(10pt), width: padded.width, height: padded.height)]]
+    }
   }
   (rects: forbidden, display: display, debug: debug)
 }
@@ -277,10 +289,16 @@
 #let debug-reflow(
   /// Content to be segmented and have its layout displayed.
   /// -> content
-  ct
+  ct,
+  /// Whether to show the placed objects.
+  /// -> bool
+  display: false,
 ) = layout(size => {
   let (obstacles, containers) = separate(ct)
   let forbidden = forbidden-rectangles(obstacles, margin: 5pt, size: size)
+  if display {
+    forbidden.display
+  }
   forbidden.debug
 
   let allowed = tolerable-rectangles(containers, avoid: forbidden.rects, size: size)

@@ -1,17 +1,17 @@
 #import "/src/bisect.typ": *
 
-#let test-case(ct) = {
+#let test-case(ct) = layout(size => {
   let dims = (width: 5cm, height: 5cm)
   context {
     [#{(ct,)}]
-    let (fit, rest) = fill-box(dims, ct)
+    let (fit, rest) = fill-box(dims, ct, size: size)
     table(
       columns: 2,
       box(..dims, stroke: green)[#fit],
       box(stroke: orange)[#rest],
     )
   }
-}
+})
 
 #test-case[]
 

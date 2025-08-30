@@ -1,6 +1,7 @@
 #import "geometry.typ"
 
-#let fill-boxes(body, ..containers, size: (:)) = {
+#let fill-boxes(body, ..containers, size: none) = {
+  assert(size != none)
   let full = ()
   let body = body
   for cont in containers.pos() {
@@ -92,7 +93,7 @@
 
     import "bisect.typ" as bisect
     let max-dims = measure(box(height: cont.height, width: cont.width), ..size)
-    let (fits, overflow) = bisect.fill-box(max-dims)[#body]
+    let (fits, overflow) = bisect.fill-box(max-dims, size: size)[#body]
     if fits == none { continue }
     let actual-dims = measure(box(width: cont.width)[#fits], ..size)
     if actual-dims.height < 1mm { continue }

@@ -80,6 +80,11 @@
   /// -> dictionary
   ..args
 ) = {
+  if "width" not in size { panic(size) }
+  let scale-value(rel, max) = {
+    let rel = 0% + 0pt + rel
+    rel.ratio * max + rel.length.to-absolute()
+  }
   let ans = (:)
   for (arg, val) in args.named() {
     let is-x = arg.contains("x") or (arg.at(0) == "w")
@@ -87,9 +92,9 @@
     if is-x and is-y {
       panic("Cannot infer if " + arg + " is horizontal or vertical")
     } else if is-x {
-      ans.insert(arg, measure(box(width: val), ..size).width)
+      ans.insert(arg, scale-value(val, size.width))
     } else if is-y {
-      ans.insert(arg, measure(box(height: val), ..size).height)
+      ans.insert(arg, scale-value(val, size.height))
     } else {
       panic("Cannot infer if " + arg + " is horizontal or vertical")
     }
@@ -121,15 +126,19 @@
     0% + dx
   } else if alignment.x == right {
     100% + dx - width
-  } else {
+  } else if alignment.x == center {
     50% + dx - width / 2
+  } else {
+    0% + dy
   }
   let y = if alignment.y == top {
     0% + dy
   } else if alignment.y == bottom {
     100% + dy - height
-  } else {
+  } else if alignment.y == horizon {
     50% + dy - height / 2
+  } else {
+    0% + dy
   }
   (x: x, y: y)
 }

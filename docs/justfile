@@ -1,2 +1,0 @@
-doc:
-  typst watch --root=.. main.typ

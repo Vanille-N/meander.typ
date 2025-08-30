@@ -17,9 +17,12 @@
 ## Threading
 - [X] boxes must not stretch beyond containers
 - [ ] parameterization of alignment inside boxes
-- [X] justification
+- [ ] justification
+  - [X] working baseline
+  - [ ] content broken by `[ ]`
 - [ ] hyphenation
 - [ ] handle paragraph breaks
+- [ ] relax upper bounds on text growing vertically
 
 ## QoL
 
