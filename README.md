@@ -36,7 +36,7 @@ The (contextual) function `meander.reflow` splits content into
 </td>
 <td>
 
-![](gallery/multi-obstacles.png)
+![a page where text flows between 5 rectangular obstacles](gallery/multi-obstacles.png)
 
 </td>
 </tr>
@@ -67,7 +67,7 @@ Use multiple `container`s to produce layouts in columns.
 </td>
 <td>
 
-![](gallery/columns.png)
+![a two-column page with 3 obstacles](gallery/columns.png)
 
 </td>
 </tr>
@@ -107,20 +107,9 @@ More complex text outlines can be achieved by playing with obstacles.
 </td>
 <td>
 
-![](gallery/shape.png)
+![text with a half-circle cutout](gallery/shape.png)
 
 </td>
 </tr>
 </table>
-
-
-## Known issues and roadmap
-
-- [X] boxes must not stretch beyond containers
-- [ ] fix the numbering pattern in `enum`
-- [ ] improve `list.item` and `enum.item` indentation and vertical spacing
-- [ ] parameterization of alignment inside boxes
-- [ ] proper handling of containers that intersect horizontally
-- [ ] hyphenation and justification
-- [ ] multi-page handling
 
