@@ -107,6 +107,7 @@
   let styles = if "styles" in fields { (fields.remove("styles"),) } else { () }
   // Construct the closure
   let rebuild(inner) = {
+    assert(inner != none)
     let pos = (inner, ..number, ..styles)
     //if ct.func() == [#set text(size: 30pt)].func() { panic(ct.fields().styles, pos) }
     ct.func()(..fields, ..pos)
@@ -152,10 +153,14 @@
     if fits-inside(rebuild(inner.slice(0, i + 1).join(" "))) {
       continue
     } else {
-      let left = rebuild(inner.slice(0, i).join(" "))
-      assert(fits-inside(left))
-      let right = rebuild(inner.slice(i).join(" "))
-      return (left, right)
+      if i == 0 {
+        return (none, rebuild(inner.join(" ")))
+      } else {
+        let left = rebuild(inner.slice(0, i).join(" "))
+        assert(fits-inside(left))
+        let right = rebuild(inner.slice(i).join(" "))
+        return (left, right)
+      }
     }
   }
   return (rebuild(inner.join(" ")), none)
@@ -175,12 +180,14 @@
 ) = {
   let (inner, rebuild) = default-rebuild(ct, "child")
   let (left, right) = split-dispatch(inner, ct => fits-inside(rebuild(ct)), cfg)
-  if left != none {
+  let left = if left == none { none } else {
     assert(fits-inside(rebuild(left)))
-    (rebuild(left), rebuild(right))
-  } else {
-    (none, rebuild(right))
+    rebuild(left)
   }
+  let right = if right == none { none } else {
+    rebuild(right)
+  }
+  (left, right)
 }
 
 /// Split content with a `"children"` main field.
@@ -198,6 +205,11 @@
   let (inner, rebuild) = default-rebuild(ct, "children")
   if not fits-inside([]) { return (none, ct) }
   for i in range(inner.len()) {
+    // Magically substitute parbreaks for vertical spaces
+    // which behave better w.r.t splitting.
+    if inner.at(i).func() == parbreak {
+      inner.at(i) = [#linebreak()#v(par.spacing)]
+    }
     // If inner.at(i) fits, take it
     if fits-inside(rebuild(inner.slice(0, i + 1))) {
       continue
@@ -209,8 +221,7 @@
       let left = {
         if left == none {
           if i == 0 {
-            let right = rebuild(inner)
-            return (none, right)
+            return (none, rebuild(inner))
           } else {
             rebuild(inner.slice(0, i))
           }
@@ -348,12 +359,14 @@
   } else if ct.func() in (strong, emph, underline, stroke, overline, highlight) {
     let (inner, rebuild) = default-rebuild(ct, "body")
     let (left, right) = split-dispatch(inner, ct => fits-inside(rebuild(ct)), cfg)
-    if left != none {
+    let left = if left == none { none } else {
       assert(fits-inside(rebuild(left)))
-      (rebuild(left), rebuild(right))
-    } else {
-      (none, rebuild(right))
+      rebuild(left)
     }
+    let right = if right == none { none } else {
+      rebuild(right)
+    }
+    (left, right)
   } else {
     take-it-or-leave-it(ct, fits-inside)
   }
@@ -370,7 +383,9 @@
   /// Extra configuration options. -> dictionary
   cfg,
 ) = {
-  if ct.has("text") {
+  if ct.func() == parbreak {
+    take-it-or-leave-it(v(1em), fits-inside)
+  } else if ct.has("text") {
     has-text(ct, dispatch, fits-inside, cfg)
   } else if ct.has("child") {
     has-child(ct, dispatch, fits-inside, cfg)
@@ -384,8 +399,35 @@
   }
 }
 
+#let push-linebreak-if-fits(dims, ct, size: none) = {
+  if ct.func() == [::].func() {
+    let (inner, rebuild) = default-rebuild(ct, "children")
+    if inner.len() > 0 {
+      inner.at(-1) = push-linebreak-if-fits(dims, inner.at(-1), size: size)
+    }
+    return rebuild(inner)
+  }
+  let styled = [#set text(size: 15pt);].func()
+  if ct.func() == styled {
+    let (inner, rebuild) = default-rebuild(ct, "child")
+    return rebuild(push-linebreak-if-fits(dims, inner, size: size))
+  }
+  assert(size != none)
+  let extra = box(width: 1pt, height: 1mm, stroke: blue, baseline: -1pt)
+  let baseline = box(width: dims.width)[#ct]
+  let testing = box(width: dims.width)[#ct#extra]
+  let final = [#ct#context[#linebreak(justify: par.justify)]]
+  if measure(baseline, ..size).height + 1pt < measure(testing, ..size).height {
+    ct
+  } else {
+    final
+  }
+}
+
 /// Initialize default configuration options and take as much content as fits
-/// in a box of given size.
+/// in a box of given size. Returns a tuple of the content that fits and the
+/// content that overflows separated.
+/// -> (content, content)
 #let fill-box(
   /// Container size.
   /// -> (width: length, height: length)
@@ -420,6 +462,19 @@
     cfg.insert("allow-horiz-overflow", false)
   }*/
   // TODO: include vertical and horizontal spacing here.
-  dispatch(ct, ct => fits-inside(dims, ct, size: size), cfg)
+  let (left, right) = dispatch(ct, ct => fits-inside(dims, ct, size: size), cfg)
+  let extra = box(width: 1pt, height: 1mm, stroke: blue, baseline: -1pt)
+  if left == none or right == none {
+    (left, right)
+  } else {
+    let left = push-linebreak-if-fits(dims, left, size: size)
+    (left, right)
+    //if measure(box(width: dims.width)[#left], ..size).height + 1pt < measure(box(width: dims.width)[#left#extra], ..size).height {
+    //(highlight(left), right)
+    //} else {
+    //  (left + extra, right)
+      //(left + extra + linebreak(justify: par.justify), right)
+    //}
+  }
 }
 

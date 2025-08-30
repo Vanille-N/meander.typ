@@ -129,7 +129,6 @@
     place(dx: container.dx, dy: container.dy, {
       box(width: container.width, height: container.height, {
         content
-        linebreak()
       })
     })
   }

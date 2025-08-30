@@ -99,6 +99,57 @@
   #filler
 ]
 
+#pagebreak()
+#[
+#context reflow[
+  #let vradius = 12.2cm
+  #let vcount = 50
+  #let hradius = 5cm
+  #{for i in range(vcount) {
+    let frac = (2 * (i + 0.5) / vcount) - 1
+    let width = calc.sqrt(1 - frac * frac) * 10cm
+    fakeimg(top + left, dy: i * (2 * vradius / vcount), width: width, height: 2 * vradius / vcount, fill: red)
+  }}
+  #box(place(top + left, {}))
+  #[
+    #set text(fill: blue)
+    #lorem(10)
+    #lorem(10) \
+    #lorem(10)
+  ]
+
+  #[
+    #set text(fill: red)
+    #lorem(15)
+    #v(1cm)
+    #lorem(10)
+  ]
+
+  #[
+    #set text(fill: green)
+    #set par(justify: false)
+    #set linebreak(justify: true)
+    #lorem(50) \
+  ]
+
+  #[
+    #set text(fill: orange)
+    #set par(justify: true)
+    #set linebreak(justify: false)
+    #lorem(27) \
+    #lorem(20) \
+  ]
+
+  #[
+    #set text(fill: purple)
+    #set par(justify: true)
+    #set linebreak(justify: true)
+    #lorem(50) \
+    #lorem(42) \
+  ]
+]
+]
+
 /*
 #let test-content = [
   #lorem(50)
