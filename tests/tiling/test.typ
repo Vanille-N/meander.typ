@@ -6,7 +6,7 @@
 
 #context debug-reflow(display: true)[
   #fakeimg(top + left, width: 5cm, height: 5cm, fill: red)
-  #fakeimg(left, dx: -1cm, width: 5cm, height: 5cm, fill: blue)
+  #fakeimg(horizon + left, dx: -1cm, width: 5cm, height: 5cm, fill: blue)
   #fakeimg(top + right, dy: -1cm, width: 5cm, height: 5cm, fill: green)
 ]
 #pagebreak()
@@ -45,7 +45,7 @@
   #fakeimg(top + center, width: 8cm, height: 2cm, fill: orange)
   #fakeimg(top + center, dy: 5cm, height: 3cm, width: 3cm, fill: blue)
   #fakeimg(center + horizon, height: 1cm, width: 6cm, fill: green)
-  #fakeimg(bottom, height: 6cm, width: 5cm, fill: red)
+  #fakeimg(bottom + center, height: 6cm, width: 5cm, fill: red)
   #container(width: 47%)
   #container(top + right, width: 47%)
 ]

@@ -47,7 +47,7 @@
   #fakeimg(top + center, width: 8cm, height: 2cm, fill: orange)
   #fakeimg(top + center, dy: 5cm, height: 3cm, width: 3cm, fill: blue)
   #fakeimg(center + horizon, height: 1cm, width: 6cm, fill: green)
-  #fakeimg(bottom, height: 6cm, width: 5cm, fill: red)
+  #fakeimg(center + bottom, height: 6cm, width: 5cm, fill: red)
   #box(width: 47%, place({}))
   #box(width: 47%, place(top + right, {}))
   #filler

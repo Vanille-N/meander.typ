@@ -1,9 +1,10 @@
+#import "/src/threading.typ": reflow
 #import "/src/contour.typ": *
 
-#context[#redraw(
+#context reflow[#redraw(
   debug: true,
   div: 20,
-  tile: (x, y) => true,
+  grid: (x, y) => true,
   place(center)[
     #circle(radius: 6cm, fill: yellow)
   ],
@@ -11,10 +12,10 @@
 
 #pagebreak()
 
-#context[#redraw(
+#context reflow[#redraw(
   debug: true,
   div: 20,
-  tile: (x, y) => {
+  grid: (x, y) => {
     calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) <= 1
   },
   place(center + horizon)[
@@ -24,10 +25,10 @@
 
 #pagebreak()
 
-#context[#redraw(
+#context reflow[#redraw(
   debug: true,
   div: 20,
-  tile: (x, y) => {
+  grid: (x, y) => {
     calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) <= 1
   },
   place(center)[
@@ -37,15 +38,15 @@
 
 #pagebreak()
 
-#context[#redraw(
+#context reflow[#redraw(
   debug: true,
   div: 20,
-  tile: (x, y) => calc.abs(x - y) <= 0.06,
+  grid: (x, y) => calc.abs(x - y) <= 0.06,
   place(center + top)[
     #line(end: (5cm, 5cm))
   ],
 )]
-#context[#redraw(
+#context reflow[#redraw(
   debug: true,
   div: 20,
   horiz: y => (y - 0.07, y + 0.07),
@@ -53,7 +54,7 @@
     #line(end: (5cm, 5cm))
   ],
 )]
-#context[#redraw(
+#context reflow[#redraw(
   debug: true,
   div: 20,
   vert: x => (x - 0.07, x + 0.07),
@@ -64,7 +65,7 @@
 
 #pagebreak()
 
-#context[#redraw(
+#context reflow[#redraw(
   debug: true,
   div: 20,
   flush: right,
@@ -73,7 +74,7 @@
     #line(end: (5cm, 5cm))
   ],
 )]
-#context[#redraw(
+#context reflow[#redraw(
   debug: true,
   div: 20,
   flush: left,
@@ -82,7 +83,7 @@
     #line(end: (5cm, 5cm))
   ],
 )]
-#context[#redraw(
+#context reflow[#redraw(
   debug: true,
   div: 20,
   flush: center,
@@ -94,7 +95,7 @@
 
 #pagebreak()
 
-#context[#redraw(
+#context reflow[#redraw(
   debug: true,
   div: 20,
   flush: top,
@@ -103,7 +104,7 @@
     #line(end: (5cm, 5cm))
   ],
 )]
-#context[#redraw(
+#context reflow[#redraw(
   debug: true,
   div: 20,
   flush: bottom,
@@ -112,7 +113,7 @@
     #line(end: (5cm, 5cm))
   ],
 )]
-#context[#redraw(
+#context reflow[#redraw(
   debug: true,
   div: 20,
   flush: horizon,
