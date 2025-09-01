@@ -82,11 +82,12 @@
 
 = Quick start
 
-The main function provided is ```typ meander.reflow```, which takes as input some content,
+The main function provided is ```typ #meander.reflow```, which takes as input some content,
 and auto-splits it into "containers", "obstacles", and "flowing text".
-Obstacles are ```typ content``` that are placed on the page with a fixed layout.
-Containers are created by the function ```typ meander.container```, and everything
-else is flowing text.
+Obstacles are toplevel (must not be inside any containers or any styling rules)
+```typ content``` that are placed on the page with a fixed layout.
+Containers are created at the toplevel by the function ```typ #meander.container```,
+and everything else is flowing text.
 
 After excluding the zones forbidden by obstacles and segmenting the containers
 appropriately, the threading algorithm will split the flowing content across
@@ -95,8 +96,8 @@ containers to wrap around the forbidden regions.
 == A simple example
 
 #table(columns: (1fr, 1fr), stroke: none)[
-  ```typ meander.reflow``` is contextual, so the invocation needs to be wrapped in a
-  ```typ context { ... }``` block. Currently multi-page setups are not supported,
+  ```typ #meander.reflow``` is contextual, so the invocation needs to be wrapped in a
+  ```typ #context { ... }``` block. Currently multi-page setups are not supported,
   but this is definitely a desired feature.
 
   ```typ
@@ -155,7 +156,7 @@ Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if
 == Multiple obstacles
 
 #table(columns: (1fr, 1fr), stroke: none)[
-  ```typ meander.reflow``` can handle as many obstacles as you provide
+  ```typ #meander.reflow``` can handle as many obstacles as you provide
   (at the cost of potentially performance issues if there are too many,
   but experiments have shown that up to \~100 obstacles is no problem).
 
@@ -164,7 +165,7 @@ Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if
     // Multiple obstacles
     #place(top + left, my-image-1)
     #place(top + right, my-image-2)
-    #place(right, my-image-3)
+    #place(horizon + right, my-image-3)
     #place(bottom + left, my-image-4)
     #place(bottom + left, my-image-5,
       dx: 2cm)
@@ -179,7 +180,7 @@ Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if
     #meander.reflow[
       #fakeimg(top + left, width: 2.5cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
       #fakeimg(top + right, width: 2cm, height: 1cm, fill: blue, label: text(size: 14pt)[`2`])
-      #fakeimg(right, width: 4cm, height: 2cm, fill: green, label: text(size: 14pt)[`3`])
+      #fakeimg(horizon + right, width: 4cm, height: 2cm, fill: green, label: text(size: 14pt)[`3`])
       #fakeimg(bottom + left, width: 2cm, height: 2cm, fill: red, label: text(size: 14pt)[`4`])
       #fakeimg(bottom + left, dx: 2.1cm, width: 1.5cm, height: 1cm, fill: yellow, label: text(size: 14pt)[`5`])
       #meander.container()
@@ -213,7 +214,7 @@ Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if
 ][
   #pseudopage[
     #meander.reflow[
-      #fakeimg(bottom + right, width: 2.5cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
+      #fakeimg(bottom + right, width: 2.7cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
       #fakeimg(center + horizon, dy: -1cm, width: 2cm, fill: blue, label: text(size: 14pt)[`2`])
       #fakeimg(top + right, width: 4cm, height: 2cm, fill: green, label: text(size: 14pt)[`3`])
       #meander.container(width: 55%)
@@ -228,23 +229,31 @@ Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if
 #table(columns: (1fr, 1fr), stroke: none)[
   The same page setup as the previous example will internally be separated into
   - obstacles `my-image-1`, `my-image-2`, and `my-image-3`.
-    They are shown on the right in red.
-  - containers ```typ (x: 0%, y: 0%, width: 55%, height: 100%)```
-    and ```typ (x: 60%, y: 0%, width: 40%, height: 100%)```
-  - flowing text ```typ lorem(600)```, not shown here.
+  - containers ```typ #(x: 0%, y: 0%, width: 55%, height: 100%)```
+    and ```typ #(x: 60%, y: 0%, width: 40%, height: 100%)```
+  - flowing text ```typ #lorem(600)```, not shown here.
 
-  Respecting the horizontal separations of the obstacles, and staying within
-  the bounds of the containers, the page is split into the subcontainers
-  shown to the right in green.
-  These boxes will be filled in order, including heuristics to properly provide
-  vertical spacing between these boxes.
+  Initially obstacles are placed on the page #text(fill: purple)[($->$)] and surrounded by an
+  exclusion zone with a small (soon to be configurable) margin.
 
-  This debug view is visible by simply replacing ```typ reflow```
-  with ```typ debug-reflow```.
+  Then the containers are placed on the page and segmented into rectangles
+  to avoid the exclusion zones #text(fill: purple)[($arrow.b$)].
+
+  Finally the flowing text is threaded through those boxes
+  #text(fill: purple)[($arrow.br$)], which may be resized vertically a bit compared
+  to the initial segmentation.
 ][
   #pseudopage[
     #meander.debug-reflow[
-      #fakeimg(bottom + right, width: 3cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
+      #fakeimg(bottom + right, width: 2.7cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
+      #fakeimg(center + horizon, dy: -1cm, width: 2cm, fill: blue, label: text(size: 14pt)[`2`])
+      #fakeimg(top + right, width: 4cm, height: 2cm, fill: green, label: text(size: 14pt)[`3`])
+    ]
+  ]
+][
+  #pseudopage[
+    #meander.debug-reflow[
+      #fakeimg(bottom + right, width: 2.7cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
       #fakeimg(center + horizon, dy: -1cm, width: 2cm, fill: blue, label: text(size: 14pt)[`2`])
       #fakeimg(top + right, width: 4cm, height: 2cm, fill: green, label: text(size: 14pt)[`3`])
 
@@ -252,66 +261,325 @@ Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if
       #meander.container(right, width: 40%)
     ]
   ]
-]
+][
+  #pseudopage[
+    #meander.reflow(debug: true)[
+      #fakeimg(bottom + right, width: 2.7cm, height: 3cm, fill: orange, label: text(size: 14pt)[`1`])
+      #fakeimg(center + horizon, dy: -1cm, width: 2cm, fill: blue, label: text(size: 14pt)[`2`])
+      #fakeimg(top + right, width: 4cm, height: 2cm, fill: green, label: text(size: 14pt)[`3`])
 
-= Advanced techniques
+      #meander.container(width: 55%)
+      #meander.container(right, width: 40%)
+      #lorem(600)
+    ]
+  ]
+]
+#pagebreak()
+
+The order in which the boxes are filled is in the priority of
+- container order
+- top $->$ bottom
+- left $->$ right
+which has implications for how your text will be laid out.
+Indeed compare the following situations that result in the same boxes but in
+different orders:
 
 #table(columns: (1fr, 1fr), stroke: none)[
-  Here is a way to achieve a complex outline:
   ```typ
   #context meander.reflow[
-    // Draw a half circle of empty boxes
-    // that will count as obstacles
-    #let vradius = 45%
-    #let vcount = 50
-    #let hradius = 60%
-    #for i in range(vcount) {
-      let frac = 2 * (i+0.5) / vcount - 1
-      let width = hradius *
-        calc.sqrt(1 - frac * frac)
-      place(left + horizon,
-        dy: (i - vcount / 2) *
-          (2 * vradius / vcount)
-      )[#box(width: width,
-        height: 2 * vradius / vcount
-      )]
-    }
+    #place(center + horizon,
+      line(end: (100%, 0%)))
+    #place(center + horizon,
+      line(end: (0%, 100%)))
 
-    // Then do the usual
-    #meander.container()
-    #set par(justify: true)
-    #lorem(400)
+    #meander.container(width: 100%)
+
+  ]
+  ```
+][
+  ```typ
+  #context meander.reflow[
+    #place(center + horizon,
+      line(end: (100%, 0%)))
+    #place(center + horizon,
+      line(end: (0%, 100%)))
+
+    #meander.container(width: 50%)
+    #meander.container(right, width: 50%)
   ]
   ```
 ][
   #pseudopage[
-    #meander.reflow[
-      #let vradius = 45%
-      #let vcount = 50
-      #let hradius = 60%
-      #{for i in range(vcount) {
-        let frac = (2 * (i + 0.5) / vcount) - 1
-        let width = calc.sqrt(1 - frac * frac) * hradius
-        fakeimg(left + horizon, dy: (i - vcount / 2) * (2 * vradius / vcount), width: width, height: 2 * vradius / vcount, fill: white)
-      }}
-      #meander.container()
+    #context meander.debug-reflow[
+      #place(center + horizon)[#line(end: (100%, 0%))]
+      #place(center + horizon)[#line(end: (0%, 100%))]
+
+      #meander.container(width: 100%)
+    ]
+    #place(center + horizon, dx: -25%, dy: -25%)[#text(size: 50pt)[*1*]]
+    #place(center + horizon, dx: 25%, dy: -25%)[#text(size: 50pt)[*2*]]
+    #place(center + horizon, dx: -25%, dy: 25%)[#text(size: 50pt)[*3*]]
+    #place(center + horizon, dx: 25%, dy: 25%)[#text(size: 50pt)[*4*]]
+  ]
+][
+  #pseudopage[
+    #context meander.debug-reflow[
+      #place(center + horizon)[#line(end: (100%, 0%))]
+      #place(center + horizon)[#line(end: (0%, 100%))]
+
+      #meander.container(width: 50%)
+      #meander.container(right, width: 50%)
+    ]
+    #place(center + horizon, dx: -25%, dy: -25%)[#text(size: 50pt)[*1*]]
+    #place(center + horizon, dx: 25%, dy: -25%)[#text(size: 50pt)[*3*]]
+    #place(center + horizon, dx: -25%, dy: 25%)[#text(size: 50pt)[*2*]]
+    #place(center + horizon, dx: 25%, dy: 25%)[#text(size: 50pt)[*4*]]
+  ]
+]
+And even in the example above, the box *1* will be filled before the first
+line of *2* is used.
+In short, Meander *does not "guess" columns*. If you want columns rather than
+a top-bottom and left-right layout, you need to specify them.
+
+#pagebreak()
+
+= Advanced techniques
+
+Although Meander started as only a text threading engine,
+the ability to place text in boxes of unequal width has direct applications
+in more advanced paragraph shapes. This has been a desired feature since at
+least #link("https://github.com/typst/typst/issues/5181")[issue \#5181].
+
+Even though this is somewhat outside of the original feature roadmap,
+Meander makes an effort for this application to be more user-friendly,
+by providing retiling functions. Here we walk through these steps.
+
+Here is our starting point: a simple double-column page
+with a cutout in the middle for an image.
+```typ
+#context meander.reflow[
+  #place(center + horizon)[
+    #circle(radius: 1.5cm, fill: yellow)
+  ]
+
+  #meander.container(width: 48%)
+  #meander.container(right, width: 48%)
+
+  #set par(justify: true)
+  #lorem(600)
+]
+```
+#table(columns: (1fr, 1fr), stroke: none)[
+  #pseudopage[
+    #context meander.debug-reflow[
+      #place(center + horizon)[#circle(radius: 1.5cm, fill: yellow)]
+
+      #meander.container(width: 48%)
+      #meander.container(right, width: 48%)
+
       #set par(justify: true)
-      #lorem(400)
+      #lorem(600)
+    ]
+  ]
+][
+  #pseudopage[
+    #context meander.reflow[
+      #place(center + horizon)[#circle(radius: 1.5cm, fill: yellow)]
+
+      #meander.container(width: 48%)
+      #meander.container(right, width: 48%)
+
+      #set par(justify: true)
+      #lorem(600)
+    ]
+  ]
+]
+Meander sees all obstacles as rectangular, so the circle leaves a big
+ugly #link("https://www.youtube.com/watch?v=6pDH66X3ClA")[square hole] in our page.
+
+Fear not! We can redraw the boundaries.
+```typ #meander.redraw``` accepts as parameter a function normalized to
+the interval $[0, 1]$ to define the real boundaries of the object relative
+to its dimensions.
+A `grid` redrawing function is from $[0, 1] times [0, 1]$ to `bool`,
+returning for each normalized coordinate `(x, y)` whether it belongs to
+the obstacle.
+
+So instead of placing directly the circle, we write:
+```typ
+#meander.redraw(
+  // How many subdivisions we want.
+  div: 15,
+  // Whether each point belongs to the circle or not.
+  // Remember: x and y are normalized to [0, 1].
+  grid: (x, y) => calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) <= 1,
+  // The original object is measured, then is not counted as an obstacle.
+  place(center + horizon)[#circle(radius: 1.5cm, fill: yellow)]
+)
+```
+This results in the new subdivisions of containers below.
+#table(columns: (1fr, 1fr), stroke: none)[
+  #pseudopage[
+    #context meander.debug-reflow[
+      #meander.redraw(
+        div: 15,
+        grid: (x, y) => calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) <= 1,
+        place(center + horizon)[#circle(radius: 1.5cm, fill: yellow)]
+      )
+
+      #meander.container(width: 48%)
+      #meander.container(right, width: 48%)
+
+      #set par(justify: true)
+      #lorem(600)
+    ]
+  ]
+][
+  #pseudopage[
+    #context meander.reflow[
+      #meander.redraw(
+        div: 15,
+        grid: (x, y) => calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) <= 1,
+        place(center + horizon)[#circle(radius: 1.5cm, fill: yellow)]
+      )
+
+      #meander.container(width: 48%)
+      #meander.container(right, width: 48%)
+
+      #set par(justify: true)
+      #lorem(600)
+    ]
+  ]
+]
+Setting aside the obvious hyphenation issues above,
+this enables in theory drawing arbitrary paragraph shapes.
+If your shape is not convenient to express through a grid function, here
+are the other options available:
+- `vert`: given `x`, return a tuple `(top, bottom)` where `top < bottom`,
+  resulting in an obstacle between `top` and `bottom`.
+- `height`: given `x`, return a tuple `(anchor, height)`,
+  resulting in an obstacle of height `height`.
+  The interpretation of `anchor` depends on the additional parameter
+  `flush` passed to the function `#redraw`: if `flush = top` then `anchor`
+  will be the top of the obstacle. If `flush = bottom` then `anchor` will be
+  the bottom of the obstacle. If `flush = horizon` then `anchor` will be the
+  center of the obstacle.
+- `horiz`: a horizontal version of `vert`.
+- `width`: a horizontal version of `height`.
+
+the inputs are guaranteed and the outputs are assumed to be normalized
+to $[0, 1]$. Below are some examples.
+
+#import "@preview/cetz:0.4.1"
+
+#table(columns: (2fr, 1fr), stroke: none)[
+][
+  #context box(width: 5.6cm, height: 5.6cm, stroke: black, inset: 3mm)[
+    #set text(size: 4pt)
+    #set par(justify: true)
+    #meander.reflow[
+      #meander.redraw(
+        debug: true,
+        div: 7,
+        horiz: y => (1 - y, 1),
+        place(right + bottom)[#cetz.canvas({
+          import cetz.draw: *
+          merge-path(fill: yellow, {
+            line((0, 0), (3, 0))
+            line((), (3, 2))
+            line((), (0, 0))
+          })
+        })]
+      )
+      #meander.container()
+      #lorem(500)
+    ]
+  ]
+][
+][
+  #context box(width: 5.6cm, height: 5.6cm, stroke: black, inset: 3mm)[
+    #set text(size: 4pt)
+    #set par(justify: true)
+    #meander.reflow[
+      #meander.redraw(
+        debug: true,
+        div: 12,
+        flush: center,
+        width: y => (0.5, y),
+        place(center + bottom)[#cetz.canvas({
+          import cetz.draw: *
+          merge-path(fill: yellow, {
+            line((0, 0), (3.4, 0))
+            line((), (1.7, 4))
+            line((), (0, 0))
+          })
+        })]
+      )
+      #meander.container()
+      #lorem(500)
+    ]
+  ]
+][
+][
+  #context box(width: 5.6cm, height: 5.6cm, stroke: black, inset: 3mm)[
+    #set text(size: 4pt)
+    #set par(justify: true)
+    #meander.reflow[
+      #meander.redraw(
+        debug: true,
+        div: 12,
+        vert: x => (0.5 * x, 1 - 0.5 * x),
+        place(left + horizon)[#cetz.canvas({
+          import cetz.draw: *
+          merge-path(fill: yellow, {
+            line((0, 0), (0, 4))
+            line((), (1, 2))
+            line((), (0, 0))
+          })
+        })]
+      )
+      #meander.container()
+      #lorem(500)
+    ]
+  ]
+][
+][
+  #context box(width: 5.6cm, height: 5.6cm, stroke: black, inset: 3mm)[
+    #set text(size: 4pt)
+    #set par(justify: true)
+    #meander.reflow[
+      #meander.redraw(
+        debug: true,
+        div: 26,
+        horiz: y => if y <= 0.5 { (0, 1 - 2 * y) } else { (0, 2 * (y - 0.5)) },
+        place(left + horizon)[#cetz.canvas({
+          import cetz.draw: *
+          merge-path(fill: yellow, {
+            line((0, 0), (0, 2.5))
+            line((), (2, 2.5))
+            line((), (0, 0))
+            line((), (0, -2.5))
+            line((), (2, -2.5))
+            line((), (0, 0))
+          })
+        })]
+      )
+      #meander.container()
+      #lorem(500)
     ]
   ]
 ]
 
-There are limits to this technique, and in particular increasing the
+There are of course limits to this technique, and in particular increasing the
 number of obstacles will in turn increase the number of boxes that the layout
 is segmented into. This means
-- performance issues if you get too wild (though notice that having 50 obstacles
-  in the previous example went fine)
-- text that doesn't fit in the boxes at all, in particular if you don't give
-  them any vertical space to grow because they are bounded on both sides.
-
-In short, stay reasonable with this and don't try to add hundreds of
-obstacles of 1mm height each.
-
+- performance issues if you get too wild
+  (though notice that having 15 obstacles in the previous example went completely
+  fine, and I have test cases with up to \~100)
+- text may not fit in the boxes, and the vertical stretching of boxes still
+  needs improvements.
+In the meantime it is highly discouraged to use a subdivision that results
+in obstacles much smaller than the font height.
 
 = Modularity (WIP)
 
