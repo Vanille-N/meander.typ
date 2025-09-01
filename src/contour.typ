@@ -1,5 +1,5 @@
 #import "geometry.typ"
-#import "tiling.typ": phantom
+#import "tiling.typ"
 
 #let frac-rect(frac, abs, ..style) = {
   place(
@@ -14,7 +14,7 @@
   )
 }
 
-#let redraw-tiled(fun, div: 5, debug: true, block: (:)) = {
+#let redraw-grid(fun, div: 5, debug: true, block: (:)) = {
   let (div-x, div-y) = if type(div) == int {
     (div, div)
   } else if type(div) == dictionary {
@@ -118,13 +118,13 @@
         )
       } else if flush == bottom {
         frac-rect(
-          (x: j / div, y: a, width: 1 / div, height: h),
+          (x: j / div, y: a - h, width: 1 / div, height: h),
           block,
           stroke: if debug { red } else { none },
         )
       } else {
         frac-rect(
-          (x: j / div, y: 1 - a - h, width: 1 / div, height: h),
+          (x: j / div, y: 1 - a, width: 1 / div, height: h),
           block,
           stroke: if debug { red } else { none },
         )
@@ -138,7 +138,8 @@
 #let redraw(
   ct,
   debug: false,
-  tile: none,
+  phantom: true,
+  grid: none,
   horiz: none,
   width: none,
   vert: none,
@@ -155,13 +156,13 @@
   assert(dims.width > 0pt, message: "object width must be positive")
   assert(dims.height > 0pt, message: "object height must be positive")
   let (x, y) = geometry.align(alignment, dx: dx, dy: dy, ..dims)
-  if debug {
-    ct
+  if phantom {
+    tiling.phantom(ct)
   } else {
-    phantom(ct)
+    ct
   }
-  if tile != none {
-    redraw-tiled(tile, ..args, debug: debug, block: (x: x, y: y, ..dims))
+  if grid != none {
+    redraw-grid(grid, ..args, debug: debug, block: (x: x, y: y, ..dims))
     return
   } else if horiz != none {
     redraw-horiz(horiz, ..args, debug: debug, block: (x: x, y: y, ..dims))

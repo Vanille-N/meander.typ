@@ -23,14 +23,30 @@
 - [ ] hyphenation
 - [ ] handle paragraph breaks
 - [ ] relax upper bounds on text growing vertically
+- [ ] line spacing not properly updated when font size changes ?
 
 ## QoL
 
-- [ ] phantom placed objects that do not count as obstacles
+- [X] phantom placed objects that do not count as obstacles
 - [ ] group displacement
-- [ ] retiling functions
-  - [ ] horizontal
-  - [ ] vertical
-  - [ ] grid
+- [X] retiling functions
+  - [X] horizontal
+  - [X] vertical
+  - [X] grid
+- [ ] inverse retiling (define a container with a complex shape through retiling functions)
 
+## Parameterization
+
+- [ ] obstacle margin
+- [ ] do-no-split list
+- [ ] full algorithm replacement
+  - [ ] tiling
+  - [ ] bisection
+  - [ ] threading
+
+## Documentation
+
+- [ ] retiling functions
+  - [ ] tutorial
+  - [ ] doc comments
 

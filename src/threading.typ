@@ -113,10 +113,16 @@
   /// See module `tiling` for how to format this content.
   /// -> content
   ct,
+  /// Whether to show the boundaries of boxes.
+  /// -> bool
+  debug: false,
 ) = layout(size => {
   import "tiling.typ" as tiling
   let (flow, obstacles, containers) = tiling.separate(ct)
   let forbidden = tiling.forbidden-rectangles(obstacles, margin: 5pt, size: size)
+  if debug {
+    forbidden.debug
+  }
   forbidden.display
 
   let allowed = tiling.tolerable-rectangles(containers, avoid: forbidden.rects, size: size)
@@ -128,7 +134,7 @@
     [#flow],
   ) {
     place(dx: container.dx, dy: container.dy, {
-      box(width: container.width, height: container.height, {
+      box(width: container.width, height: container.height, stroke: if debug { green } else { none }, {
         content
       })
     })

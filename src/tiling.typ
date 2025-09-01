@@ -292,7 +292,7 @@
   ct,
   /// Whether to show the placed objects.
   /// -> bool
-  display: false,
+  display: true,
 ) = layout(size => {
   let (obstacles, containers) = separate(ct)
   let forbidden = forbidden-rectangles(obstacles, margin: 5pt, size: size)
