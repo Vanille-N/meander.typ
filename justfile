@@ -3,3 +3,6 @@ doc:
 
 test T:
   typst watch --root=. tests/{{T}}/test.typ x.pdf
+
+example T:
+  typst watch --root=. examples/{{T}}/main.typ x.pdf
