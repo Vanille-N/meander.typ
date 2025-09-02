@@ -157,6 +157,7 @@
         return (none, rebuild(inner.join(" ")))
       } else {
         let left = rebuild(inner.slice(0, i).join(" "))
+        left += [#context { linebreak(justify: par.justify) }]
         assert(fits-inside(left))
         let right = rebuild(inner.slice(i).join(" "))
         return (left, right)
@@ -394,51 +395,6 @@
   }
 }
 
-/// Attempt to push a `linebreak` with the justification of the paragraph.
-///
-/// If the content has not reached the end of the box, we try to see if
-/// it will accept a linebreak, and we give that linebreak the same justification
-/// as the paragraph so that even boxes cut in many pieces are correctly
-/// justified.
-#let push-linebreak-if-fits(
-  /// Dimensions of the container
-  /// -> (width: length, height: length)
-  dims,
-  /// Content to fit
-  /// -> content
-  ct,
-  /// Size of the parent, as given by `layout`
-  /// -> (width: length, height: length)
-  size: none,
-) = {
-  // Recurse inside `sequence`
-  if ct.func() == [::].func() {
-    let (inner, rebuild) = default-rebuild(ct, "children")
-    if inner.len() > 0 {
-      inner.at(-1) = push-linebreak-if-fits(dims, inner.at(-1), size: size)
-    }
-    return rebuild(inner)
-  }
-  // Recurse inside `styled`
-  let styled = [#set text(size: 15pt);].func()
-  if ct.func() == styled {
-    let (inner, rebuild) = default-rebuild(ct, "child")
-    return rebuild(push-linebreak-if-fits(dims, inner, size: size))
-  }
-  // If the content would accept a small `box`, then the end of the line is not
-  // reached and we push a `linebreak`.
-  assert(size != none)
-  let extra = box(width: 0.5pt, height: 1mm, stroke: 0.5pt + blue, baseline: -1pt)
-  let baseline = box(width: dims.width)[#ct]
-  let testing = box(width: dims.width)[#ct#extra]
-  let final = [#ct#context[#linebreak(justify: par.justify)]]
-  if measure(baseline, ..size).height + 1pt < measure(testing, ..size).height {
-    ct
-  } else {
-    final
-  }
-}
-
 /// Initialize default configuration options and take as much content as fits
 /// in a box of given size. Returns a tuple of the content that fits and the
 /// content that overflows separated.
@@ -475,13 +431,6 @@
   }
   cfg.insert("enum-depth", 0)
   // TODO: include vertical and horizontal spacing here.
-  let (left, right) = dispatch(ct, ct => fits-inside(dims, ct, size: size), cfg)
-  let extra = box(width: 1pt, height: 1mm, stroke: blue, baseline: -1pt)
-  if left == none or right == none {
-    (left, right)
-  } else {
-    let left = push-linebreak-if-fits(dims, left, size: size)
-    (left, right)
-  }
+  dispatch(ct, ct => fits-inside(dims, ct, size: size), cfg)
 }
 
