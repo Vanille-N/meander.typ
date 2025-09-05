@@ -1,6 +1,6 @@
 [package]
 name = "meander"
-version = "0.1.0"
+version = "0.2.0"
 entrypoint = "src/lib.typ"
 
 authors = ["Neven Villani <neven@crans.org>"]
