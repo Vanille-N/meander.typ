@@ -7,109 +7,83 @@ See the [documentation](docs/main.pdf).
 
 ## Quick start
 
-The (contextual) function `meander.reflow` splits content into
-- obstacles: all `place`d content at the toplevel (i.e. not inside a subcontainer such as a `box`)
-- containers: produced by `meander.container()`, optionally specifying an alignment, `dx`, `dy`, `width`, `height`
-- flowing text: everything else
-
-<table>
-<tr>
-<td>
+The function `meander.reflow` splits the input sequence into
+- obstacles: all objects created via the function `placed` (which is like `place`),
+- containers: produced by `container`, optionally specifying an alignment and dimensions,
+- flowing content: produced by `content`.
 
 ```typ
-#context meander.reflow[
-  // Obstacles
-  #place(top + left, my-image-1)
-  #place(top + right, my-image-2)
-  #place(right, my-image-3)
-  #place(bottom + left, my-image-4)
-  #place(bottom + left, my-image-5, dx: 2cm)
+#import "@preview/meander:0.2.0"
 
-  // Container
-  #meander.container()
+#meander.reflow({
+  import meander: *
 
-  // Flowing text
-  #lorem(500)
-]
+  placed(top + left, my-img-1)
+  placed(top + right, my-img-2)
+  placed(horizon + right, my-img-3)
+  placed(bottom + left, my-img-4)
+  placed(bottom + left, dx: 35%, my-img-5)
+
+  container()
+  content[
+    #set par(justify: true)
+    #lorem(600)
+  ]
+})
 ```
-
-</td>
-<td>
-
 ![a page where text flows between 5 rectangular obstacles](gallery/multi-obstacles.png)
 
-</td>
-</tr>
-</table>
+-----
 
 Use multiple `container`s to produce layouts in columns.
 
-<table>
-<tr>
-<td>
-
 ```typ
-#context meander.reflow[
-  // Obstacles
-  #place(bottom + right, my-image-1)
-  #place(center + horizon, my-image-2, dy: -1cm)
-  #place(top + right, my-image-3)
+#import "@preview/meander:0.2.0"
 
-  // Containers
-  #meander.container(width: 55%)
-  #meander.container(right, width: 40%)
+#meander.reflow({
+  import meander: *
 
-  // Flowing text
-  #lorem(600)
-]
+  placed(bottom + right, my-img-1)
+  placed(center + horizon, my-img-2)
+  placed(top + right, my-img-3)
+
+  container(width: 55%)
+  container(align: right, width: 40%)
+  content[#lorem(600)]
+})
 ```
-
-</td>
-<td>
-
 ![a two-column page with 3 obstacles](gallery/columns.png)
 
-</td>
-</tr>
-</table>
+------
 
-More complex text outlines can be achieved by playing with obstacles.
-
-<table>
-<tr>
-<td>
+Meander allows precise control over the boundaries of obstacles, to draw complex paragraph shapes.
 
 ```typ
-#context meander.reflow[
-  // Draw a half circle shape with obstacles
-  #let vradius = 45%
-  #let vcount = 50
-  #let hradius = 60%
-  #for i in range(vcount) {
-    let frac = 2 * (i+0.5) / vcount - 1
-    let width = hradius * calc.sqrt(1 - frac * frac)
-    place(
-      left + horizon,
-      dy: (i - vcount / 2) * (2 * vradius / vcount),
-    )[
-      #box(width: width, height: 2 * vradius / vcount)
-    ]
-  }
+#meander.reflow({
+  import meander: *
 
-  // Container
-  #meander.container()
+  placed(
+    center + horizon,
+    boundary:
+      // Override the default margin
+      contour.margin(4pt) +
+      // Then redraw the shape as a grid
+      contour.grid(
+        // 25 vertical and horizontal subdivisions (choose whatever looks good)
+        div: 25,
+        // Equation for a circle of center (0.5, 0.5) and radius 0.5
+        (x, y) => calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) <= 1
+      ),
+    // Underlying object
+    circle(radius: 1.5cm, fill: yellow),
+  )
 
-  // Flowing text
-  #lorem(600)
-]
+  container(width: 48%)
+  container(align: right, width: 48%)
+  content[
+    #set par(justify: true)
+    #lorem(600)
+  ]
+})
 ```
-
-</td>
-<td>
-
-![text with a half-circle cutout](gallery/shape.png)
-
-</td>
-</tr>
-</table>
-
+![text with a circular cutout](gallery/shape.png)
