@@ -61,6 +61,7 @@
       block,
     )
   }
+  ()
 },)
 
 /// Vertical segmentation as `(top, bottom)`
@@ -82,6 +83,7 @@
       block,
     )
   }
+  ()
 },)
 
 /// Horizontal segmentation as `(anchor, width)`.
@@ -120,6 +122,7 @@
       panic(flush, " is not a proper horizontal alignment")
     }
   }
+  ()
 },)
 
 /// Vertical segmentation as `(anchor, height)`.
@@ -158,6 +161,7 @@
       panic(flush, " is not a proper vertical alignment")
     }
   }
+  ()
 },)
 
 /// Cuts the image into a rectangular grid then checks for each cell if
@@ -170,7 +174,7 @@
   /// Returns for each cell whether it satisfies the 2D equations of the image's boundary.
   /// -> function(fraction, fraction) => bool
   fun,
-) = ((block) => {
+) = (block => {
   let (div-x, div-y) = if type(div) == int {
     (div, div)
   } else if type(div) == dictionary {
@@ -188,7 +192,7 @@
       } else {
         if start < j {
           frac-rect(
-              (x: start / div-x, y: i / div-y, width: (j - start) / div-x, height: 1 / div-y),
+            (x: start / div-x, y: i / div-y, width: (j - start) / div-x, height: 1 / div-y),
             block,
           )
         }
@@ -202,6 +206,78 @@
       )
     }
   }
+  ()
 },)
 
+/// Allows drawing the shape of the image as ascii art.
+///
+/// Blocks
+/// - `#`: full
+/// - ` `: empty
+///
+/// Half blocks
+/// - `[`: left
+/// - `]`: right
+/// - `^`: top
+/// - `_`: bottom
+///
+/// Quarter blocks
+/// - #raw("`"): top left
+/// - `'`: top right
+/// - `,`: bottom left
+/// - `.`: bottom right
+///
+/// Anti-quarter blocks
+/// - `J`: top left
+/// - `L`: top right
+/// - `7`: bottom left
+/// - `F`: bottom right
+///
+/// Diagonals
+/// - `/`: positive
+/// - `\`: negative
+#let ascii-art(
+  /// Draw the shape of the image in ascii art.
+  /// -> code
+  ascii
+) = (block => {
+  let ascii = ascii.text.split("\n")
+  let imax = calc.max(ascii.len(), 1)
+  let jmax = calc.max(..ascii.map(x => x.len()), 1)
+  let interp(chr) = {
+    (
+      "#": ((0,0,1,1),),
+      " ": (),
 
+      "[": ((0,0,0.5,1),),
+      "]": ((0.5,0,0.5,1),),
+      "_": ((0,0.5,1,0.5),),
+      "^": ((0,0,1,0.5),),
+
+      ",": ((0,0.5,0.5,0.5),),
+      "'": ((0.5,0,0.5,0.5),),
+      ".": ((0.5,0.5,0.5,0.5),),
+      "`": ((0,0,0.5,0.5),),
+
+      "L": ((0,0,0.5,1),(0.5,0.5,0.5,0.5)),
+      "J": ((0.5,0,0.5,1),(0,0.5,0.5,0.5)),
+      "7": ((0.5,0,0.5,1),(0,0,0.5,0.5)),
+      "F": ((0,0,0.5,1),(0.5,0,0.5,0.5)),
+
+      "\\": ((0,0,0.5,0.5),(0.5,0.5,0.5,0.5)),
+      "/": ((0,0.5,0.5,0.5),(0.5,0,0.5,0.5)),
+    ).at(chr)
+  }
+  for i in range(imax) {
+    for j in range(jmax) {
+      let chr = ascii.at(i).at(j, default: " ")
+      for (x, y, w, h) in interp(chr) {
+        frac-rect(
+          (x: (j + x) / jmax, y: (i + y) / imax, width: w / jmax, height: h / imax),
+          block,
+        )
+      }
+    }
+  }
+  ()
+},)

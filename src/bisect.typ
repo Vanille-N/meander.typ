@@ -204,8 +204,7 @@
       panic("Unimplemented: Idk if this is reachable")
     }
   }
-  panic("Unimplemented: Idk if this is reachable")
-  //return (rebuild(inner.join(" ")), none)
+  return (rebuild(inner.join(" ")), none)
 }
 
 /// Split content with a `"child"` main field.
