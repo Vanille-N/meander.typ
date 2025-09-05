@@ -44,6 +44,9 @@ example() {
     (watch)
       typstc watch examples/$1/main.typ examples/$1/main.pdf
       ;;
+    (img)
+      typstc compile examples/$1/main.typ examples/$1/main.svg
+      ;;
     ('')
       typstc compile examples/$1/main.typ examples/$1/main.pdf
       ;;
