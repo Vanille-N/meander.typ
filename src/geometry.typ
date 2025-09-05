@@ -63,7 +63,7 @@
 /// with arguments that contain `'x'` or start with `'w'` being interpreted as
 /// horizontal, and arguments that contain `'y'` or start with `'h'` being
 /// interpreted as vertical.
-///
+/// #v(2cm)
 /// ```example
 /// #context resolve(
 ///     (width: 100pt, height: 200pt),
@@ -85,10 +85,11 @@
     let rel = 0% + 0pt + rel
     rel.ratio * max + rel.length.to-absolute()
   }
+  // TODO: filter to only convert lengths
   let ans = (:)
   for (arg, val) in args.named() {
-    let is-x = arg.contains("x") or (arg.at(0) == "w")
-    let is-y = arg.contains("y") or (arg.at(0) == "h")
+    let is-x = arg.at(0) == "x" or arg.last() == "x" or arg.at(0) == "w"
+    let is-y = arg.at(0) == "y" or arg.last() == "y" or arg.at(0) == "h"
     if is-x and is-y {
       panic("Cannot infer if " + arg + " is horizontal or vertical")
     } else if is-x {
@@ -96,7 +97,7 @@
     } else if is-y {
       ans.insert(arg, scale-value(val, size.height))
     } else {
-      panic("Cannot infer if " + arg + " is horizontal or vertical")
+      ans.insert(arg, val)
     }
   }
   ans

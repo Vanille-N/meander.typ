@@ -1,127 +1,129 @@
 #import "geometry.typ"
 
-/// Splits content into obstacles, containers, and flowing text.
+/// Core function to create an obstacle.
+/// -> obstacle
+#let placed(
+  /// Reference position on the page (or in the parent container).
+  /// -> alignment
+  align,
+  /// Horizontal displacement.
+  /// -> relative
+  dx: 0% + 0pt,
+  /// Vertical displacement.
+  /// -> relative
+  dy: 0% + 0pt,
+  /// An array of functions to transform the bounding box of the content.
+  /// By default, a 5pt margin.
+  /// See `contour.typ`.
+  /// -> (..function,)
+  boundary: (auto,),
+  /// Inner content.
+  /// -> content
+  content,
+) = {
+  ((
+    type: place,
+    align: align,
+    dx: dx,
+    dy: dy,
+    boundary: boundary,
+    content: content
+  ),)
+}
+
+/// Core function to create a container.
+/// -> container
+#let container(
+  /// Location on the page.
+  /// -> alignment
+  align: top + left,
+  /// Horizontal displacement.
+  /// -> relative
+  dx: 0% + 0pt,
+  /// Vertical displacement.
+  /// -> relative
+  dy: 0% + 0pt,
+  /// Width of the container.
+  /// -> relative
+  width: 100%,
+  /// Height of the container.
+  /// -> relative
+  height: 100%,
+) = {
+  ((
+    type: box,
+    align: align,
+    dx: dx,
+    dy: dy,
+    width: width,
+    height: height,
+  ),)
+}
+
+/// Core function to add flowing content.
+/// -> flowing
+#let content(
+  /// Inner content.
+  /// -> content
+  data
+) = {
+  ((
+    type: text,
+    data: data,
+  ),)
+}
+
+/// Splits the input sequence into obstacles, containers, and flowing content.
 ///
-/// An "obstacle" is any content inside a `place` at the toplevel.
-/// It will be appended in order to the `placed` field as `content`.
+/// An "obstacle" is data produced by the `placed` function.
+/// It can contain arbitrary content, and defines a zone where flowing content
+/// cannot be placed.
 ///
-/// A "container" is a `box(place({}))`. Both `box` and `place` are allowed
-/// to have `width`, `height`, etc. parameters, but no inner contents.
-/// It will be appended in order to the `free` field as a block,
-/// i.e. a dictionary with the fields `x`, `y`, `width`, `height` describing
-/// the upper left corner and the dimensions of the container.
-/// See the helper function `container` that constructs a container directly.
+/// A "container" is produced by the function `container`.
+/// It defines a region where (once the obstacles are subtracted) is allowed
+/// to contain flowing content.
 ///
-/// Everything that is neither obstacle nor container is flowing text,
-/// and will end in the field `flow`.
+/// Lastly flowing content is produced by the function `content`.
+/// It will be threaded through every available container in order.
 ///
 /// ```typ
-/// #separate[
+/// #separate({
 ///   // This is an obstacle
-///   #place(top + left, box(width: 50pt, height: 50pt))
+///   placed(top + left, box(width: 50pt, height: 50pt))
 ///   // This is a container
-///   #box(height: 50%, place({}))
-///   // This is flowing text
-///   #lorem(50)
-/// ]
+///   container(height: 50%)
+///   // This is flowing content
+///   content[#lorem(50)]
+/// })
 /// ```
 ///
-/// -> (containers: (..block,), obstacles: (..content,), flow: content)
+/// -> (containers: (..box,), obstacles: (..box,), flow: (..content,))
 #let separate(
   /// -> content
-  ct
+  seq
 ) = {
-  let flow = []
-  let flow-has-par = false
-  // TODO: rename
+  let flow = ()
   let placed = ()
   let free = ()
-  assert(ct.func() == [].func(), message: "`separate` expects sequence-like content.")
-  for child in ct.children {
-    if child.func() == pagebreak {
-      panic("Pagebreaks are not supported inside `separate`")
-    } else if child.func() == place {
-      placed.push(child)
-    } else if child.func() == box and child.has("body") {
-      // The box is eligible if its body is only a `place` and the place itself is empty
-      let outer = child
-      let inner = child.body
-      if inner.func() == place and inner.body == [] {
-        let width = outer.fields().at("width", default: 100%)
-        let height = outer.fields().at("height", default: 100%)
-        let alignment = inner.fields().at("alignment", default: top + left)
-        let dx = inner.at("dx", default: 0pt)
-        let dy = inner.at("dy", default: 0pt)
-        let (x, y) = geometry.align(alignment, dx: dx, dy: dy, width: width, height: height)
-        free.push((x: x, y: y, width: width, height: height))
-      } else {
-        flow += child
-      }
-    } else if child.func() == [].func() {
-      let child-sep = separate(child)
-      flow += child-sep.flow
-      placed += child-sep.obstacles
-      free += child-sep.containers
+  for obj in seq {
+    if obj.type == place {
+      placed.push(obj)
+    } else if obj.type == box {
+      free.push(obj)
+    } else if obj.type == text {
+      flow.push(obj)
     } else {
-      flow += child
-      /*
-      if child.func() == parbreak {
-        if flow-has-par {
-          flow += child
-          flow-has-par = false
-        }
-      } else {
-        flow += child
-        if flow not in ([ ], []) {
-          flow-has-par = true
-        }
-      }
-      */
+      panic()
     }
   }
   (flow: flow, obstacles: placed, containers: free)
 }
 
-/// Marks the contents as not an obstacle.
-#let phantom(ct) = place(ct)
-
-/// Creates a standard container.
-/// This is not obscure, it's simply a `box(place({}))`, which is by convention
-/// recognized by `separate` as a container.
-/// -> content
-#let container(
-  /// Accepts the parameters:
-  /// - `alignment` (positional, default top + left), passed to `place`
-  /// - `dx: relative` (named, default `0%`), passed to `place`
-  /// - `dy: relative` (named, default `0%`), passed to `place`
-  /// - `width: relative` (named, default `100%`), passed to `box`
-  /// - `height: relative` (named, default `100%`), passed to `box`
-  /// -> args
-  ..args,
-) = {
-  let named = args.named()
-  let pos = args.pos()
-  if pos.len() > 1 { panic("`container` expects at most an alignment as positional argument") }
-
-  let box-named = (:)
-  let place-named = (:)
-  for arg in ("dx", "dy") {
-    if arg in args.named() {
-      place-named.insert(arg, named.at(arg))
-    }
-  }
-  for arg in ("width", "height") {
-    if arg in args.named() {
-      box-named.insert(arg, named.at(arg))
-    }
-  }
-  box(..box-named, place(..pos, ..place-named, {}))
-}
-
 /// Pattern with red crosses to display forbidden zones.
 /// -> pattern
 #let pat-forbidden(
-  /// Size of the tiling
+  /// Size of the tiling.
+  /// -> length
   sz,
 ) = tiling(size: (sz, sz))[
   #place(box(width: 100%, height: 100%, stroke: none, fill: red.transparentize(95%)))
@@ -132,7 +134,8 @@
 /// Pattern with green pluses to display allowed zones.
 /// -> pattern
 #let pat-allowed(
-  /// Size of the tiling
+  /// Size of the tiling.
+  /// -> length
   sz,
 ) = tiling(size: (sz, sz))[
   #place(box(width: 100%, height: 100%, stroke: none, fill: green.transparentize(95%)))
@@ -140,8 +143,7 @@
   #place(line(start: (50%, 25%), end: (50%, 75%), stroke: green + 0.1pt))
 ]
 
-/// From a set of obstacles (see `separate`: an obstacle is any `place`d content
-/// at the toplevel, so excluding `place`s that are inside `box`, `rect`, etc.),
+/// From a set of obstacles (see `separate`: an obstacle is any `placed` content)
 /// construct the blocks `(x: length, y: length, width: length, height: length)`
 /// that surround the obstacles.
 ///
@@ -150,14 +152,11 @@
 /// - `display`, show this to include the placed content in the final output
 /// - `debug`, show this to include helper boxes to visualize the layout
 ///
-/// -> (rects: (..block,), display: content, debug: content)
+/// -> (rects: (..box,), display: content, debug: content)
 #let forbidden-rectangles(
   /// Array of all the obstacles that are placed on this document.
-  /// -> (..content,)
+  /// -> (..box,)
   obstacles,
-  /// Add padding around the obstacles.
-  /// -> length
-  margin: 0pt,
   /// Dimensions of the parent container, as provided by `layout`.
   /// -> (width: length, height: length)
   size: none
@@ -167,35 +166,25 @@
   let display = []
   let debug = []
   for elem in obstacles {
-    let (elem, reflow) = {
-      if elem.fields().body.func() == place {
-        (elem.fields().body, false)
-      } else {
-        (elem, true)
-      }
-    }
-    let fields = elem.fields()
-    let inner = fields.body
-    let alignment = fields.at("alignment", default: top + left)
-    let dx = fields.at("dx", default: 0pt)
-    let dy = fields.at("dy", default: 0pt)
-    let (width, height) = measure(inner, ..size)
-    let (x, y) = geometry.align(alignment, dx: dx, dy: dy, width: width, height: height)
+    let (width, height) = measure(elem.content, ..size)
+    let (x, y) = geometry.align(elem.align, dx: elem.dx, dy: elem.dy, width: width, height: height)
     let dims = geometry.resolve(size, x: x, y: y, width: width, height: height)
     // TODO: does this correctly handle obstacles that go below 0% ?
-    display += place[#move(dx: dims.x, dy: dims.y)[#inner]]
+    display += place[#move(dx: dims.x, dy: dims.y)[#elem.content]]
 
-    if reflow {
-      let padded = (x: none, y: none, width: none, height: none)
-      padded.x = geometry.clamp(dims.x - margin, min: 0pt)
-      padded.y = geometry.clamp(dims.y - margin, min: 0pt)
-      padded.width = calc.min(size.width, dims.x + dims.width + margin) - padded.x
-      padded.height = calc.min(size.height, dims.y + dims.height + margin) - padded.y
-
-      assert(padded.width >= 0pt)
-      assert(padded.height >= 0pt)
-      forbidden.push(padded)
-      debug += place(top + left)[#move(dx: padded.x, dy: padded.y)[#box(stroke: red, fill: pat-forbidden(10pt), width: padded.width, height: padded.height)]]
+    // Apply the boundary redrawing functions in order to know the true
+    // footprint of the object in the layout.
+    let bounds = (dims,)
+    for func in elem.boundary {
+      let func = if func != auto { func } else {
+        import "contour.typ"
+        contour.margin(5pt).at(0)
+      }
+      bounds = bounds.map(func).flatten()
+    }
+    for obj in bounds {
+      forbidden.push(obj)
+      debug += place(top + left)[#move(dx: obj.x, dy: obj.y)[#box(stroke: red, fill: pat-forbidden(10pt), width: obj.width, height: obj.height)]]
     }
   }
   (rects: forbidden, display: display, debug: debug)
@@ -226,35 +215,49 @@
 /// limit of how much this block is allowed to stretch vertically, set to
 /// the dimensions of the container that produced this block.
 ///
-/// -> (rects: (..block,), debug: content)
-#let tolerable-rectangles(containers, avoid: (), size: none) = {
+/// -> (rects: (..box,), debug: content)
+#let tolerable-rectangles(
+  /// Array of the containers in which content can be placed.
+  /// -> (..box,)
+  containers,
+  /// Array of all the obstacles that are placed on this document.
+  /// Will be subtracted from `containers`.
+  /// -> (..box,)
+  avoid: (),
+  /// Dimensions of the parent container, as provided by `layout`.
+  /// -> (width: length, height: length)
+  size: none,
+) = {
   if size == none { panic("Need to provide a size") }
   let zones-to-fill = ()
   let debug = []
   // TODO: include previous zones when cutting horizontally
   for zone in containers {
-    let zone = geometry.resolve(size, ..zone)
+    let (x, y) = geometry.align(zone.align, dx: zone.dx, dy: zone.dy, width: zone.width, height: zone.height)
+    let dims = geometry.resolve(size, x: x, y: y, width: zone.width, height: zone.height)
     // Cut the zone horizontally
-    let horizontal-marks = (zone.y, zone.y + zone.height)
+    // The 3pt margin is because if the box exceeds the page, `measure` can't see
+    // the difference anymore.
+    let horizontal-marks = (dims.y, dims.y + dims.height - 3pt)
     for no-zone in avoid {
-      if zone.y <= no-zone.y and no-zone.y <= zone.y + zone.height {
+      if dims.y <= no-zone.y and no-zone.y <= dims.y + dims.height - 3pt {
         horizontal-marks.push(no-zone.y)
       }
-      if zone.y <= no-zone.y + no-zone.height and no-zone.y + no-zone.height <= zone.y + zone.height {
+      if dims.y <= no-zone.y + no-zone.height and no-zone.y + no-zone.height <= dims.y + dims.height - 3pt {
         horizontal-marks.push(no-zone.y + no-zone.height)
       }
     }
     horizontal-marks = horizontal-marks.sorted()
     for (hi, lo) in horizontal-marks.windows(2) {
-      let vertical-marks = (zone.x, zone.x + zone.width)
+      let vertical-marks = (dims.x, dims.x + dims.width)
       let relevant-forbidden = ()
       for no-zone in avoid {
         if geometry.intersects((hi, lo), (no-zone.y, no-zone.y + no-zone.height), tolerance: 1mm) {
           relevant-forbidden.push(no-zone)
-          if geometry.between(zone.x, no-zone.x, zone.x + zone.width) {
+          if geometry.between(dims.x, no-zone.x, dims.x + dims.width) {
             vertical-marks.push(no-zone.x)
           }
-          if geometry.between(zone.x, no-zone.x + no-zone.width, zone.x + zone.width) {
+          if geometry.between(dims.x, no-zone.x + no-zone.width, dims.x + dims.width) {
             vertical-marks.push(no-zone.x + no-zone.width)
           }
         }
@@ -271,7 +274,7 @@
           valid-zones.push((x: l, width: r - l))
         }
       }
-      let bounds = zone
+      let bounds = dims
       for zone in valid-zones {
         assert(lo >= hi)
         assert(zone.width >= 0pt)
@@ -286,16 +289,16 @@
 /// Debug version of the toplevel `reflow`,
 /// that only displays the partitioned layout.
 /// -> content
-#let debug-reflow(
+#let regions(
   /// Content to be segmented and have its layout displayed.
   /// -> content
   ct,
   /// Whether to show the placed objects.
   /// -> bool
   display: true,
-) = layout(size => {
+) = context layout(size => {
   let (obstacles, containers) = separate(ct)
-  let forbidden = forbidden-rectangles(obstacles, margin: 5pt, size: size)
+  let forbidden = forbidden-rectangles(obstacles, size: size)
   if display {
     forbidden.display
   }

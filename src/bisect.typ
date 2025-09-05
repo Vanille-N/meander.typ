@@ -4,7 +4,10 @@
 
 /// Tests if content fits inside a box.
 ///
-/// WARNING: horizontal fit is not strictly checked
+/// WARNING: horizontal fit is not very strictly checked
+/// A single word may be said to fit in a box that is less wide than the word.
+/// This is an inherent limitation of `measure(box(...))` and I will try
+/// to develop workarounds for future versions.
 ///
 /// The closure of this function constitutes the basis of the entire content
 /// splitting algorithm: iteratively add content until it no longer `fits-inside`,
@@ -134,6 +137,9 @@
 
 /// Split content with a `"text"` main field.
 /// Strategy: split by `" "` and take all words that fit.
+/// Then if hyphenation is enabled, split by syllables and take all syllables
+/// that fit. End the block with a linebreak that has the justification of
+/// the paragraph.
 #let has-text(
   /// Content to split. -> content
   ct,
@@ -146,25 +152,60 @@
 ) = {
   let (inner, rebuild) = default-rebuild(ct, "text")
   let inner = inner.split(" ")
+
+  // TODO: also allow hyphenating 1st word
   if not fits-inside([#inner.at(0) #box(width: 1pt, height: 1mm)]) {
     return (none, ct)
   }
+
+  let lbreak = [
+    #context[#linebreak(justify: par.justify)]
+  ]
   for i in range(inner.len()) {
     if fits-inside(rebuild(inner.slice(0, i + 1).join(" "))) {
       continue
     } else {
-      if i == 0 {
-        return (none, rebuild(inner.join(" ")))
-      } else {
-        let left = rebuild(inner.slice(0, i).join(" "))
-        left += [#context { linebreak(justify: par.justify) }]
-        assert(fits-inside(left))
+      if text.hyphenate == false {
+        let left = if i == 0 { none } else {
+          let left = rebuild(inner.slice(0, i).join(" "))
+          left += lbreak
+          assert(fits-inside(left))
+          left
+        }
         let right = rebuild(inner.slice(i).join(" "))
         return (left, right)
       }
+      import "@preview/hy-dro-gen:0.1.0" as hy
+      let left = inner.slice(0, i)
+      let overhang = inner.at(i)
+      let right = inner.slice(i + 1)
+      let syllables = hy.syllables(overhang, lang: "en") // TODO: get the proper language
+      for i in range(inner.len()) {
+        if fits-inside(rebuild((..left, syllables.slice(0, i + 1).join("") + "-").join(" "))) {
+          continue
+        } else {
+          if i == 0 {
+            let left = if left == () { none } else {
+              let left = rebuild(left.join(" "))
+              left += lbreak
+              left
+            }
+            let right = rebuild((overhang, ..right).join(" "))
+            return (left, right)
+          } else {
+            left += (syllables.slice(0, i).join("") + "-",)
+            assert(fits-inside(rebuild(left.join(" "))), message: left.join(" "))
+            let left = rebuild(left.join(" ")) + lbreak
+            assert(fits-inside(left))
+            return (left, rebuild((syllables.slice(i).join(""), ..right).join(" ")))
+          }
+        }
+      }
+      panic("Unimplemented: Idk if this is reachable")
     }
   }
-  return (rebuild(inner.join(" ")), none)
+  panic("Unimplemented: Idk if this is reachable")
+  //return (rebuild(inner.join(" ")), none)
 }
 
 /// Split content with a `"child"` main field.
@@ -352,7 +393,7 @@
     is-list-item(ct, split-dispatch, fits-inside, cfg)
   } else if ct.func() == enum.item {
     is-enum-item(ct, split-dispatch, fits-inside, cfg)
-  } else if ct.func() in (strong, emph, underline, stroke, overline, highlight) {
+  } else if ct.func() in (strong, emph, underline, stroke, overline, highlight, par) {
     let (inner, rebuild) = default-rebuild(ct, "body")
     let (left, right) = split-dispatch(inner, ct => fits-inside(rebuild(ct)), cfg)
     let left = if left == none { none } else {

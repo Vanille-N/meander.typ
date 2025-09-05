@@ -1,9 +1,9 @@
 #import "bisect.typ"
 
 #import "tiling.typ"
-#import tiling: phantom, container, debug-reflow
+#import tiling: placed, container, content, regions
 
 #import "threading.typ"
 #import threading: reflow
 
-#import "contour.typ": redraw
+#import "contour.typ"

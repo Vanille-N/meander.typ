@@ -15,15 +15,19 @@
 - [ ] handle multipage setups
 
 ## Threading
-- [X] boxes must not stretch beyond containers
 - [ ] parameterization of alignment inside boxes
-- [ ] justification
+- [X] justification
   - [X] working baseline
-  - [ ] content broken by `[ ]`
+  - [X] content broken by `[ ]`
 - [ ] hyphenation
+  - [X] working baseline
+  - [ ] language aware
+  - [ ] contextual or parameterizable
 - [ ] handle paragraph breaks
 - [ ] relax upper bounds on text growing vertically
-- [ ] line spacing not properly updated when font size changes ?
+- [ ] line spacing not properly updated when font size changes
+- [X] last line not always properly justified
+- [ ] very small text (4pt) is only ever threaded two lines at a time
 
 ## QoL
 
@@ -37,7 +41,7 @@
 
 ## Parameterization
 
-- [ ] obstacle margin
+- [X] obstacle margin
 - [ ] do-no-split list
 - [ ] full algorithm replacement
   - [ ] tiling
@@ -46,7 +50,8 @@
 
 ## Documentation
 
-- [ ] retiling functions
-  - [ ] tutorial
-  - [ ] doc comments
+- [X] retiling functions
+  - [X] tutorial
+  - [X] doc comments
+- [X] overhauled tiling functions
 

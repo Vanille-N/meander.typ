@@ -1,23 +1,5 @@
 #import "geometry.typ"
 
-#let fill-boxes(body, ..containers, size: none) = {
-  assert(size != none)
-  let full = ()
-  let body = body
-  for cont in containers.pos() {
-    if body == none {
-      full.push((cont, none))
-      continue
-    }
-    import "bisect.typ"
-    let max-dims = measure(box(height: cont.height, width: cont.width), ..size)
-    let (fits, overflow) = bisect.fill-box(max-dims)[#body]
-    full.push((cont, fits))
-    body = overflow
-  }
-  full
-}
-
 /// Thread text through a list of boxes in order,
 /// allowing the boxes to stretch vertically to accomodate for uneven tiling.
 ///
@@ -47,11 +29,16 @@
 ) = {
   assert(size != none)
   let full = ()
-  let body = body
+  let body-queue = body.rev()
+  let body = none
   for cont in boxes {
     if body == none {
-      full.push((cont, none))
-      continue
+      if body-queue.len() == 0 {
+        full.push((cont, none))
+        continue
+      } else {
+        body = body-queue.pop().data
+      }
     }
     // Leave it a little room
     // 1em margin at the bottom to let it potentially add an extra line
@@ -116,14 +103,14 @@
   /// Whether to show the boundaries of boxes.
   /// -> bool
   debug: false,
-) = layout(size => {
+) = context layout(size => {
   import "tiling.typ" as tiling
   let (flow, obstacles, containers) = tiling.separate(ct)
-  let forbidden = tiling.forbidden-rectangles(obstacles, margin: 5pt, size: size)
+  let forbidden = tiling.forbidden-rectangles(obstacles, size: size)
+  forbidden.display
   if debug {
     forbidden.debug
   }
-  forbidden.display
 
   let allowed = tiling.tolerable-rectangles(containers, avoid: forbidden.rects, size: size)
 
@@ -131,7 +118,7 @@
     size: size,
     avoid: forbidden.rects,
     boxes: allowed.rects,
-    [#flow],
+    flow,
   ) {
     place(dx: container.dx, dy: container.dy, {
       box(width: container.width, height: container.height, stroke: if debug { green } else { none }, {
