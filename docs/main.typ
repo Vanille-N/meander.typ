@@ -3,38 +3,37 @@
   #text(size: 25pt)[User guide]
 ]
 
+#let show-page(tag) = {
+  box(stroke: black)[
+    #image("figs/" + tag + ".svg")
+  ]
+}
+
 #let show-code(tag) = {
   let relevant-lines = ()
-  let relevant = false
   let take = false
-  let deindent = none
   let compress = none
-  for line in read("/docs/main.typ").split("\n") {
-    if line.contains("//@") and line.contains("<" + tag + ">") {
-      if deindent != none { panic("tag <" + tag + "> occurs multiple times") }
-      relevant = true
+  for line in read("figs/" + tag + ".typ").split("\n") {
+    if line.contains("<doc>") {
       take = true
-      deindent = line.position("//@")
-    } else if line.contains("//@") and line.contains("</" + tag + ">") {
-      relevant = false
-    } else if relevant {
-      if line.contains("<...>") {
-        take = false
-      } else if line.contains("</...>") {
-        take = true
-        if line.contains("inline") {
-          relevant-lines.last() += "..."
-          compress = line.position("//@")
-        } else {
-          relevant-lines.push(" " * (line.position("//@") - deindent) + "// ...")
-        }
-      } else if take {
-        if compress != none {
-          relevant-lines.last() += line.slice(calc.min(compress, line.len()))
-          compress = none
-        } else {
-          relevant-lines.push(line.slice(calc.min(deindent, line.len())))
-        }
+    } else if line.contains("</doc>") {
+      take = false
+    } else if line.contains("<...>") {
+      take = false
+    } else if line.contains("</...>") {
+      take = true
+      if line.contains("inline") {
+        relevant-lines.last() += "..."
+        compress = line.position("//@")
+      } else {
+        relevant-lines.push(" " * line.position("//@") + "// ...")
+      }
+    } else if take {
+      if compress != none {
+        relevant-lines.last() += line.slice(calc.min(compress, line.len()))
+        compress = none
+      } else {
+        relevant-lines.push(line)
       }
     }
   }
@@ -44,26 +43,6 @@
 #show link: set text(fill: blue.darken(20%))
 
 #import "../src/lib.typ" as meander
-
-#let fakeimg(alignment, dx: 0pt, dy: 0pt, fill: white, width: 1cm, height: 1cm, label: none) = {
-  meander.placed(
-    alignment, dx: dx, dy: dy,
-    boundary: meander.contour.margin(5pt),
-  )[#box(fill: fill.transparentize(70%), width: width, height: height, radius: 2mm)[#align(center + horizon)[#label]]]
-}
-
-#let pseudopage(content) = {
-  box(width: 7cm, height: 11cm, stroke: 1pt, inset: 5mm)[
-    #set text(size: 5pt)
-    #context { content }
-  ]
-}
-
-#let my-img-1 = box(width: 2.5cm, height: 3cm, fill: orange.transparentize(70%), radius: 2mm)[#align(center + horizon)[#text(size: 14pt)[`1`]]]
-#let my-img-2 = box(width: 2cm, height: 1cm, fill: blue.transparentize(70%), radius: 2mm)[#align(center + horizon)[#text(size: 14pt)[`2`]]]
-#let my-img-3 = box(width: 4cm, height: 2cm, fill: green.transparentize(70%), radius: 2mm)[#align(center + horizon)[#text(size: 14pt)[`3`]]]
-#let my-img-4 = box(width: 2cm, height: 2cm, fill: red.transparentize(70%), radius: 2mm)[#align(center + horizon)[#text(size: 14pt)[`4`]]]
-#let my-img-5 = box(width: 1.5cm, height: 1cm, fill: yellow.transparentize(70%), radius: 2mm)[#align(center + horizon)[#text(size: 14pt)[`5`]]]
 
 #v(2cm)
 
@@ -86,30 +65,7 @@
   - #link("https://github.com/Vanille-N/meander.typ/releases/tag/v0.1.0")[`0.1.0`]
 ][
   #align(center)[
-    #let filler = [
-      #set heading(outlined: false)
-      = Lorem
-
-      _#lorem(12)_
-
-      #lorem(150)
-
-      = Ipsum
-      #lorem(350)
-    ]
-    #pseudopage[
-      #meander.reflow({
-        fakeimg(top + left, width: 1.5cm, height: 3cm, fill: green)
-        fakeimg(bottom + left, width: 2cm, height: 2cm, fill: red)
-        fakeimg(bottom + right, width: 1cm, height: 2cm, fill: blue)
-        fakeimg(top + right, width: 2cm, height: 4cm, fill: orange)
-        meander.container()
-        meander.content[
-          #set par(justify: true)
-          #filler
-        ]
-      })
-    ]
+    #show-page("cover")
   ]
 ]
 
@@ -147,28 +103,7 @@ by the flowing content.
 
   #show-code("simple-example")
 ][
-  #pseudopage[
-    //@ <simple-example>
-    #meander.reflow({
-      import meander: *
-      // Obstacle in the top left
-      placed(top + left, my-img-1)
-
-      // Full-page container
-      container()
-
-      // Flowing content
-      content[
-        _#lorem(30)_
-        #[
-          #set par(justify: true)
-          #lorem(200)
-        ]
-        #lorem(100)
-      ]
-    })
-    //@ </simple-example>
-  ]
+  #show-page("simple-example")
 ]
 
 Meander is expected to respect the majority of styling options,
@@ -190,27 +125,7 @@ Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if
 
   #show-code("multi-obstacles")
 ][
-  #pseudopage[
-    //@ <multi-obstacles>
-    #meander.reflow({
-      import meander: *
-      // As many obstacles as you want
-      placed(top + left, my-img-1)
-      placed(top + right, my-img-2)
-      placed(horizon + right, my-img-3)
-      placed(bottom + left, my-img-4)
-      placed(bottom + left, dx: 35%,
-        my-img-5)
-
-      // The container wraps around all
-      container()
-      content[
-        #set par(justify: true)
-        #lorem(600)
-      ]
-    })
-    //@ </multi-obstacles>
-  ]
+  #show-page("multi-obstacles")
 ]
 
 == Columns
@@ -221,22 +136,7 @@ Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if
 
   #show-code("two-columns")
 ][
-  #pseudopage[
-    //@ <two-columns>
-    #meander.reflow({
-      import meander: *
-      placed(bottom + right, my-img-1)
-      placed(center + horizon, my-img-2)
-      placed(top + right, my-img-3)
-
-      // With two containers we can
-      // emulate two columns.
-      container(width: 55%)
-      container(align: right, width: 40%)
-      content[#lorem(600)]
-    })
-    //@ </two-columns>
-  ]
+  #show-page("two-columns")
 ]
 
 = Showcase
@@ -279,44 +179,11 @@ A selection of nontrivial examples of what is feasible.
   The debug views on this page are accessible via
   ```typ #meander.regions``` and ```typ #meander.reflow.with(debug: true)```
 ][
-  #pseudopage[
-    #meander.regions({
-      import meander: *
-      placed(bottom + right, my-img-1)
-      placed(center + horizon, my-img-2)
-      placed(top + right, my-img-3)
-    })
-  ]
+  #show-page("debug-regions-obstacles")
 ][
-  #pseudopage[
-    #meander.regions({
-      import meander: *
-      placed(bottom + right, my-img-1)
-      placed(center + horizon, my-img-2)
-      placed(top + right, my-img-3)
-
-      // With two containers we can
-      // emulate two columns.
-      container(width: 55%)
-      container(align: right, width: 40%)
-      content[#lorem(600)]
-    })
-  ]
+  #show-page("debug-regions-full")
 ][
-  #pseudopage[
-    #meander.reflow(debug: true, {
-      import meander: *
-      placed(bottom + right, my-img-1)
-      placed(center + horizon, my-img-2)
-      placed(top + right, my-img-3)
-
-      // With two containers we can
-      // emulate two columns.
-      container(width: 55%)
-      container(align: right, width: 40%)
-      content[#lorem(600)]
-    })
-  ]
+  #show-page("debug-reflow")
 ]
 #pagebreak()
 
@@ -333,45 +200,9 @@ different orders:
 ][
   #show-code("4-regions-2")
 ][
-  #pseudopage[
-    //@ <4-regions-1>
-    #meander.regions({
-      import meander: *
-      placed(center + horizon,
-        line(end: (100%, 0%)))
-      placed(center + horizon,
-        line(end: (0%, 100%)))
-
-      container(width: 100%)
-
-
-    })
-    //@ </4-regions-1>
-    #place(center + horizon, dx: -25%, dy: -25%)[#text(size: 50pt)[*1*]]
-    #place(center + horizon, dx: 25%, dy: -25%)[#text(size: 50pt)[*2*]]
-    #place(center + horizon, dx: -25%, dy: 25%)[#text(size: 50pt)[*3*]]
-    #place(center + horizon, dx: 25%, dy: 25%)[#text(size: 50pt)[*4*]]
-  ]
+  #show-page("4-regions-1")
 ][
-  #pseudopage[
-    //@ <4-regions-2>
-    #meander.regions({
-      import meander: *
-      placed(center + horizon,
-        line(end: (100%, 0%)))
-      placed(center + horizon,
-        line(end: (0%, 100%)))
-
-      container(width: 50%)
-      container(align: right,
-        width: 50%)
-    })
-    //@ </4-regions-2>
-    #place(center + horizon, dx: -25%, dy: -25%)[#text(size: 50pt)[*1*]]
-    #place(center + horizon, dx: 25%, dy: -25%)[#text(size: 50pt)[*3*]]
-    #place(center + horizon, dx: -25%, dy: 25%)[#text(size: 50pt)[*2*]]
-    #place(center + horizon, dx: 25%, dy: 25%)[#text(size: 50pt)[*4*]]
-  ]
+  #show-page("4-regions-2")
 ]
 And even in the example above, the box *1* will be filled before the first
 line of *2* is used.
@@ -397,37 +228,9 @@ with a cutout in the middle for an image.
 
 #show-code("square-hole")
 #table(columns: (1fr, 1fr), stroke: none)[
-  #pseudopage[
-    #meander.regions({
-      import meander: *
-      placed(center + horizon)[#circle(radius: 1.5cm, fill: yellow)]
-
-      container(width: 48%)
-      container(align: right, width: 48%)
-
-      content[
-        #set par(justify: true)
-        #lorem(600)
-      ]
-    })
-  ]
+  #show-page("square-hole-debug")
 ][
-  #pseudopage[
-    //@ <square-hole>
-    #meander.reflow({
-      import meander: *
-      placed(center + horizon)[#circle(radius: 1.5cm, fill: yellow)]
-
-      container(width: 48%)
-      container(align: right, width: 48%)
-
-      content[
-        #set par(justify: true)
-        #lorem(600)
-      ]
-    })
-    //@ </square-hole>
-  ]
+  #show-page("square-hole")
 ]
 Meander sees all obstacles as rectangular, so the circle leaves a big
 ugly #link("https://www.youtube.com/watch?v=6pDH66X3ClA")[square hole] in our page.
@@ -446,56 +249,9 @@ So instead of placing directly the circle, we write:
 #show-code("circle-hole")
 This results in the new subdivisions of containers below.
 #table(columns: (1fr, 1fr), stroke: none)[
-  #pseudopage[
-    #meander.regions({
-      import meander: *
-      placed(center + horizon,
-        boundary: contour.margin(4pt) + contour.grid(div: 25, (x, y) => {
-          calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) <= 1
-        })
-      )[#circle(radius: 1.5cm, fill: yellow)]
-
-      container(width: 48%)
-      container(align: right, width: 48%)
-
-      content[
-        #set par(justify: true)
-        #lorem(600)
-      ]
-    })
-  ]
+  #show-page("circle-hole-debug") 
 ][
-  #pseudopage[
-    //@ <circle-hole>
-    #meander.reflow({
-      import meander: *
-      placed(
-        center + horizon,
-        boundary:
-          // Override the default margin
-          contour.margin(4pt) +
-          // Then redraw the shape as a grid
-          contour.grid(
-            // 25 vertical and horizontal subdivisions (choose whatever looks good)
-            div: 25,
-            // Equation for a circle of center (0.5, 0.5) and radius 0.5
-            (x, y) => calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) <= 1
-          ),
-        // Underlying object
-        circle(radius: 1.5cm, fill: yellow),
-      )
-      //@ <...>
-      container(width: 48%)
-      container(align: right, width: 48%)
-
-      content[
-        #set par(justify: true)
-        #lorem(600)
-      ]
-      //@ </...>
-    })
-    //@ </circle-hole>
-  ]
+  #show-page("circle-hole")
 ]
 This enables in theory drawing arbitrary paragraph shapes.
 If your shape is not convenient to express through a grid function, here
@@ -519,159 +275,18 @@ See some examples below.
 // TODO: enable showing some obstacle boxes
 
 #table(columns: (1fr, 1fr), stroke: none)[
-  #box(width: 5.6cm, height: 5cm, stroke: black, inset: 3mm)[
-    #set text(size: 5pt)
-    #set par(justify: true)
-    //@ <contour-1>
-    #meander.reflow({
-      import meander: *
-      placed(right + bottom,
-        boundary:
-          // The right aligned edge makes
-          // this easy to specify using
-          // `horiz`
-          contour.horiz(
-            div: 20,
-            // (left, right)
-            y => (1 - y, 1),
-          ) +
-          // Add a post-segmentation margin
-          contour.margin(5pt)
-      )[
-      //@ <...>
-        #cetz.canvas({
-          import cetz.draw: *
-          merge-path(fill: yellow, {
-            line((0, 0), (3, 0))
-            line((), (3, 2))
-            line((), (0, 0))
-          })
-        })
-      //@ </...> inline
-      ]
-      //@ <...>
-      container()
-      content[#lorem(500)]
-      //@ </...>
-    })
-    //@ </contour-1>
-  ]
+  #show-page("contour-1")
   #show-code("contour-1")
 ][
-  #box(width: 5.6cm, height: 5cm, stroke: black, inset: 3mm)[
-    #set text(size: 5pt)
-    #set par(justify: true)
-    //@ <contour-2>
-    #meander.reflow({
-      import meander: *
-      placed(center + bottom,
-        boundary:
-          // This time the vertical symetry
-          // makes `width` a good match.
-          contour.width(
-            div: 20,
-            flush: center,
-            // Centered in 0.5, of width y
-            y => (0.5, y),
-          ) +
-          contour.margin(5pt)
-      )[
-      //@ <...>
-        #cetz.canvas({
-          import cetz.draw: *
-          merge-path(fill: yellow, {
-            line((0, 0), (3.4, 0))
-            line((), (1.7, 3))
-            line((), (0, 0))
-          })
-        })
-      //@ </...> inline
-      ]
-      //@ <...>
-      container()
-      content[#lorem(500)]
-      //@ </...>
-    })
-    //@ </contour-2>
-  ]
+  #show-page("contour-2")
   #show-code("contour-2")
 ]
 
 #table(columns: (1fr, 1fr), stroke: none)[
-  #box(width: 5.6cm, height: 5cm, stroke: black, inset: 3mm)[
-    #set text(size: 5pt)
-    #set par(justify: true)
-    //@ <contour-3>
-    #meander.reflow({
-      import meander: *
-      placed(left + horizon,
-        boundary:
-          contour.height(
-            div: 20,
-            flush: horizon,
-            x => (0.5, 1 - x),
-          ) +
-          contour.margin(5pt)
-      )[
-      //@ <...>
-        #cetz.canvas({
-          import cetz.draw: *
-          merge-path(fill: yellow, {
-            line((0, 0), (0, 4))
-            line((), (1, 2))
-            line((), (0, 0))
-          })
-        })
-      //@ </...> inline
-      ]
-      //@ <...>
-      container()
-      content[#lorem(500)]
-      //@ </...>
-    })
-    //@ </contour-3>
-  ]
+  #show-page("contour-3")
   #show-code("contour-3")
 ][
-  #box(width: 5.6cm, height: 5cm, stroke: black, inset: 3mm)[
-    #set text(size: 5pt)
-    #set par(justify: true)
-    //@ <contour-4>
-    #meander.reflow({
-      import meander: *
-      placed(left + horizon,
-        boundary:
-          contour.horiz(
-            div: 25,
-            y => if y <= 0.5 {
-              (0, 2 * (0.5 - y))
-            } else {
-              (0, 2 * (y - 0.5))
-            },
-          ) +
-          contour.margin(3pt)
-      )[
-      //@ <...>
-        #cetz.canvas({
-          import cetz.draw: *
-          merge-path(fill: yellow, {
-            line((0, 0), (0, 2.2))
-            line((), (2, 2.2))
-            line((), (0, 0))
-            line((), (0, -2.2))
-            line((), (2, -2.2))
-            line((), (0, 0))
-          })
-        })
-      //@ </...> inline
-      ]
-      //@ <...>
-      container()
-      content[#lorem(500)]
-      //@ </...>
-    })
-    //@ </contour-4>
-  ]
+  #show-page("contour-4")
   #show-code("contour-4")
 ]
 
@@ -725,45 +340,11 @@ rule outside of the invocation of ```typ #meander.reflow``` altogether.
 #table(columns: (1fr, 1fr), stroke: none, align: center)[
   #text(fill: red, size: 20pt)[*Wrong*]
   #show-code("par-justify")
-  #pseudopage[
-    #set text(hyphenate: false)
-    //@ <par-justify>
-    #meander.reflow({
-      //@ <...>
-      import meander: *
-      for i in range(100) {
-        container(dy: i * 1%, height: 2%)
-      }
-      //@ </...>
-      content[
-        #par(justify: true)[
-          #lorem(600)
-        ]
-      ]
-    })
-    //@ </par-justify>
-  ]
+  #show-page("par-justify")
 ][
   #text(fill: green, size: 20pt)[*Correct*]
   #show-code("set-par-justify")
-  #pseudopage[
-    #set text(hyphenate: false)
-    //@ <set-par-justify>
-    #meander.reflow({
-      //@ <...>
-      import meander: *
-      for i in range(100) {
-        container(dy: i * 1%, height: 2%)
-      }
-      //@ </...>
-      content[
-        #set par(justify: true)
-        #lorem(600)
-      ]
-
-    })
-    //@ </set-par-justify>
-  ]
+  #show-page("set-par-justify")
 ]
 
 == Font size
@@ -781,47 +362,11 @@ way to do this in a more well-behaved manner.
 #table(columns: (1fr, 1fr), stroke: none, align: center)[
   #text(fill: red, size: 20pt)[*Wrong*]
   #show-code("font-size-inside")
-  #pseudopage[
-    //@ <font-size-inside>
-    #meander.reflow({
-      //@ <...>
-      import meander: *
-      container()
-      placed(
-        left,
-        boundary: contour.horiz(div: 100, _ => (0, 1)),
-        line(end: (0%, 100%), stroke: white)
-      )
-      //@ </...>
-      content[
-        #set text(size: 15pt)
-        #lorem(600)
-      ]
-    })
-    //@ </font-size-inside>
-  ]
+  #show-page("font-size-inside")
 ][
   #text(fill: green, size: 20pt)[*Correct*]
   #show-code("font-size-outside")
-  #pseudopage[
-    //@ <font-size-outside>
-    #set text(size: 15pt)
-    #meander.reflow({
-      //@ <...>
-      import meander: *
-      container()
-      placed(
-        left,
-        boundary: contour.horiz(div: 100, _ => (0, 1)),
-        line(end: (0%, 100%), stroke: white)
-      )
-      //@ </...>
-      content[
-        #lorem(600)
-      ]
-    })
-    //@ </font-size-outside>
-  ]
+  #show-page("font-size-outside")
 ]
 
 #pagebreak()
@@ -839,45 +384,11 @@ to change it more locally.
 #table(columns: (1fr, 1fr), stroke: none, align: center)[
   #text(fill: red, size: 20pt)[*Wrong*]
   #show-code("text-hyphenate-inside")
-  #pseudopage[
-    #set par(justify: true)
-    #set text(hyphenate: false)
-    //@ <text-hyphenate-inside>
-    #meander.reflow({
-      //@ <...>
-      import meander: *
-      for i in range(100) {
-        container(dy: i * 1%, height: 2%)
-      }
-      //@ </...>
-      content[
-        #set text(hyphenate: true)
-        #lorem(600)
-      ]
-    })
-    //@ </text-hyphenate-inside>
-  ]
+  #show-page("text-hyphenate-inside")
 ][
   #text(fill: green, size: 20pt)[*Correct*]
   #show-code("text-hyphenate-outside")
-  #pseudopage[
-    #set par(justify: true)
-    #set text(hyphenate: false)
-    //@ <text-hyphenate-outside>
-    #set text(hyphenate: true)
-    #meander.reflow({
-      //@ <...>
-      import meander: *
-      for i in range(100) {
-        container(dy: i * 1%, height: 2%)
-      }
-      //@ </...>
-      content[
-        #lorem(600)
-      ]
-    })
-    //@ </text-hyphenate-outside>
-  ]
+  #show-page("text-hyphenate-outside")
 ]
 
 #pagebreak()

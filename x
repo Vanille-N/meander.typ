@@ -68,4 +68,10 @@ doc() {
   esac
 }
 
+release() {
+  mkdir -p release
+  rm -rf release/*
+  cp -r README.md LICENSE src typst.toml gallery release/
+}
+
 "$@"
