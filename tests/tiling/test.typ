@@ -1,4 +1,5 @@
 #import "/src/tiling.typ": container, regions, placed, content
+#import "/src/contour.typ"
 
 #let fakeimg(align, dx: 0pt, dy: 0pt, fill: white, width: 1cm, height: 1cm) = {
   placed(align, dx: dx, dy: dy,
@@ -109,3 +110,16 @@
   container()
 })
 
+#pagebreak()
+
+#regions({
+  placed(bottom + left,
+    boundary: contour.horiz(div: 100, y => (0, y)),
+    box(width: 50%, height: 100%),
+  )
+  placed(top + right,
+    boundary: contour.horiz(div: 100, y => (y, 1)),
+    box(width: 50%, height: 100%),
+  )
+  container()
+})

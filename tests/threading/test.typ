@@ -1,5 +1,6 @@
 #import "/src/threading.typ": *
-#import "/src/tiling.typ": container, placed, content
+#import "/src/tiling.typ": container, placed, content, regions
+#import "/src/contour.typ"
 
 #let fakeimg(align, dx: 0pt, dy: 0pt, fill: white, width: 1cm, height: 1cm) = {
   placed(align, dx: dx, dy: dy,
@@ -119,3 +120,18 @@
   container(align: center + horizon, width: 5cm, height: 5cm)
   content(filler)
 })]
+
+#pagebreak()
+
+#reflow(debug: true, {
+  placed(bottom + left,
+    boundary: contour.horiz(div: 70, y => (0, y)) + contour.margin(2pt),
+    box(width: 70%, height: 70%),
+  )
+  placed(top + right,
+    boundary: contour.horiz(div: 70, y => (y, 1)) + contour.margin(2pt),
+    box(width: 70%, height: 70%),
+  )
+  container()
+  content[#lorem(600)]
+})

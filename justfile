@@ -1,8 +1,12 @@
-doc:
-  typst watch --root=. docs/main.typ docs/main.pdf
+typstc cmd file fmt="pdf":
+  typst {{ cmd }} --root=. {{ file }} {{ replace(file, ".typ", "." + fmt) }}
 
-test T:
-  typst watch --root=. tests/{{T}}/test.typ x.pdf
+doc: (typstc "watch" "docs/main.typ")
 
-example T:
-  typst watch --root=. examples/{{T}}/main.typ x.pdf
+figs force="":
+  cd docs && if [ "{{force}}" = force ]; then touch figs/_preamble.typ; fi && watch make figs
+
+test T: (typstc "watch" "tests/"+T+"/test.typ")
+
+example T: (typstc "watch" "examples/"+T+"/main.typ")
+
