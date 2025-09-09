@@ -10,3 +10,20 @@ test T: (typstc "watch" "tests/"+T+"/test.typ")
 
 example T: (typstc "watch" "examples/"+T+"/main.typ")
 
+up-to-date:
+  ./publish-helper.py gallery/multi-obstacles.typ
+  ./publish-helper.py gallery/two-columns.typ
+  ./publish-helper.py gallery/circle-hole.typ
+  ./publish-helper.py README.md
+
+publish-up-to-date:
+  ./publish-helper.py release/README.md --publish
+
+publish:
+  mkdir -p release
+  rm -rf release/*
+  cp -r src release/
+  cp README.md LICENSE typst.toml release/
+  mkdir release/gallery
+  cp gallery/*.svg release/gallery/
+
