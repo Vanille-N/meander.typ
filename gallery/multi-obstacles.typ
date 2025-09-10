@@ -1,7 +1,9 @@
-// @helper(until eof; diff docs/figs/multi-obstacles.typ)
+// @scrybe(until eof; diff docs/figs/multi-obstacles.typ)
 #import "_preamble.typ": *
+
 #meander.reflow({
   import meander: *
+
   // As many obstacles as you want
   placed(top + left, my-img-1)
   placed(top + right, my-img-2)

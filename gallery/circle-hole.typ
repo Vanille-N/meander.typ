@@ -1,7 +1,9 @@
-// @helper(until eof; diff docs/figs/circle-hole.typ)
+// @scrybe(until eof; diff docs/figs/circle-hole.typ)
 #import "_preamble.typ": *
+
 #meander.reflow({
   import meander: *
+
   placed(
     center + horizon,
     boundary:
@@ -17,9 +19,9 @@
     // Underlying object
     circle(radius: 3cm, fill: yellow),
   )
+
   container(width: 48%)
   container(align: right, width: 48%)
-
   content[
     #set par(justify: true)
     #lorem(600)

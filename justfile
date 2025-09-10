@@ -5,19 +5,19 @@ doc: (typstc "watch" "docs/main.typ")
 
 figs force="":
   cd docs && if [ "{{force}}" = force ]; then touch figs/_preamble.typ; fi && watch make figs
+  cp docs/figs/multi-obstacles.svg gallery/
+  cp docs/figs/two-columns.svg gallery/
+  cp docs/figs/circle-hole.svg gallery/
 
 test T: (typstc "watch" "tests/"+T+"/test.typ")
 
 example T: (typstc "watch" "examples/"+T+"/main.typ")
 
-up-to-date:
-  ./publish-helper.py gallery/multi-obstacles.typ
-  ./publish-helper.py gallery/two-columns.typ
-  ./publish-helper.py gallery/circle-hole.typ
-  ./publish-helper.py README.md
+scrybe:
+  scrybe gallery/*.typ README.md typst.toml --version=0.2.0
 
-publish-up-to-date:
-  ./publish-helper.py release/README.md --publish
+scrybe-publish:
+  scrybe release/README.md release/typst.toml --publish --version=0.2.0
 
 publish:
   mkdir -p release

@@ -1,5 +1,6 @@
 [package]
 name = "meander"
+# @scrybe(grep {{version}})
 version = "0.2.0"
 entrypoint = "src/lib.typ"
 

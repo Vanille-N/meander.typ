@@ -3,7 +3,7 @@ _Text threading and image wrap-around for Typst._
 
 `meander` provides a core function `reflow` to segment a page and wrap content around images.
 
-<!-- @helper(if publish; grep https) -->
+<!-- @scrybe(if publish; grep https; grep {{version}}) -->
 See the [documentation](docs/main.pdf).
 
 ## Quick start
@@ -13,15 +13,17 @@ The function `meander.reflow` splits the input sequence into
 - containers: produced by `container`, optionally specifying an alignment and dimensions,
 - flowing content: produced by `content`.
 
-<!-- @helper(until ```; diff gallery/multi-obstacles.typ) -->
+<!-- @scrybe(not publish; jump import; grep local; grep {{version}}) -->
+<!-- @scrybe(if publish; jump import; grep preview; grep {{version}}) -->
+<!-- @scrybe(jump import; until ```; diff gallery/multi-obstacles.typ) -->
 ```typ
-#import "@preview/meander:0.2.0"
-
 #let my-img-1 = box(width: 7cm, height: 7cm, fill: orange)
 #let my-img-2 = box(width: 5cm, height: 3cm, fill: blue)
 #let my-img-3 = box(width: 8cm, height: 4cm, fill: green)
 #let my-img-4 = box(width: 5cm, height: 5cm, fill: red)
 #let my-img-5 = box(width: 4cm, height: 3cm, fill: yellow)
+
+#import "@local/meander:0.2.0"
 
 #meander.reflow({
   import meander: *
@@ -48,13 +50,15 @@ The function `meander.reflow` splits the input sequence into
 
 Use multiple `container`s to produce layouts in columns.
 
-<!-- @helper(until ```; diff gallery/two-columns.typ) -->
+<!-- @scrybe(not publish; jump import; grep local; grep {{version}}) -->
+<!-- @scrybe(if publish; jump import; grep preview; grep {{version}}) -->
+<!-- @scrybe(jump import; until ```; diff gallery/two-columns.typ) -->
 ```typ
-#import "@preview/meander:0.2.0"
-
 #let my-img-1 = box(width: 7cm, height: 7cm, fill: orange)
 #let my-img-2 = box(width: 5cm, height: 3cm, fill: blue)
 #let my-img-3 = box(width: 8cm, height: 4cm, fill: green)
+
+#import "@local/meander:0.2.0"
 
 #meander.reflow({
   import meander: *
@@ -76,9 +80,11 @@ Use multiple `container`s to produce layouts in columns.
 
 Meander allows precise control over the boundaries of obstacles, to draw complex paragraph shapes.
 
-<!-- @helper(until ```; diff gallery/circle-hole.typ) -->
+<!-- @scrybe(not publish; jump import; grep local; grep {{version}}) -->
+<!-- @scrybe(if publish; jump import; grep preview; grep {{version}}) -->
+<!-- @scrybe(jump import; until ```; diff gallery/circle-hole.typ) -->
 ```typ
-#import "@preview/meander:0.2.0"
+#import "@local/meander:0.2.0"
 
 #meander.reflow({
   import meander: *
