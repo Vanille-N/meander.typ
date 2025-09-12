@@ -1,4 +1,4 @@
-#import "/src/tiling.typ": placed
+#import "/src/tiling.typ": placed, container, content
 #import "/src/threading.typ": reflow
 #import "/src/contour.typ"
 
@@ -132,5 +132,50 @@
     ),
     line(end: (5cm, 5cm))
   )
+})
+
+#pagebreak()
+
+#reflow(debug: true, {
+  placed(
+    center + horizon,
+    dx: -5cm,
+    dy: -5cm,
+    boundary: contour.margin(x: 1cm, top: 5mm),
+    circle(radius: 3cm, fill: yellow),
+  )
+  placed(
+    center + horizon,
+    dx: 5cm,
+    dy: -5cm,
+    boundary: contour.margin(1cm, bottom: 1mm),
+    circle(radius: 3cm, fill: yellow),
+  )
+  placed(
+    center + horizon,
+    dx: -5cm,
+    dy: 5cm,
+    boundary: contour.margin(top: 1mm, bottom: 2mm, left: 3mm, right: 4mm),
+    circle(radius: 3cm, fill: yellow),
+  )
+  placed(
+    center + horizon,
+    dx: 5cm,
+    dy: 5cm,
+    boundary: contour.margin(1mm, y: 1cm, bottom: 1mm),
+    circle(radius: 3cm, fill: yellow),
+  )
+})
+
+#pagebreak()
+
+#reflow(debug: true, {
+  placed(
+    center + horizon,
+    boundary: contour.phantom,
+    circle(radius: 5cm, fill: yellow),
+  )
+  container()
+  content[#lorem(600)]
 })
 

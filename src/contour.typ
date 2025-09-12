@@ -4,16 +4,33 @@
 /// Contouring function that pads the inner image.
 /// -> function
 #let margin(
-  /// Padding.
-  /// -> length
-  size
+  /// May contain the following parameters, ordered here by decreasing generality
+  /// and increasing precedence
+  /// - `length` for all sides, the only possible positional argument
+  /// - `x,y: length` for horizontal and vertical margins respectively
+  /// - `top,bottom,left,right: length` for single-sided margins
+  ..args
 ) = ((block) => {
-  let (x, y, width, height) = block
+  let pos = args.pos()
+  let named = args.named()
+  if pos.len() > 1 { panic("contour.margin expects at most 1 positional argument") }
+  for (name,_) in named {
+    if name not in ("x", "y", "top", "bottom", "left", "right") {
+      panic("contour.margin cannot interpret the argument '" + name + "'")
+    }
+  }
+  let size = pos.at(0, default: 0pt)
+  let x = named.at("x", default: size)
+  let y = named.at("y", default: size)
+  let left = named.at("left", default: x)
+  let right = named.at("right", default: x)
+  let top = named.at("top", default: y)
+  let bottom = named.at("bottom", default: y)
   ((
-    x: x - size,
-    y: y - size,
-    width: width + 2 * size,
-    height: height + 2 * size,
+    x: block.x - left,
+    y: block.y - top,
+    width: block.width + left + right,
+    height: block.height + top + bottom,
   ),)
 },)
 
