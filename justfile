@@ -14,10 +14,10 @@ test T: (typstc "watch" "tests/"+T+"/test.typ")
 example T fmt="pdf": (typstc "watch" "examples/"+T+"/main.typ" fmt)
 
 scrybe:
-  scrybe gallery/*.typ README.md typst.toml --version=0.2.0
+  scrybe gallery/*.typ README.md typst.toml --version=0.2.1
 
 scrybe-publish:
-  scrybe release/README.md release/typst.toml --publish --version=0.2.0
+  scrybe release/README.md release/typst.toml --publish --version=0.2.1
 
 publish:
   mkdir -p release
