@@ -1,5 +1,6 @@
+// @scrybe(jump import; grep preview; grep {{version}})
 // @scrybe(until eof; diff docs/figs/circle-hole.typ)
-#import "_preamble.typ": *
+#import "@preview/meander:0.2.1"
 
 #meander.reflow({
   import meander: *
@@ -24,6 +25,6 @@
   container(align: right, width: 48%)
   content[
     #set par(justify: true)
-    #lorem(600)
+    #lorem(570)
   ]
 })

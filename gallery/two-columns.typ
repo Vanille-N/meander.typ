@@ -1,5 +1,6 @@
+// @scrybe(jump import; grep preview; grep {{version}})
 // @scrybe(until eof; diff docs/figs/two-columns.typ)
-#import "_preamble.typ": *
+#import "@preview/meander:0.2.1"
 
 #meander.reflow({
   import meander: *
@@ -12,5 +13,5 @@
   // emulate two columns.
   container(width: 55%)
   container(align: right, width: 40%)
-  content[#lorem(600)]
+  content[#lorem(470)]
 })

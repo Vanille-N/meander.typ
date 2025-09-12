@@ -24,5 +24,5 @@
     ```)
   )[#image("image.png")]
   container()
-  content[#lorem(600)]
+  content[#lorem(468)]
 })
