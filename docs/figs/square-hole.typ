@@ -9,6 +9,6 @@
 
   content[
     #set par(justify: true)
-    #lorem(600)
+    #lorem(590)
   ]
 })

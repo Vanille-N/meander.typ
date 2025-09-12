@@ -1,3 +1,4 @@
+#import "std.typ"
 #import "geometry.typ"
 
 /// Core function to create an obstacle.
@@ -17,6 +18,10 @@
   /// See `contour.typ`.
   /// -> (..function,)
   boundary: (auto,),
+  /// Whether the obstacle is shown.
+  /// Useful for only showing once an obstacle that intersects several invocations.
+  /// -> bool
+  display: true,
   /// Inner content.
   /// -> content
   content,
@@ -27,6 +32,7 @@
     dx: dx,
     dy: dy,
     boundary: boundary,
+    display: display,
     content: content
   ),)
 }
@@ -57,6 +63,12 @@
     dy: dy,
     width: width,
     height: height,
+  ),)
+}
+
+#let pagebreak() = {
+  ((
+    type: std.pagebreak,
   ),)
 }
 
@@ -102,6 +114,7 @@
   /// -> content
   seq
 ) = {
+  let pages = ()
   let flow = ()
   let placed = ()
   let free = ()
@@ -112,11 +125,16 @@
       free.push(obj)
     } else if obj.type == text {
       flow.push(obj)
+    } else if obj.type == std.pagebreak {
+      pages.push((obstacles: placed, containers: free))
+      placed = ()
+      free = ()
     } else {
-      panic()
+      panic("Unknown element of type " + repr(obj.type))
     }
   }
-  (flow: flow, obstacles: placed, containers: free)
+  pages.push((obstacles: placed, containers: free))
+  (flow: flow, pages: pages) 
 }
 
 /// Pattern with red crosses to display forbidden zones.
@@ -169,8 +187,9 @@
     let (width, height) = measure(elem.content, ..size)
     let (x, y) = geometry.align(elem.align, dx: elem.dx, dy: elem.dy, width: width, height: height)
     let dims = geometry.resolve(size, x: x, y: y, width: width, height: height)
-    // TODO: does this correctly handle obstacles that go below 0% ?
-    display += place[#move(dx: dims.x, dy: dims.y)[#elem.content]]
+    if elem.display {
+      display += place[#move(dx: dims.x, dy: dims.y)[#elem.content]]
+    }
 
     // Apply the boundary redrawing functions in order to know the true
     // footprint of the object in the layout.
@@ -184,7 +203,7 @@
     }
     for obj in bounds {
       forbidden.push(obj)
-      debug += place(top + left)[#move(dx: obj.x, dy: obj.y)[#box(stroke: red, fill: pat-forbidden(30pt), width: obj.width, height: obj.height)]]
+      debug += place[#move(dx: obj.x, dy: obj.y)[#box(stroke: red, fill: pat-forbidden(30pt), width: obj.width, height: obj.height)]]
     }
   }
   (rects: forbidden, display: display, debug: debug)
@@ -296,14 +315,19 @@
   /// Whether to show the placed objects.
   /// -> bool
   display: true,
-) = context layout(size => {
-  let (obstacles, containers) = separate(ct)
-  let forbidden = forbidden-rectangles(obstacles, size: size)
-  if display {
-    forbidden.display
-  }
-  forbidden.debug
+) = layout(size => {
+  let (pages,) = separate(ct)
+  for (idx, (containers, obstacles)) in pages.enumerate() {
+    if idx != 0 {
+      colbreak()
+    }
+    let forbidden = forbidden-rectangles(obstacles, size: size)
+    if display {
+      forbidden.display
+    }
+    forbidden.debug
 
-  let allowed = tolerable-rectangles(containers, avoid: forbidden.rects, size: size)
-  allowed.debug
+    let allowed = tolerable-rectangles(containers, avoid: forbidden.rects, size: size)
+    allowed.debug
+  }
 })

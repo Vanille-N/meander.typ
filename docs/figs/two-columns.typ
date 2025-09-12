@@ -10,5 +10,5 @@
   // emulate two columns.
   container(width: 55%)
   container(align: right, width: 40%)
-  content[#lorem(600)]
+  content[#lorem(470)]
 })

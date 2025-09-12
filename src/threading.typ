@@ -89,7 +89,11 @@
     full.push((cont, fits))
     body = overflow
   }
-  full
+  let overflow = body-queue
+  if body != none {
+    overflow.push((type: text, data: body))
+  }
+  (full: full, overflow: overflow.rev())
 }
 
 /// Segment the input content according to the tiling algorithm,
@@ -103,28 +107,61 @@
   /// Whether to show the boundaries of boxes.
   /// -> bool
   debug: false,
-) = context layout(size => {
+  /// Controls the behavior in case the content overflows the provided
+  /// containers.
+  /// - `auto` -> adds a warning box to the document
+  /// - `true` -> ignores the issue
+  /// - `false` -> panics
+  /// -> bool
+  allow-overflow: auto,
+) = layout(size => {
   import "tiling.typ" as tiling
-  let (flow, obstacles, containers) = tiling.separate(ct)
-  let forbidden = tiling.forbidden-rectangles(obstacles, size: size)
-  forbidden.display
-  if debug {
-    forbidden.debug
-  }
+  let (flow, pages) = tiling.separate(ct)
+  let latest-container = (dx: 0pt, y: 0pt)
+  for (idx, (containers, obstacles)) in pages.enumerate() {
+    if idx != 0 {
+      colbreak()
+    }
+    let forbidden = tiling.forbidden-rectangles(obstacles, size: size)
+    forbidden.display
+    if debug {
+      forbidden.debug
+    }
 
-  let allowed = tiling.tolerable-rectangles(containers, avoid: forbidden.rects, size: size)
+    let allowed = tiling.tolerable-rectangles(containers, avoid: forbidden.rects, size: size)
 
-  for (container, content) in smart-fill-boxes(
-    size: size,
-    avoid: forbidden.rects,
-    boxes: allowed.rects,
-    flow,
-  ) {
-    place(dx: container.dx, dy: container.dy, {
-      box(width: container.width, height: container.height, stroke: if debug { green } else { none }, {
-        content
+    let (full, overflow) = smart-fill-boxes(
+      size: size,
+      avoid: forbidden.rects,
+      boxes: allowed.rects,
+      flow,
+    )
+    flow = overflow
+    for (container, content) in full {
+      latest-container = container
+      place(dx: container.dx, dy: container.dy, {
+          box(width: container.width, height: container.height, stroke: if debug { green } else { none }, {
+          content
+        })
       })
-    })
+    }
+  }
+  if flow != () {
+    if allow-overflow == auto {
+      place(dx: latest-container.dx, dy: latest-container.dy)[
+        #box(fill: red, stroke: black + 5pt, inset: 5mm)[
+          #align(center)[
+            #text(size: 20pt)[*Warning*] \
+            This container is insufficient to hold the full text. \
+            Consider adding more containers or a `pagebreak`.
+          ]
+        ]
+      ]
+    } else if allow-overflow == true {
+      // Ignore
+    } else {
+      panic("The containers provided cannot hold the remaining text: " + repr(flow))
+    }
   }
 })
 

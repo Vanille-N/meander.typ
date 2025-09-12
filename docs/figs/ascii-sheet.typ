@@ -1,9 +1,10 @@
-#import "/src/lib.typ" as meander
+#import "_preamble.typ": *
+
 #set page(height: 17cm, width: 15cm)
 
 #let image = text(size: 50pt)[
   ```
-  #
+  #   /   \
 
   [   ]   ^   _
 
@@ -13,21 +14,24 @@
   ```
 ]
 
+//@ <doc>
 #meander.reflow(debug: true, {
   import meander: *
   placed(
     top + left,
-    boundary: contour.margin(6mm) + contour.ascii-art(
-      ```
-      #
+    boundary:
+      contour.margin(6mm) +
+      contour.ascii-art(
+        ```
+        # / \
 
-      [ ] ^ _
+        [ ] ^ _
 
-      , . ' `
+        , . ' `
 
-      J F L 7
-      ```
-    )
+        J F L 7
+        ```
+      )
   )[#image]
 })
 

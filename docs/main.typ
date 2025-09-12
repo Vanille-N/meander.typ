@@ -3,6 +3,10 @@
   #text(size: 25pt)[User guide]
 ]
 
+#let TODO = box(fill: red, stroke: black + 5pt, inset: 5mm)[
+  #text(size: 20pt)[TODO]
+]
+
 #let show-page(tag) = {
   box(stroke: black)[
     #image("figs/" + tag + ".svg")
@@ -128,7 +132,7 @@ Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if
   #show-page("multi-obstacles")
 ]
 
-== Columns
+== Columns <two-columns>
 
 #table(columns: (55%, 40%), stroke: none)[
   In order to simulate a multi-column layout, you can provide several
@@ -138,6 +142,8 @@ Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if
 ][
   #show-page("two-columns")
 ]
+
+#pagebreak()
 
 = Showcase
 
@@ -160,11 +166,12 @@ A selection of nontrivial examples of what is feasible.
 = Understanding the algorithm
 
 #table(columns: (1fr, 1fr), stroke: none)[
-  The same page setup as the previous example will internally be separated into
+  The same page setup as the previous @two-columns[example]
+  will internally be separated into
   - obstacles `my-img-1`, `my-img-2`, and `my-img-3`.
   - containers ```typ #(x: 0%, y: 0%, width: 55%, height: 100%)```
     and ```typ #(x: 60%, y: 0%, width: 40%, height: 100%)```
-  - flowing content ```typ #lorem(600)```.
+  - flowing content ```typ #lorem(470)```.
 
   Initially obstacles are placed on the page #text(fill: purple)[($->$)].
   If they have a `boundary` parameter, it recomputes the exclusion zone.
@@ -213,6 +220,8 @@ a top-bottom and left-right layout, you need to specify them.
 
 = Advanced techniques
 
+== Obstacle contouring
+
 Although Meander started as only a text threading engine,
 the ability to place text in boxes of unequal width has direct applications
 in more advanced paragraph shapes. This has been a desired feature since at
@@ -222,6 +231,8 @@ Even though this is somewhat outside of the original feature roadmap,
 Meander makes an effort for this application to be more user-friendly,
 by providing functions to redraw the boundaries of an obstacle.
 Here we walk through these steps.
+
+=== As equations
 
 Here is our starting point: a simple double-column page
 with a cutout in the middle for an image.
@@ -254,6 +265,9 @@ This results in the new subdivisions of containers below.
   #show-page("circle-hole")
 ]
 This enables in theory drawing arbitrary paragraph shapes.
+
+=== As stacked rectangles
+
 If your shape is not convenient to express through a grid function, here
 are the other options available:
 - `vert(div: _, fun)`: subdivide vertically in `div` sections,
@@ -269,10 +283,6 @@ are the other options available:
 
 Reminder: all of these functions operate on values normalized to $[0, 1]$.
 See some examples below.
-
-#import "@preview/cetz:0.4.1"
-
-// TODO: enable showing some obstacle boxes
 
 #table(columns: (1fr, 1fr), stroke: none)[
   #show-page("contour-1")
@@ -290,6 +300,22 @@ See some examples below.
   #show-code("contour-4")
 ]
 
+=== As ASCII art
+
+Another method of specifying contours is by drawing a rough shape of the obstacle
+in ASCII art. Pass a code block made of the characters ```# /\[]^_,.'`JFL7```
+to the contouring function ```typ #contour.ascii-art```, and you can easily draw the
+shape of your image.
+
+#table(columns: (1fr, 1fr), stroke: none)[
+  #show-code("ascii-sheet")
+][
+  #show-page("ascii-sheet")
+]
+See #link("https://github.com/Vanille-N/meander.typ/tree/master/examples/5181-b/main.typ")[`examples/5181-b/main.typ`] for a nontrivial use-case.
+
+=== Remarks
+
 The contouring functions available should already cover a reasonable range
 of use-cases, but if you have other ideas you could always try to submit one
 as a new #link("https://github.com/Vanille-N/meander.typ/issues")[issue].
@@ -304,6 +330,34 @@ is segmented into. This means
   needs improvements.
 In the meantime it is highly discouraged to use a subdivision that results
 in obstacles much smaller than the font height.
+
+== Multi-page setups
+
+Meander can deal with text that spans multiple pages,
+you just need to place ```typ #pagebreak```s appropriately.
+Note that ```typ #pagebreak``` only affects the obstacles and containers,
+while ```typ #content``` blocks ignore them entirely.
+
+#show-code("two-pages/doc")
+#table(columns: (1fr, 1fr), stroke: none)[
+  #show-page("two-pages/doc.1")
+][
+  #show-page("two-pages/doc.2")
+]
+
+If you run into performance issues, consider finding spots where you can break
+the ```typ #reflow``` invocation. As long as you don't insert a ```typ #pagebreak```
+explicitly, several ```typ #reflow```s can coexist on the same page.
+A ```typ #set block(spacing: 0em)``` can help with the vertical alignment of invocations.
+
+#table(columns: (1fr, 1fr), stroke: none)[
+  #show-page("junction/doc.1")
+][
+  #show-page("junction/doc.2")
+]
+#show-code("junction/doc")
+
+#pagebreak()
 
 = Modularity (WIP)
 

@@ -12,6 +12,6 @@
   //@ </...>
   content[
     #set text(size: 30pt)
-    #lorem(600)
+    #lorem(80)
   ]
 })

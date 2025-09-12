@@ -31,6 +31,6 @@
   ]
   //@ <...>
   container()
-  content[#lorem(700)]
+  content[#lorem(590)]
   //@ </...>
 })
