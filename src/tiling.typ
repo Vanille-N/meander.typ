@@ -15,11 +15,14 @@
   dy: 0% + 0pt,
   /// An array of functions to transform the bounding box of the content.
   /// By default, a 5pt margin.
-  /// See `contour.typ`.
+  /// See `contour.typ` for a list of available functions.
   /// -> (..function,)
   boundary: (auto,),
   /// Whether the obstacle is shown.
   /// Useful for only showing once an obstacle that intersects several invocations.
+  /// Contrast the following:
+  /// - `boundary: contour.phantom` will display the object without using it as an obstacle,
+  /// - `display: false` will use the object as an obstacle but not display it.
   /// -> bool
   display: true,
   /// Inner content.

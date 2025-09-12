@@ -1,6 +1,7 @@
 #import "../_preamble.typ": *
 //@ <doc>
-// Omitting this leads to a vertical discrepancy on obstacle 4
+// Omitting this leads to a vertical
+// discrepancy on obstacle 4
 #set block(spacing: 0em)
 
 // First half-page
@@ -15,7 +16,8 @@
   import meander: *
   placed(bottom + center, my-img-2)
   container(align: bottom, height: 50%, width: 48%)
-  container(align: bottom + right, height: 50%, width: 48%)
+  container(align: bottom + right,
+            height: 50%, width: 48%)
 
   pagebreak()
 

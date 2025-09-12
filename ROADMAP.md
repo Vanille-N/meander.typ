@@ -12,7 +12,6 @@
 ## Page segmentation
 - [ ] include previous containers when segmenting vertically.
 - [ ] do not use as horizontal marks the obstacles that don't intersect the container
-- [X] handle multipage setups
 
 ## Threading
 - [ ] parameterization of alignment inside boxes
@@ -28,10 +27,7 @@
 ## QoL
 
 - [ ] group displacement
-- [ ] different x and y margins around images
 - [ ] inverse retiling (define a container with a complex shape through retiling functions)
-- [X] configurable warning when the text overflows the containers
-- [X] option to hide obstacles 
 
 ## Parameterization
 
@@ -43,6 +39,4 @@
 
 ## Documentation
 
-- [X] ASCII art feature has no example in the docs
-- [X] ASCII cheat sheet is missing / and \
 

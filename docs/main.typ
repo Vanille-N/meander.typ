@@ -7,9 +7,9 @@
   #text(size: 20pt)[TODO]
 ]
 
-#let show-page(tag) = {
+#let show-page(tag, width: auto) = {
   box(stroke: black)[
-    #image("figs/" + tag + ".svg")
+    #image("figs/" + tag + ".svg", width: width)
   ]
 }
 
@@ -50,7 +50,7 @@
 
 #v(2cm)
 
-#table(columns: 2, stroke: none)[
+#table(columns: (auto, auto), stroke: none)[
   *Abstract* \
   Meander implements a content layout algorithm to provide text threading
   (when text from one box spills into a different box if it overflows),
@@ -102,12 +102,11 @@ by the flowing content.
 
 #table(columns: (1fr, 1fr), stroke: none)[
   Below is a single page whose layout is fully determined by Meander.
-  Currently multi-page setups are not supported,
-  but this is definitely a desired feature.
+  Multi-page setups are also possible, see @multi-page.
 
   #show-code("simple-example")
 ][
-  #show-page("simple-example")
+  #show-page("simple-example", width: 7cm)
 ]
 
 Meander is expected to respect the majority of styling options,
@@ -207,9 +206,9 @@ different orders:
 ][
   #show-code("4-regions-2")
 ][
-  #show-page("4-regions-1")
+  #show-page("4-regions-1", width: 6cm)
 ][
-  #show-page("4-regions-2")
+  #show-page("4-regions-2", width: 6cm)
 ]
 And even in the example above, the box *1* will be filled before the first
 line of *2* is used.
@@ -232,6 +231,12 @@ Meander makes an effort for this application to be more user-friendly,
 by providing functions to redraw the boundaries of an obstacle.
 Here we walk through these steps.
 
+Basic contouring is simply the ability to customize the margin around obstacles
+by passing to ```typ #placed``` the argument `boundary: contour.margin(1cm)`.
+```typ #contour.margin``` also accepts parameters `x`, `y`, `top`, `bottom`,
+`left`, `right`, with the precedence you would expect, to customize the margins
+precisely.
+
 === As equations
 
 Here is our starting point: a simple double-column page
@@ -239,9 +244,9 @@ with a cutout in the middle for an image.
 
 #show-code("square-hole")
 #table(columns: (1fr, 1fr), stroke: none)[
-  #show-page("square-hole-debug")
+  #show-page("square-hole-debug", width: 6cm)
 ][
-  #show-page("square-hole")
+  #show-page("square-hole", width: 6cm)
 ]
 Meander sees all obstacles as rectangular, so the circle leaves a big
 ugly #link("https://www.youtube.com/watch?v=6pDH66X3ClA")[square hole] in our page.
@@ -260,16 +265,38 @@ So instead of placing directly the circle, we write:
 #show-code("circle-hole")
 This results in the new subdivisions of containers below.
 #table(columns: (1fr, 1fr), stroke: none)[
-  #show-page("circle-hole-debug") 
+  #show-page("circle-hole-debug", width: 6cm) 
 ][
-  #show-page("circle-hole")
+  #show-page("circle-hole", width: 6cm)
 ]
 This enables in theory drawing arbitrary paragraph shapes.
+Note the high density of obstacles on the debug view above:
+this works here but we are getting close to the resolution limit of meander,
+so don't try to draw obstacles with a resolution too much lower than the normal
+line height.
 
 === As stacked rectangles
 
-If your shape is not convenient to express through a grid function, here
-are the other options available:
+If your shape is not convenient to express through a grid function, but
+has some horizontal or vertical regularity, here are some other suggestions:
+
+#table(columns: (1fr, 1fr), stroke: none, inset: (y: 2mm), align: center,
+  table.hline(stroke: gray),
+  show-page("contour-1", width: 5cm),
+  show-code("contour-1"),
+  table.hline(stroke: gray),
+  show-code("contour-2"),
+  show-page("contour-2", width: 5cm),
+  table.hline(stroke: gray),
+  show-page("contour-3", width: 5cm),
+  show-code("contour-3"),
+  table.hline(stroke: gray),
+  show-code("contour-4"),
+  show-page("contour-4", width: 5cm),
+  table.hline(stroke: gray),
+)
+
+To summarize,
 - `vert(div: _, fun)`: subdivide vertically in `div` sections,
   then `fun(x) = (top, bottom)` produces an obstacle between `top` and `bottom`.
 - `height(div: _, flush: _, fun)`: subdivide vertically in `div` sections,
@@ -281,24 +308,9 @@ are the other options available:
 - `horiz`: a horizontal version of `vert`.
 - `width`: a horizontal version of `height`.
 
-Reminder: all of these functions operate on values normalized to $[0, 1]$.
-See some examples below.
+All of these functions operate on values normalized to $[0, 1]$.
 
-#table(columns: (1fr, 1fr), stroke: none)[
-  #show-page("contour-1")
-  #show-code("contour-1")
-][
-  #show-page("contour-2")
-  #show-code("contour-2")
-]
-
-#table(columns: (1fr, 1fr), stroke: none)[
-  #show-page("contour-3")
-  #show-code("contour-3")
-][
-  #show-page("contour-4")
-  #show-code("contour-4")
-]
+#pagebreak()
 
 === As ASCII art
 
@@ -331,7 +343,9 @@ is segmented into. This means
 In the meantime it is highly discouraged to use a subdivision that results
 in obstacles much smaller than the font height.
 
-== Multi-page setups
+#pagebreak()
+
+== Multi-page setups <multi-page>
 
 Meander can deal with text that spans multiple pages,
 you just need to place ```typ #pagebreak```s appropriately.
@@ -340,22 +354,25 @@ while ```typ #content``` blocks ignore them entirely.
 
 #show-code("two-pages/doc")
 #table(columns: (1fr, 1fr), stroke: none)[
-  #show-page("two-pages/doc.1")
+  #show-page("two-pages/doc.1", width: 6cm)
 ][
-  #show-page("two-pages/doc.2")
+  #show-page("two-pages/doc.2", width: 6cm)
 ]
+
+#pagebreak()
 
 If you run into performance issues, consider finding spots where you can break
 the ```typ #reflow``` invocation. As long as you don't insert a ```typ #pagebreak```
 explicitly, several ```typ #reflow```s can coexist on the same page.
 A ```typ #set block(spacing: 0em)``` can help with the vertical alignment of invocations.
 
-#table(columns: (1fr, 1fr), stroke: none)[
-  #show-page("junction/doc.1")
-][
-  #show-page("junction/doc.2")
-]
-#show-code("junction/doc")
+#table(columns: (70%, 35%), stroke: none,
+  show-code("junction/doc"),
+  [
+    #show-page("junction/doc.1", width: 5cm)
+    #show-page("junction/doc.2", width: 5cm)
+  ],
+)
 
 #pagebreak()
 
@@ -394,12 +411,14 @@ rule outside of the invocation of ```typ #meander.reflow``` altogether.
 #table(columns: (1fr, 1fr), stroke: none, align: center)[
   #text(fill: red, size: 20pt)[*Wrong*]
   #show-code("par-justify")
-  #show-page("par-justify")
+  #show-page("par-justify", width: 5cm)
 ][
   #text(fill: green, size: 20pt)[*Correct*]
   #show-code("set-par-justify")
-  #show-page("set-par-justify")
+  #show-page("set-par-justify", width: 5cm)
 ]
+
+#pagebreak()
 
 == Font size
 
@@ -416,11 +435,11 @@ way to do this in a more well-behaved manner.
 #table(columns: (1fr, 1fr), stroke: none, align: center)[
   #text(fill: red, size: 20pt)[*Wrong*]
   #show-code("font-size-inside")
-  #show-page("font-size-inside")
+  #show-page("font-size-inside", width: 5cm)
 ][
   #text(fill: green, size: 20pt)[*Correct*]
   #show-code("font-size-outside")
-  #show-page("font-size-outside")
+  #show-page("font-size-outside", width: 5cm)
 ]
 
 #pagebreak()
@@ -438,11 +457,11 @@ to change it more locally.
 #table(columns: (1fr, 1fr), stroke: none, align: center)[
   #text(fill: red, size: 20pt)[*Wrong*]
   #show-code("text-hyphenate-inside")
-  #show-page("text-hyphenate-inside")
+  #show-page("text-hyphenate-inside", width: 5cm)
 ][
   #text(fill: green, size: 20pt)[*Correct*]
   #show-code("text-hyphenate-outside")
-  #show-page("text-hyphenate-outside")
+  #show-page("text-hyphenate-outside", width: 5cm)
 ]
 
 #pagebreak()
