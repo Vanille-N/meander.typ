@@ -148,16 +148,25 @@ Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if
 
 A selection of nontrivial examples of what is feasible.
 
-#table(columns: (1fr, 1fr), stroke: gray, align: center + horizon)[
-  #image("/examples/5181-a/main.svg", width: 7.5cm)
-  #link("https://github.com/Vanille-N/meander.typ/tree/master/examples/5181-a/main.typ")[`examples/5181-a/main.typ`] \
-  Inspired by #link("https://github.com/typst/typst/issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (a)]
-][
-  #image("/examples/5181-b/main.svg", width: 7.5cm)
-  #v(1.9cm)
-  #link("https://github.com/Vanille-N/meander.typ/tree/master/examples/5181-b/main.typ")[`examples/5181-b/main.typ`] \
-  Inspired by #link("https://github.com/typst/typst/issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (b)]
-]
+#table(columns: (1fr, 1fr), stroke: gray, align: center + horizon,
+  [
+    #image("/examples/5181-a/main.svg", width: 7.5cm)
+    #link("https://github.com/Vanille-N/meander.typ/tree/master/examples/5181-a/main.typ")[`examples/5181-a/main.typ`] \
+    Motivated by #link("https://github.com/typst/typst/issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (a)]
+  ],
+  [
+    #image("/examples/5181-b/main.svg", width: 7.5cm)
+    #v(1.9cm)
+    #link("https://github.com/Vanille-N/meander.typ/tree/master/examples/5181-b/main.typ")[`examples/5181-b/main.typ`] \
+    Motivated by #link("https://github.com/typst/typst/issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (b)]
+  ],
+  [
+    #image("/examples/talmudifier/main.svg", width: 7.5cm)
+    #link("https://github.com/Vanille-N/meander.typ/tree/master/examples/talmudifier/main.typ")[`examples/talmudifier/main.typ`] \
+    From #link("https://github.com/subalterngames/talmudifier")[`github:subalterngames/talmudifier`] \
+    Motivated by #link("https://github.com/typst/typst/issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (c)]
+  ],
+)
 
 
 #pagebreak()

@@ -11,7 +11,7 @@ figs force="":
 
 test T: (typstc "watch" "tests/"+T+"/test.typ")
 
-example T: (typstc "watch" "examples/"+T+"/main.typ")
+example T fmt="pdf": (typstc "watch" "examples/"+T+"/main.typ" fmt)
 
 scrybe:
   scrybe gallery/*.typ README.md typst.toml --version=0.2.0
