@@ -64,8 +64,9 @@
 
   *Versions* \
   - #link("https://github.com/Vanille-N/meander.typ")[`dev`]
-  - #link("https://github.com/Vanille-N/meander.typ/releases/tag/v0.2.0")[`0.2.0`]
+  - #link("https://github.com/Vanille-N/meander.typ/releases/tag/v0.2.1")[`0.2.1`]
     (#link("https://typst.app/universe/package/meander")[`latest`])
+  - #link("https://github.com/Vanille-N/meander.typ/releases/tag/v0.2.0")[`0.2.0`]
   - #link("https://github.com/Vanille-N/meander.typ/releases/tag/v0.1.0")[`0.1.0`]
 ][
   #align(center)[

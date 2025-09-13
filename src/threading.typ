@@ -114,7 +114,7 @@
   /// - `pagebreak` -> the text that overflows is simply placed normally on the next page
   /// - `panic` -> refuses to compile the document
   /// -> any
-  overflow: auto,
+  overflow: false,
 ) = layout(size => {
   import "tiling.typ" as tiling
   let (flow, pages) = tiling.separate(ct)

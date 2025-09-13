@@ -31,3 +31,5 @@
   container()
   content[#lorem(1000)]
 })
+// Regular text can continue afterwards
+#lorem(5)
