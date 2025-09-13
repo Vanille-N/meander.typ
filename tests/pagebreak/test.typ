@@ -22,3 +22,12 @@
 
   content[#lorem(900)]
 })
+
+#pagebreak()
+
+#meander.reflow(overflow: pagebreak, {
+  import meander: *
+  placed(top + left, {})
+  container()
+  content[#lorem(1000)]
+})

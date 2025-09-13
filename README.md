@@ -1,7 +1,7 @@
 # Meander
 _Text threading and image wrap-around for Typst._
 
-`meander` provides a core function `reflow` to segment a page and wrap content around images.
+`meander` provides a core function `reflow` to segment pages and wrap content around images.
 
 <!-- @scrybe(not version; panic Please specify a version number) -->
 <!-- @scrybe(if publish; grep https; grep {{version}}) -->
@@ -12,7 +12,8 @@ See the [documentation](docs/main.pdf).
 The function `meander.reflow` splits the input sequence into
 - obstacles: all objects created via the function `placed` (which is like `place`),
 - containers: produced by `container`, optionally specifying an alignment and dimensions,
-- flowing content: produced by `content`.
+- flowing content: produced by `content`,
+- optionally `pagebreak`s so that the layout can cover multiple consecutive pages.
 
 <!-- @scrybe(not publish; jump import; grep local; grep {{version}}) -->
 <!-- @scrybe(if publish; jump import; grep preview; grep {{version}}) -->

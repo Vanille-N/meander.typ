@@ -12,6 +12,7 @@
 ## Page segmentation
 - [ ] include previous containers when segmenting vertically.
 - [ ] do not use as horizontal marks the obstacles that don't intersect the container
+- [ ] There's still a bug on a page with just a single container()
 
 ## Threading
 - [ ] parameterization of alignment inside boxes

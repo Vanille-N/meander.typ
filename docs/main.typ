@@ -168,7 +168,6 @@ A selection of nontrivial examples of what is feasible.
   ],
 )
 
-
 #pagebreak()
 
 = Understanding the algorithm
@@ -382,6 +381,13 @@ A ```typ #set block(spacing: 0em)``` can help with the vertical alignment of inv
     #show-page("junction/doc.2", width: 5cm)
   ],
 )
+
+*Note:* the default behavior if the content provided overflows the available
+containers is *not* to put in on the next page, but rather to show a warning.
+You can manually enable the overflow going to the next page by passing
+to ```typ #reflow``` the parameter `overflow: pagebreak`.
+Other options include `overflow: panic` if you want accidental overflows to
+trigger an immediate panic.
 
 #pagebreak()
 
