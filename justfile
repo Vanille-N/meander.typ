@@ -4,7 +4,7 @@ typstc cmd file fmt="pdf":
 doc: (typstc "watch" "docs/main.typ")
 
 figs force="":
-  cd docs && if [ "{{force}}" = force ]; then touch figs/_preamble.typ; fi && watch make figs
+  cd docs && if [ "{{force}}" = force ]; then touch figs/_preamble.typ; fi && make figs
   cp docs/figs/multi-obstacles.svg gallery/
   cp docs/figs/two-columns.svg gallery/
   cp docs/figs/circle-hole.svg gallery/
