@@ -183,17 +183,18 @@
 ) = {
   let (inner, rebuild) = default-rebuild(ct, "text")
   let inner = inner.split(" ")
+  let atom = box(width: 0pt, height: 1mm)
 
   // TODO: also allow hyphenating 1st word
-  if not fits-inside([#inner.at(0) #box(width: 1pt, height: 1mm)]) {
+  /*if not fits-inside(rebuild(inner.at(0)) + atom) {
     return (none, ct)
-  }
+  }*/
 
   let lbreak = [
     #context[#linebreak(justify: par.justify)]
   ]
   for i in range(inner.len()) {
-    if fits-inside(rebuild(inner.slice(0, i + 1).join(" "))) {
+    if fits-inside(rebuild(inner.slice(0, i + 1).join(" ")) + atom) {
       continue
     } else {
       if text.hyphenate == false {
@@ -209,11 +210,13 @@
         let overhang = inner.at(i)
         let before = inner.slice(0, i)
         let after = inner.slice(i + 1)
-        let (left-rec, right-rec) = split-word(inner.at(i), ww => fits-inside(rebuild((..before, ww).join(" "))), cfg)
+        let (left-rec, right-rec) = split-word(inner.at(i), ww => fits-inside(rebuild((..before, ww).join(" ")) + atom), cfg)
         let left-words = if left-rec == none { before } else {
           (..before, left-rec)
         }
-        let left = rebuild(left-words.join(" ")) + lbreak
+        let left = if i == 0 { none } else {
+          rebuild(left-words.join(" ")) + lbreak
+        }
         let right-words = if right-rec == none { after } else {
           (right-rec, ..after)
         }
