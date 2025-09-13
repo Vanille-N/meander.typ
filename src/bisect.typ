@@ -311,10 +311,12 @@
       panic("Not enough list markers. Decrease nesting or provide `cfg.list-markers`")
     }
     for i in range(cfg.list-depth + 1) {
-      cfg.list-markers.at(i) = h(0.5em)
+      cfg.list-markers.at(i) = hide(cfg.list-markers.at(i))
     }
     // TODO: improve the ad-hoc spacing
-    [#set list(marker: cfg.list-markers); #rebuild(right)]
+    //[#set list(marker: cfg.list-markers); #rebuild(right)]
+    //rebuild(right)
+    right
   }
   (left, right)
 }
@@ -369,7 +371,9 @@
       }
     }
     // TODO: improve the ad-hoc spacing
-    [#set enum(full: true, numbering: numbering); #rebuild(right)]
+    //[#set enum(full: true, numbering: numbering); #rebuild(right)]
+    //rebuild(right)
+    right
   }
   (left, right)
 }

@@ -40,3 +40,5 @@
 ## Documentation
 
 - [ ] Talk more in depth about overflow options
+- [ ] non-doc regular comments about the algorithm
+
