@@ -201,9 +201,11 @@
           }
         }
       }
-      panic("Unimplemented: Idk if this is reachable")
+      // TODO: assert that left fits and find test case that hits this
+      return (rebuild((..left, syllables.join("").join(" "))), rebuild(right.join(" ")))
     }
   }
+  // TODO: assert that left fits and find test case that hits this
   return (rebuild(inner.join(" ")), none)
 }
 
@@ -314,9 +316,9 @@
       cfg.list-markers.at(i) = hide(cfg.list-markers.at(i))
     }
     // TODO: improve the ad-hoc spacing
-    //[#set list(marker: cfg.list-markers); #rebuild(right)]
+    [#set list(marker: cfg.list-markers); #rebuild(right)]
     //rebuild(right)
-    right
+    //right
   }
   (left, right)
 }
@@ -371,9 +373,9 @@
       }
     }
     // TODO: improve the ad-hoc spacing
-    //[#set enum(full: true, numbering: numbering); #rebuild(right)]
+    [#set enum(full: true, numbering: numbering); #rebuild(right)]
     //rebuild(right)
-    right
+    //right
   }
   (left, right)
 }

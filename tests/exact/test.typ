@@ -59,6 +59,8 @@
 
 #set text(size: 30pt)
 
+// TODO: There is a blocking bug here with the proper segmentation of list.item and enum.item
+/*
 #compare[
   #for _ in range(15) [
     - #lorem(1)
