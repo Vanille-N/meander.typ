@@ -13,6 +13,9 @@
   ]
 }
 
+#let repo = "https://github.com/Vanille-N/meander.typ/"
+#let typst-repo = "https://github.com/typst/typst/"
+
 #let show-code(tag) = {
   let relevant-lines = ()
   let take = false
@@ -58,16 +61,16 @@
 
   *Feature requests* \
   For as long as the feature doesn't exist natively in Typst
-  (see issue: #link("https://github.com/typst/typst/issues/5181")[`github:typst/typst #5181`]),
+  (see issue: #link(typst-repo + "issues/5181")[`github:typst/typst #5181`]),
   feel free to submit test cases of layouts you would like to see supported
-  by opening a new #link("https://github.com/Vanille-N/meander.typ/issues")[issue].
+  by opening a new #link(repo + "issues")[issue].
 
   *Versions* \
-  - #link("https://github.com/Vanille-N/meander.typ")[`dev`]
-  - #link("https://github.com/Vanille-N/meander.typ/releases/tag/v0.2.1")[`0.2.1`]
+  - #link(repo)[`dev`]
+  - #link(repo + "releases/tag/v0.2.1")[`0.2.1`]
     (#link("https://typst.app/universe/package/meander")[`latest`])
-  - #link("https://github.com/Vanille-N/meander.typ/releases/tag/v0.2.0")[`0.2.0`]
-  - #link("https://github.com/Vanille-N/meander.typ/releases/tag/v0.1.0")[`0.1.0`]
+  - #link(repo + "releases/tag/v0.2.0")[`0.2.0`]
+  - #link(repo + "releases/tag/v0.1.0")[`0.1.0`]
 ][
   #align(center)[
     #show-page("cover")
@@ -114,9 +117,9 @@ Meander is expected to respect the majority of styling options,
 including headings, paragraph justification, font size, etc.
 Notable exceptions are detailed in @styling-layout.
 If you find a discrepancy make sure to file it as a
-#link("https://github.com/Vanille-N/meander.typ/issues")[bug report]
+#link(repo + "issues")[bug report]
 if it is not already part of the
-#link("https://github.com/Vanille-N/meander.typ/tree/master/KNOWN-ISSUES.md")[known limitations].
+#link(repo + "tree/master/ROADMAP.md")[known limitations].
 
 Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if needed.
 
@@ -152,20 +155,20 @@ A selection of nontrivial examples of what is feasible.
 #table(columns: (1fr, 1fr), stroke: gray, align: center + horizon,
   [
     #image("/examples/5181-a/main.svg", width: 7.5cm)
-    #link("https://github.com/Vanille-N/meander.typ/tree/master/examples/5181-a/main.typ")[`examples/5181-a/main.typ`] \
-    Motivated by #link("https://github.com/typst/typst/issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (a)]
+    #link(repo + "tree/master/examples/5181-a/main.typ")[`examples/5181-a/main.typ`] \
+    Motivated by #link(typst-repo + "issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (a)]
   ],
   [
     #image("/examples/5181-b/main.svg", width: 7.5cm)
     #v(1.9cm)
-    #link("https://github.com/Vanille-N/meander.typ/tree/master/examples/5181-b/main.typ")[`examples/5181-b/main.typ`] \
-    Motivated by #link("https://github.com/typst/typst/issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (b)]
+    #link(repo + "tree/master/examples/5181-b/main.typ")[`examples/5181-b/main.typ`] \
+    Motivated by #link(typst-repo + "issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (b)]
   ],
   [
     #image("/examples/talmudifier/main.svg", width: 7.5cm)
-    #link("https://github.com/Vanille-N/meander.typ/tree/master/examples/talmudifier/main.typ")[`examples/talmudifier/main.typ`] \
+    #link(repo + "tree/master/examples/talmudifier/main.typ")[`examples/talmudifier/main.typ`] \
     From #link("https://github.com/subalterngames/talmudifier")[`github:subalterngames/talmudifier`] \
-    Motivated by #link("https://github.com/typst/typst/issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (c)]
+    Motivated by #link(typst-repo + "issues/5181#issuecomment-2661180292")[`github:typst/typst` \#5181 (c)]
   ],
 )
 
@@ -233,7 +236,7 @@ a top-bottom and left-right layout, you need to specify them.
 Although Meander started as only a text threading engine,
 the ability to place text in boxes of unequal width has direct applications
 in more advanced paragraph shapes. This has been a desired feature since at
-least #link("https://github.com/typst/typst/issues/5181")[issue \#5181].
+least #link(typst-repo + "issues/5181")[issue \#5181].
 
 Even though this is somewhat outside of the original feature roadmap,
 Meander makes an effort for this application to be more user-friendly,
@@ -333,13 +336,13 @@ shape of your image.
 ][
   #show-page("ascii-sheet")
 ]
-See #link("https://github.com/Vanille-N/meander.typ/tree/master/examples/5181-b/main.typ")[`examples/5181-b/main.typ`] for a nontrivial use-case.
+See #link(repo + "tree/master/examples/5181-b/main.typ")[`examples/5181-b/main.typ`] for a nontrivial use-case.
 
 === Remarks
 
 The contouring functions available should already cover a reasonable range
 of use-cases, but if you have other ideas you could always try to submit one
-as a new #link("https://github.com/Vanille-N/meander.typ/issues")[issue].
+as a new #link(repo + "issues")[issue].
 
 There are of course limits to this technique, and in particular increasing the
 number of obstacles will in turn increase the number of boxes that the layout
