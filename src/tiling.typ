@@ -260,14 +260,17 @@
     // Cut the zone horizontally
     // The 3pt margin is because if the box exceeds the page, `measure` can't see
     // the difference anymore.
-    let horizontal-marks = (dims.y, dims.y + dims.height - 3pt)
+    let horizontal-marks = (dims.y, dims.y + dims.height)
     for no-zone in avoid {
-      if dims.y <= no-zone.y and no-zone.y <= dims.y + dims.height - 3pt {
+      if dims.y <= no-zone.y and no-zone.y <= dims.y + dims.height {
         horizontal-marks.push(no-zone.y)
       }
-      if dims.y <= no-zone.y + no-zone.height and no-zone.y + no-zone.height <= dims.y + dims.height - 3pt {
+      if dims.y <= no-zone.y + no-zone.height and no-zone.y + no-zone.height <= dims.y + dims.height {
         horizontal-marks.push(no-zone.y + no-zone.height)
       }
+    }
+    if horizontal-marks.len() == 2 {
+      horizontal-marks.push(size.height / 2)
     }
     horizontal-marks = horizontal-marks.sorted()
     for (hi, lo) in horizontal-marks.windows(2) {

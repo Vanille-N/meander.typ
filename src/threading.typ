@@ -149,15 +149,17 @@
   }
   if flow != () {
     if overflow == false {
-      place(dx: latest-container.dx, dy: latest-container.dy)[
-        #box(fill: red, stroke: black + 5pt, inset: 5mm)[
-          #align(center)[
-            #text(size: 20pt)[*Warning*] \
-            This container is insufficient to hold the full text. \
-            Consider adding more containers or a `pagebreak`.
+      place(top + left)[#box(width: 100%, height: 100%)[
+        #place(bottom + right)[
+          #box(fill: red, stroke: black + 5pt, inset: 5mm)[
+            #align(center)[
+              #text(size: 20pt)[*Warning*] \
+              This container is insufficient to hold the full text. \
+              Consider adding more containers or a `pagebreak`.
+            ]
           ]
         ]
-      ]
+      ]]
     } else if overflow == true {
       // Ignore
     } else if overflow == std.pagebreak or overflow == tiling.pagebreak {

@@ -1,3 +1,10 @@
+# Changelog
+
+## v0.2.1 -> dev
+
+Segmentation
+- Hack to solve the issue where a single `container` on the page will overflow vertically.
+
 ## v0.2.0 -> v0.2.1
 
 Segmentation

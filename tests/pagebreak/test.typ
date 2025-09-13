@@ -33,3 +33,11 @@
 })
 // Regular text can continue afterwards
 #lorem(5)
+
+#pagebreak()
+
+#meander.reflow(debug: true, {
+  import meander: *
+  container()
+  content[#lorem(1000)]
+})
