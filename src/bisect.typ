@@ -135,6 +135,37 @@
   }
 }
 
+#let split-word(
+  /// Word to split.
+  /// -> string
+  ww,
+  /// Closure to determine if the content fits (see `fits-inside` above). -> function
+  fits-inside,
+  /// Extra configuration options. -> dictionary
+  cfg,
+) = {
+  import "@preview/hy-dro-gen:0.1.0" as hy
+  let syllables = hy.syllables(ww, lang: "en") // TODO: get the proper language
+  for i in range(syllables.len()) {
+    if fits-inside(syllables.slice(0, i + 1).join("") + "-") {
+      continue
+    } else {
+      if i == 0 {
+        let left = none
+        let right = ww
+        return (left, right)
+      } else {
+        let left = syllables.slice(0, i).join("") + "-"
+        let right = syllables.slice(i).join("")
+        assert(fits-inside(left))
+        return (left, right)
+      }
+    }
+  }
+  // TODO: assert that left fits and find test case that hits this
+  return (left, none)
+}
+
 /// Split content with a `"text"` main field.
 /// Strategy: split by `" "` and take all words that fit.
 /// Then if hyphenation is enabled, split by syllables and take all syllables
@@ -174,35 +205,21 @@
         }
         let right = rebuild(inner.slice(i).join(" "))
         return (left, right)
-      }
-      import "@preview/hy-dro-gen:0.1.0" as hy
-      let left = inner.slice(0, i)
-      let overhang = inner.at(i)
-      let right = inner.slice(i + 1)
-      let syllables = hy.syllables(overhang, lang: "en") // TODO: get the proper language
-      for i in range(inner.len()) {
-        if fits-inside(rebuild((..left, syllables.slice(0, i + 1).join("") + "-").join(" "))) {
-          continue
-        } else {
-          if i == 0 {
-            let left = if left == () { none } else {
-              let left = rebuild(left.join(" "))
-              left += lbreak
-              left
-            }
-            let right = rebuild((overhang, ..right).join(" "))
-            return (left, right)
-          } else {
-            left += (syllables.slice(0, i).join("") + "-",)
-            assert(fits-inside(rebuild(left.join(" "))), message: left.join(" "))
-            let left = rebuild(left.join(" ")) + lbreak
-            assert(fits-inside(left))
-            return (left, rebuild((syllables.slice(i).join(""), ..right).join(" ")))
-          }
+      } else {
+        let overhang = inner.at(i)
+        let before = inner.slice(0, i)
+        let after = inner.slice(i + 1)
+        let (left-rec, right-rec) = split-word(inner.at(i), ww => fits-inside(rebuild((..before, ww).join(" "))), cfg)
+        let left-words = if left-rec == none { before } else {
+          (..before, left-rec)
         }
+        let left = rebuild(left-words.join(" ")) + lbreak
+        let right-words = if right-rec == none { after } else {
+          (right-rec, ..after)
+        }
+        let right = rebuild(right-words.join(" "))
+        return (left, right)
       }
-      // TODO: assert that left fits and find test case that hits this
-      return (rebuild((..left, syllables.join("").join(" "))), rebuild(right.join(" ")))
     }
   }
   // TODO: assert that left fits and find test case that hits this
