@@ -58,6 +58,13 @@
   /// Height of the container.
   /// -> relative
   height: 100%,
+  /// Styling options for the content that ends up inside this container.
+  /// If you don't find the option you want here, check if it might be in
+  /// the `style` parameter of `content` instead.
+  /// - `align`: flush text `left`/`center`/`right`
+  /// - `text-fill`: color of text
+  /// -> dictionnary
+  style: (:),
 ) = {
   ((
     type: box,
@@ -66,6 +73,7 @@
     dy: dy,
     width: width,
     height: height,
+    style: style,
   ),)
 }
 
@@ -80,11 +88,36 @@
 #let content(
   /// Inner content.
   /// -> content
-  data
+  data,
+  /// Equivalent to `#set text(size: ...)`, but also correctly updates other layout parameters.
+  /// -> length
+  text-size: auto,
+  /// Equivalent to `#set text(lang: ...)`, but correct even across boxes.
+  /// -> string
+  text-lang: auto,
+  /// Equivalent to `#set text(hyphenate: ...)`, but correct even across boxes.
+  /// -> bool
+  text-hyphenate: auto,
+  // TODO: add
+  // - par-leading
 ) = {
+  if text-size != auto {
+    data = text(size: text-size, data)
+  }
+  if text-lang != auto {
+    data = text(lang: text-lang, data)
+  }
+  if text-hyphenate != auto {
+    data = text(hyphenate: text-hyphenate, data)
+  }
   ((
     type: text,
     data: data,
+    style: (
+      text-size: text-size,
+      text-lang: text-lang,
+      text-hyphenate: text-hyphenate,
+    ),
   ),)
 }
 
@@ -300,11 +333,12 @@
         }
       }
       let bounds = dims
+      let style = zone.style
       for zone in valid-zones {
         assert(lo >= hi)
         assert(zone.width >= 0pt)
         debug += place(dx: zone.x, dy: hi)[#box(width: zone.width, height: lo - hi, fill: pat-allowed(30pt), stroke: green)]
-        zones-to-fill.push((dx: zone.x, dy: hi, height: lo - hi, width: zone.width, bounds: bounds))
+        zones-to-fill.push((dx: zone.x, dy: hi, height: lo - hi, width: zone.width, bounds: bounds, style: style))
       }
     }
   }

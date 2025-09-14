@@ -116,3 +116,13 @@ Meander allows precise control over the boundaries of obstacles, to draw complex
 })
 ```
 ![text with a circular cutout](gallery/circle-hole.svg)
+
+
+For a more in-depth introduction, including
+- debug mode,
+- alternative recontouring techniques,
+- multi-page handling and page overflow options,
+- tips to get better segmentation,
+<!-- @scrybe(if publish; grep https; grep {{version}}) -->
+please consult the [documentation](docs/main.pdf).
+

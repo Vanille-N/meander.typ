@@ -144,8 +144,9 @@
   /// Extra configuration options. -> dictionary
   cfg,
 ) = {
-  import "@preview/hy-dro-gen:0.1.0" as hy
-  let syllables = hy.syllables(ww, lang: "en") // TODO: get the proper language
+  assert(cfg.text-hyphenate != false)
+  import "@preview/hy-dro-gen:0.1.1" as hy
+  let syllables = hy.syllables(ww, lang: cfg.text-lang, fallback: none) // TODO: get the proper language
   for i in range(syllables.len()) {
     if fits-inside(syllables.slice(0, i + 1).join("") + "-") {
       continue
@@ -185,11 +186,6 @@
   let inner = inner.split(" ")
   let atom = box(width: 0pt, height: 1mm)
 
-  // TODO: also allow hyphenating 1st word
-  /*if not fits-inside(rebuild(inner.at(0)) + atom) {
-    return (none, ct)
-  }*/
-
   let lbreak = [
     #context[#linebreak(justify: par.justify)]
   ]
@@ -197,7 +193,7 @@
     if fits-inside(rebuild(inner.slice(0, i + 1).join(" ")) + atom) {
       continue
     } else {
-      if text.hyphenate == false {
+      if cfg.text-hyphenate == false {
         let left = if i == 0 { none } else {
           let left = rebuild(inner.slice(0, i).join(" "))
           left += lbreak
@@ -445,7 +441,9 @@
   /// Extra configuration options. -> dictionary
   cfg,
 ) = {
+  //panic(cfg)
   if ct.func() == parbreak {
+    // TODO: this is very ad-hoc
     take-it-or-leave-it(v(1em), fits-inside)
   } else if ct.has("text") {
     has-text(ct, dispatch, fits-inside, cfg)
@@ -494,6 +492,12 @@
   cfg.insert("list-depth", 0)
   if "enum-numbering" not in cfg {
     cfg.insert("enum-numbering", ("1.",) * 6)
+  }
+  if "text-hyphenate" not in cfg or cfg.text-hyphenate == auto {
+    cfg.text-hyphenate = text.hyphenate
+  }
+  if "text-lang" not in cfg or cfg.text-lang == auto {
+    cfg.text-lang = text.lang
   }
   cfg.insert("enum-depth", 0)
   // TODO: include vertical and horizontal spacing here.

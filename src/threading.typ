@@ -30,20 +30,23 @@
   assert(size != none)
   let full = ()
   let body-queue = body.rev()
-  let body = none
+  let body = (data: none)
+  let text-size = text.size
   for cont in boxes {
-    if body == none {
+    if body.data == none {
       if body-queue.len() == 0 {
         full.push((cont, none))
         continue
       } else {
-        body = body-queue.pop().data
+        body = body-queue.pop()
       }
     }
+    text-size = body.style.text-size
+    if text-size == auto { text-size = text.size }
     // Leave it a little room
     // 0.5em margin at the bottom to let it potentially add an extra line
     let old-lo = cont.dy + cont.height
-    let new-lo = old-lo + geometry.resolve(size, y: 0.5em).y
+    let new-lo = old-lo + geometry.resolve(size, y: 0.5 * text-size).y
     new-lo = calc.min(new-lo, cont.bounds.y + cont.bounds.height)
     for no-box in avoid {
       if geometry.intersects((cont.dx, cont.dx + cont.width), (no-box.x, no-box.x + no-box.width), tolerance: 1mm) {
@@ -56,7 +59,7 @@
     // As much as it wants on the top to fill previously unused space
     let old-hi = cont.dy
     let new-hi = cont.bounds.y
-    let lineskip = geometry.resolve(size, y: 0.65em).y
+    let lineskip = geometry.resolve(size, y: 0.65 * text-size).y
     let lo = cont.dy + cont.height
     for no-box in avoid {
       if new-hi > lo { continue }
@@ -80,18 +83,18 @@
 
     import "bisect.typ" as bisect
     let max-dims = measure(box(height: cont.height, width: cont.width), ..size)
-    let (fits, overflow) = bisect.fill-box(max-dims, size: size)[#body]
+    let (fits, overflow) = bisect.fill-box(max-dims, size: size, cfg: body.style)[#body.data]
     if fits == none { continue }
     let actual-dims = measure(box(width: cont.width)[#fits], ..size)
     if actual-dims.height < 1mm { continue }
     cont.width = actual-dims.width
     cont.height = actual-dims.height
     full.push((cont, fits))
-    body = overflow
+    body.data = overflow
   }
   let overflow = body-queue
-  if body != none {
-    overflow.push((type: text, data: body))
+  if body.data != none {
+    overflow.push(body)
   }
   (full: full, overflow: overflow.rev())
 }
@@ -140,6 +143,16 @@
     flow = overflow
     for (container, content) in full {
       latest-container = container
+      let style = container.style
+      for (key, val) in container.style {
+        if key == "align" {
+          content = align(val, content)
+        } else if key == "text-fill" {
+          content = text(fill: val, content)
+        } else {
+          panic("Container does not support the styling option '" + key + "'")
+        }
+      }
       place(dx: container.dx, dy: container.dy, {
           box(width: container.width, height: container.height, stroke: if debug { green } else { none }, {
           content
