@@ -302,7 +302,7 @@
         horizontal-marks.push(no-zone.y + no-zone.height)
       }
     }
-    if horizontal-marks.len() == 2 {
+    if horizontal-marks.len() == 2 and dims.height == size.height {
       horizontal-marks.push(size.height / 2)
     }
     horizontal-marks = horizontal-marks.sorted()

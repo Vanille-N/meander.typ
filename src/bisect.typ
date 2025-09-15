@@ -211,7 +211,7 @@
         let left-words = if left-rec == none { before } else {
           (..before, left-rec)
         }
-        let left = if i == 0 { none } else {
+        let left = if left-words == () { none } else {
           rebuild(left-words.join(" ")) + lbreak
         }
         let right-words = if right-rec == none { after } else {
@@ -446,7 +446,7 @@
   if ct.func() == parbreak {
     // TODO: this is very ad-hoc
     take-it-or-leave-it(v(1em), fits-inside)
-  } else if ct.has("text") {
+  } else if ct.has("text") and ct.func() != raw {
     has-text(ct, dispatch, fits-inside, cfg)
   } else if ct.has("child") {
     has-child(ct, dispatch, fits-inside, cfg)

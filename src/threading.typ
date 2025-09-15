@@ -121,7 +121,6 @@
 ) = layout(size => {
   import "tiling.typ" as tiling
   let (flow, pages) = tiling.separate(ct)
-  let latest-container = (dx: 0pt, y: 0pt)
   for (idx, (containers, obstacles)) in pages.enumerate() {
     if idx != 0 {
       colbreak()
@@ -142,7 +141,6 @@
     )
     flow = overflow
     for (container, content) in full {
-      latest-container = container
       let style = container.style
       for (key, val) in container.style {
         if key == "align" {

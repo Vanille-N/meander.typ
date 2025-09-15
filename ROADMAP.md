@@ -12,6 +12,10 @@
 - [ ] properly split vertical spaces
 - [ ] path thought unreachable can be hit during hyphenation calcs
 - [ ] single word on line will overflow if box is too small
+- [ ] raw code seems to possibly trigger an assertion error
+- [ ] crashes when we try to `split-word` a `sym.angle.l`
+- [ ] improper justification when the split occurs in a sequence rather than
+      in a `has-text`.
 
 ## Page segmentation
 - [ ] include previous containers when segmenting vertically.
@@ -22,13 +26,9 @@
   - [ ] overflow to a predefined layout
 
 ## Threading
-- [X] parameterization of alignment inside boxes
-- [X] hyphenation
-  - [X] language aware
-  - [X] contextual or parameterizable
 - [ ] handle paragraph breaks
 - [ ] relax upper bounds on text growing vertically
-- [X] line spacing not properly updated when font size changes
+- [ ] line spacing not properly updated when par.leading changes
 - [ ] very small text (4pt) is only ever threaded two lines at a time
 - [ ] send content to one specific container
 
