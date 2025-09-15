@@ -22,11 +22,20 @@
 
 #pagebreak()
 
+#meander.reflow({
+  import meander: *
+  container(align: left, width: 25%, style: (align: left))
+  container(align: center, width: 45%, style: (align: center))
+  container(align: right, width: 25%, style: (align: right))
+  content(text-lang: "la")[#lorem(590)]
+})
+
+#pagebreak()
+
 #meander.reflow(overflow: true, {
   import meander: *
   container(width: 48%, style: (align: center, text-fill: blue))
   container(align: right, width: 48%, style: (align: right, text-fill: red))
   content[#lorem(600)]
 })
-
 

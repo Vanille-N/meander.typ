@@ -107,12 +107,13 @@
   // These fields are positional, but stored in the dictionary as named.
   let inner = fields.remove(inner-field)
   let number = if "number" in fields { (fields.remove("number"),) } else { () }
+  let alignment = if "alignment" in fields { (fields.remove("alignment"),) } else { () }
+  let dest = if "dest" in fields { (fields.remove("dest"),) } else { () }
   let styles = if "styles" in fields { (fields.remove("styles"),) } else { () }
   // Construct the closure
   let rebuild(inner) = {
     assert(inner != none)
-    let pos = (inner, ..number, ..styles)
-    //if ct.func() == [#set text(size: 30pt)].func() { panic(ct.fields().styles, pos) }
+    let pos = (..dest, inner, ..number, ..styles, ..alignment)
     ct.func()(..fields, ..pos)
   }
   (inner, rebuild)
@@ -414,7 +415,7 @@
     is-list-item(ct, split-dispatch, fits-inside, cfg)
   } else if ct.func() == enum.item {
     is-enum-item(ct, split-dispatch, fits-inside, cfg)
-  } else if ct.func() in (strong, emph, underline, stroke, overline, highlight, par) {
+  } else if ct.func() in (strong, emph, underline, stroke, overline, highlight, par, align, link) {
     let (inner, rebuild) = default-rebuild(ct, "body")
     let (left, right) = split-dispatch(inner, ct => fits-inside(rebuild(ct)), cfg)
     let left = if left == none { none } else {

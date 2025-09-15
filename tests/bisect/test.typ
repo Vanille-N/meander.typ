@@ -108,3 +108,10 @@
   3. #lorem(20)
 ]
 
+#test-case[
+  #align(center)[#lorem(50)]
+]
+
+#test-case[
+  #link("https://some.nonsense.org")[#lorem(50)]
+]
