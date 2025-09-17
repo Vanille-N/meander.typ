@@ -1,9 +1,5 @@
 #import "../_preamble.typ": *
 //@ <doc>
-// Omitting this leads to a vertical
-// discrepancy on obstacle 4
-#set block(spacing: 0em)
-
 // First half-page
 #meander.regions({
   import meander: *

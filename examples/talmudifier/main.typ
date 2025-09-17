@@ -17,7 +17,6 @@
   #linebreak(justify: true)
 ]
 
-#set block(spacing: 0em)
 #set text(hyphenate: true)
 #set par(justify: true)
 #set page(margin: 2cm)

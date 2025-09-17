@@ -35,7 +35,6 @@
   for cont in boxes {
     if body.data == none {
       if body-queue.len() == 0 {
-        full.push((cont, none))
         continue
       } else {
         body = body-queue.pop()
@@ -116,74 +115,124 @@
   /// - `true` -> ignores any overflow
   /// - `pagebreak` -> the text that overflows is simply placed normally on the next page
   /// - `panic` -> refuses to compile the document
+  /// - any `content => content` function -> uses that for formatting
   /// -> any
   overflow: false,
-) = layout(size => {
-  import "tiling.typ" as tiling
-  let (flow, pages) = tiling.separate(ct)
-  for (idx, (containers, obstacles)) in pages.enumerate() {
-    if idx != 0 {
-      colbreak()
-    }
-    let forbidden = tiling.forbidden-rectangles(obstacles, size: size)
-    forbidden.display
-    if debug {
-      forbidden.debug
-    }
-
-    let allowed = tiling.tolerable-rectangles(containers, avoid: forbidden.rects, size: size)
-
-    let (full, overflow) = smart-fill-boxes(
-      size: size,
-      avoid: forbidden.rects,
-      boxes: allowed.rects,
-      flow,
-    )
-    flow = overflow
-    for (container, content) in full {
-      let style = container.style
-      for (key, val) in container.style {
-        if key == "align" {
-          content = align(val, content)
-        } else if key == "text-fill" {
-          content = text(fill: val, content)
-        } else {
-          panic("Container does not support the styling option '" + key + "'")
-        }
-      }
-      place(dx: container.dx, dy: container.dy, {
-          box(width: container.width, height: container.height, stroke: if debug { green } else { none }, {
-          content
-        })
-      })
+  /// Relationship with the rest of the content on the page.
+  /// - `page`: meander assumes control of the entire page and will put the content
+  ///   starting from the top left. All content placed by meander is invisible to
+  ///   regular layout.
+  /// - `box`: meander will simulate a box of the same dimensions as its contents
+  ///   so that normal text can go before and after.
+  /// - `here`: similar to `page` in that it is invisible to the rest of the content,
+  ///   but has the same behavior as `box` in that it continues where existing text
+  ///   stops.
+  placement: page,
+) = {
+  let wrapper(inner) = {
+    if placement == page {
+      set block(spacing: 0em)
+      layout(size => inner(size))
+    } else if placement == float {
+      place(top + left)[
+        #box(width: 100%, height: 100%)[
+          #layout(size => inner(size))
+        ]
+      ]
+    } else if placement == box {
+      layout(size => inner(size))
+    } else {
+      panic("Invalid placement option")
     }
   }
-  if flow != () {
-    if overflow == false {
-      place(top + left)[#box(width: 100%, height: 100%)[
-        #place(bottom + right)[
-          #box(fill: red, stroke: black + 5pt, inset: 5mm)[
-            #align(center)[
-              #text(size: 20pt)[*Warning*] \
-              This container is insufficient to hold the full text. \
-              Consider adding more containers or a `pagebreak`.
+  wrapper(size => {
+    import "tiling.typ" as tiling
+    let (flow, pages) = tiling.separate(ct)
+    for (idx, (containers, obstacles)) in pages.enumerate() {
+      let maximum-height = 0pt
+      if idx != 0 {
+        if placement == float {
+          panic("Pagebreaks are only supported when the placement is 'page' or 'box'")
+        }
+        colbreak()
+      }
+      let forbidden = tiling.forbidden-rectangles(obstacles, size: size)
+      forbidden.display
+      if debug {
+        forbidden.debug
+      }
+      for block in forbidden.rects {
+        maximum-height = calc.max(maximum-height, block.y + block.height)
+      }
+
+      let allowed = tiling.tolerable-rectangles(containers, avoid: forbidden.rects, size: size)
+
+      let (full, overflow) = smart-fill-boxes(
+        size: size,
+        avoid: forbidden.rects,
+        boxes: allowed.rects,
+        flow,
+      )
+      flow = overflow
+      for (container, content) in full {
+        let style = container.style
+        for (key, val) in container.style {
+          if key == "align" {
+            content = align(val, content)
+          } else if key == "text-fill" {
+            content = text(fill: val, content)
+          } else {
+            panic("Container does not support the styling option '" + key + "'")
+          }
+        }
+        place(dx: container.dx, dy: container.dy, {
+          box(width: container.width, height: container.height, stroke: if debug { green } else { none }, {
+            content
+          })
+        })
+        maximum-height = calc.max(maximum-height, container.dy + container.height)
+      }
+      // This box fills the space occupied by the meander canvas,
+      // and thus fills the same vertical space, allowing surrounding text
+      // to fit before and after.
+      if placement == box {
+        box(width: 100%, height: maximum-height)
+      }
+    }
+    if flow != () {
+      if overflow == false {
+        place(top + left)[#box(width: 100%, height: 100%)[
+          #place(bottom + right)[
+            #box(fill: red, stroke: black, inset: 2mm)[
+              #align(center)[
+                *Warning* \
+                This container is insufficient to hold the full text. \
+                Consider adding more containers or a `pagebreak`.
+              ]
             ]
           ]
-        ]
-      ]]
-    } else if overflow == true {
-      // Ignore
-    } else if overflow == std.pagebreak or overflow == tiling.pagebreak {
-      colbreak()
-      for ct in flow {
-        // TODO: when flow gets styles added, don't forget to apply them
-        ct.data
+        ]]
+      } else if overflow == true {
+        // Ignore
+      } else if overflow == std.pagebreak or overflow == tiling.pagebreak {
+        colbreak()
+        for ct in flow {
+          // TODO: when flow gets styles added, don't forget to apply them
+          ct.data
+        }
+      } else if overflow == panic {
+        panic("The containers provided cannot hold the remaining text: " + repr(flow))
+      } else if type(overflow) == function {
+        colbreak()
+        overflow({
+          for ct in flow {
+            ct.data
+          }
+        })
+      } else {
+        panic("Not a valid value for overflow")
       }
-    } else if overflow == panic {
-      panic("The containers provided cannot hold the remaining text: " + repr(flow))
-    } else {
-      panic("Not a valid value for overflow")
     }
-  }
-})
+  })
+}
 

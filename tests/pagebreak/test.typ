@@ -41,3 +41,24 @@
   container()
   content[#lorem(1000)]
 })
+
+#pagebreak()
+
+#meander.reflow(debug: true, overflow: tt => [*The following content overflows:* #text(fill: red)[_#{tt}_]], {
+  import meander: *
+  container()
+  content[#lorem(1000)]
+})
+
+#pagebreak()
+
+#meander.reflow(debug: true, overflow: panic, placement: box, {
+  import meander: *
+  container()
+  pagebreak()
+  container()
+  content[#lorem(1000)]
+})
+#lorem(50)
+
+

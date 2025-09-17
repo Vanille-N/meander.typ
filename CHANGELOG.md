@@ -13,6 +13,7 @@ Segmentation
 
 Display
 - parameters can be passed to `container` to apply alignment and color post-hoc
+- placement options can control the relationship to other content on the page
 
 Bugfix
 - "unreachable" path was hit

@@ -376,7 +376,6 @@ while ```typ #content``` blocks ignore them entirely.
 If you run into performance issues, consider finding spots where you can break
 the ```typ #reflow``` invocation. As long as you don't insert a ```typ #pagebreak```
 explicitly, several ```typ #reflow```s can coexist on the same page.
-A ```typ #set block(spacing: 0em)``` can help with the vertical alignment of invocations.
 
 #table(columns: (70%, 35%), stroke: none,
   show-code("junction/doc"),

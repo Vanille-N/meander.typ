@@ -53,9 +53,11 @@
 ## Documentation
 
 - [ ] Talk more in depth about overflow options
+  - standard: false, true, pagebreak, panic
+  - new option: arbitrary function
 - [ ] non-doc regular comments about the algorithm
 - [ ] Remind that meander can segment an arbitrary container, not just an entire page
 - [ ] style-sensitive layout parameters
   - [ ] `text-size`
   - [ ] `text-lang` and `text-hyphenate`
-
+- [ ] explain placement options
