@@ -217,18 +217,27 @@
       } else if overflow == std.pagebreak or overflow == tiling.pagebreak {
         colbreak()
         for ct in flow {
-          // TODO: when flow gets styles added, don't forget to apply them
+          // TODO: apply the styles
           ct.data
         }
       } else if overflow == panic {
         panic("The containers provided cannot hold the remaining text: " + repr(flow))
       } else if type(overflow) == function {
-        colbreak()
-        overflow({
-          for ct in flow {
-            ct.data
-          }
-        })
+        overflow((
+          raw: ct,
+          structured: {
+            // TODO: apply the styles
+            for ct in flow {
+              tiling.content(ct.data)
+            }
+          },
+          styled: {
+            // TODO: apply the styles
+            for ct in flow {
+              ct.data
+            }
+          },
+        ))
       } else {
         panic("Not a valid value for overflow")
       }
