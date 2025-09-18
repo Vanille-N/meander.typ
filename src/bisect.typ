@@ -145,9 +145,9 @@
   /// Extra configuration options. -> dictionary
   cfg,
 ) = {
-  assert(cfg.text-hyphenate != false)
+  assert(cfg.hyphenate != false)
   import "@preview/hy-dro-gen:0.1.1" as hy
-  let syllables = hy.syllables(ww, lang: cfg.text-lang, fallback: none) // TODO: get the proper language
+  let syllables = hy.syllables(ww, lang: cfg.lang, fallback: none) // TODO: get the proper language
   for i in range(syllables.len()) {
     if fits-inside(syllables.slice(0, i + 1).join("") + "-") {
       continue
@@ -194,7 +194,7 @@
     if fits-inside(rebuild(inner.slice(0, i + 1).join(" ")) + atom) {
       continue
     } else {
-      if cfg.text-hyphenate == false {
+      if cfg.hyphenate == false {
         let left = if i == 0 { none } else {
           let left = rebuild(inner.slice(0, i).join(" "))
           left += lbreak
@@ -494,11 +494,11 @@
   if "enum-numbering" not in cfg {
     cfg.insert("enum-numbering", ("1.",) * 6)
   }
-  if "text-hyphenate" not in cfg or cfg.text-hyphenate == auto {
-    cfg.text-hyphenate = text.hyphenate
+  if "hyphenate" not in cfg or cfg.hyphenate == auto {
+    cfg.hyphenate = text.hyphenate
   }
-  if "text-lang" not in cfg or cfg.text-lang == auto {
-    cfg.text-lang = text.lang
+  if "lang" not in cfg or cfg.lang == auto {
+    cfg.lang = text.lang
   }
   cfg.insert("enum-depth", 0)
   // TODO: include vertical and horizontal spacing here.

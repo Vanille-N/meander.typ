@@ -91,32 +91,32 @@
   data,
   /// Equivalent to `#set text(size: ...)`, but also correctly updates other layout parameters.
   /// -> length
-  text-size: auto,
+  size: auto,
   /// Equivalent to `#set text(lang: ...)`, but correct even across boxes.
   /// -> string
-  text-lang: auto,
+  lang: auto,
   /// Equivalent to `#set text(hyphenate: ...)`, but correct even across boxes.
   /// -> bool
-  text-hyphenate: auto,
+  hyphenate: auto,
   // TODO: add
-  // - par-leading
+  // - leading
 ) = {
-  if text-size != auto {
-    data = text(size: text-size, data)
+  if size != auto {
+    data = text(size: size, data)
   }
-  if text-lang != auto {
-    data = text(lang: text-lang, data)
+  if lang != auto {
+    data = text(lang: lang, data)
   }
-  if text-hyphenate != auto {
-    data = text(hyphenate: text-hyphenate, data)
+  if hyphenate != auto {
+    data = text(hyphenate: hyphenate, data)
   }
   ((
     type: text,
     data: data,
     style: (
-      text-size: text-size,
-      text-lang: text-lang,
-      text-hyphenate: text-hyphenate,
+      size: size,
+      lang: lang,
+      hyphenate: hyphenate,
     ),
   ),)
 }

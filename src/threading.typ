@@ -40,7 +40,7 @@
         body = body-queue.pop()
       }
     }
-    text-size = body.style.text-size
+    text-size = body.style.size
     if text-size == auto { text-size = text.size }
     // Leave it a little room
     // 0.5em margin at the bottom to let it potentially add an extra line
@@ -119,14 +119,12 @@
   /// -> any
   overflow: false,
   /// Relationship with the rest of the content on the page.
-  /// - `page`: meander assumes control of the entire page and will put the content
-  ///   starting from the top left. All content placed by meander is invisible to
-  ///   regular layout.
+  /// - `page`: content is not visible to the rest of the layout, and will be placed
+  ///   at the current location. Supports pagebreaks.
   /// - `box`: meander will simulate a box of the same dimensions as its contents
-  ///   so that normal text can go before and after.
-  /// - `here`: similar to `page` in that it is invisible to the rest of the content,
-  ///   but has the same behavior as `box` in that it continues where existing text
-  ///   stops.
+  ///   so that normal text can go before and after. Supports pagebreaks.
+  /// - `float`: similar to `page` in that it is invisible to the rest of the content,
+  ///   but always placed at the top left of the page. Does not support pagebreaks.
   placement: page,
 ) = {
   let wrapper(inner) = {
@@ -214,6 +212,11 @@
         ]]
       } else if overflow == true {
         // Ignore
+      } else if overflow == text {
+        for ct in flow {
+          // TODO: apply the styles
+          ct.data
+        }
       } else if overflow == std.pagebreak or overflow == tiling.pagebreak {
         colbreak()
         for ct in flow {

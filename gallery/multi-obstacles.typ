@@ -1,6 +1,6 @@
 // @scrybe(jump import; grep preview; grep {{version}})
 // @scrybe(until eof; diff docs/figs/multi-obstacles.typ)
-#import "@preview/meander:0.2.1"
+#import "@preview/meander:0.2.2"
 
 #meander.reflow({
   import meander: *

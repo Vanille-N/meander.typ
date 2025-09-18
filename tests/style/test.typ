@@ -14,10 +14,10 @@
     box(width: 1cm, height: 100%),
   )
   container()
-  content(text-hyphenate: false)[#set par(justify: true); #lorem(100)]
-  content(text-hyphenate: true, text-lang: "la")[#set par(justify: true); #lorem(100)]
-  content(text-hyphenate: true, text-lang: "en")[#set par(justify: true); #lorem(100)]
-  content(text-size: 20pt)[#lorem(100)]
+  content(hyphenate: false)[#set par(justify: true); #lorem(100)]
+  content(hyphenate: true, lang: "la")[#set par(justify: true); #lorem(100)]
+  content(hyphenate: true, lang: "en")[#set par(justify: true); #lorem(100)]
+  content(size: 20pt)[#lorem(100)]
 })
 
 #pagebreak()
@@ -27,7 +27,7 @@
   container(align: left, width: 25%, style: (align: left))
   container(align: center, width: 45%, style: (align: center))
   container(align: right, width: 25%, style: (align: right))
-  content(text-lang: "la")[#lorem(590)]
+  content(lang: "la")[#lorem(590)]
 })
 
 #pagebreak()

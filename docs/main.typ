@@ -1,3 +1,5 @@
+#import "new.typ"
+
 #align(center)[
   #text(size: 30pt)[*Meander*] \
   #text(size: 25pt)[User guide]
@@ -16,7 +18,7 @@
 #let repo = "https://github.com/Vanille-N/meander.typ/"
 #let typst-repo = "https://github.com/typst/typst/"
 
-#let show-code(tag) = {
+#let show-code(tag, resize: 0pt) = context {
   let relevant-lines = ()
   let take = false
   let compress = none
@@ -44,6 +46,7 @@
       }
     }
   }
+  set text(size: text.size + resize)
   raw(lang: "typ", block: true, relevant-lines.join("\n"))
 }
 
@@ -78,6 +81,7 @@
 ]
 
 #align(bottom)[
+  #new.print(`0.2.1`)
   #line(length: 100%)
   #outline(depth: 1)
 ]
@@ -394,17 +398,6 @@ trigger an immediate panic.
 
 #pagebreak()
 
-= Modularity (WIP)
-
-Because meander is cleanly split into three algorithms
-(content segmentation, page segmentation, text threading),
-there are plans to provide
-- configuration options for each of those steps
-- the ability to replace entirely an algorithm by either a variant,
-  or a user-provided alternative that follows the same signature.
-
-#pagebreak()
-
 = Style-sensitive layout <styling-layout>
 
 Meander respects most styling options through a dedicated content segmentation
@@ -426,61 +419,229 @@ As such *do not* use ```typ #par(justify: true)[...]```.
 Instead prefer ```typ #[#set par(justify: true); ...]```, or put the ```typ #set```
 rule outside of the invocation of ```typ #meander.reflow``` altogether.
 
-#table(columns: (1fr, 1fr), stroke: none, align: center)[
+#table(columns: (1fr, 1fr, 1fr), stroke: none, align: center)[
   #text(fill: red, size: 20pt)[*Wrong*]
-  #show-code("par-justify")
+  #show-code("par-justify", resize: -2pt)
   #show-page("par-justify", width: 5cm)
 ][
   #text(fill: green, size: 20pt)[*Correct*]
-  #show-code("set-par-justify")
+  #show-code("set-par-justify", resize: -2pt)
   #show-page("set-par-justify", width: 5cm)
+][
+  #text(fill: green, size: 20pt)[*Correct*]
+  #show-code("set-par-justify-1", resize: -2pt)
+  #show-page("set-par-justify-1", width: 5cm) 
 ]
 
 #pagebreak()
 
 == Font size
+#new.new("local font size control")
 
 The font size indirectly affects layout because it determines the spacing between
 lines. When a linebreak occurs between containers, Meander needs to manually
 insert the appropriate spacing there. Since the spacing is affected by font size,
 make sure to update the font size outside of the ```typ #meander.reflow```
-invocation if you want the correct line spacing.
+invocation if you want the correct line spacing. Alternatively, `size`
+can be passed as a parameter of `content` and it will be interpreted as the text size.
 
-As such, it is currently discouraged to do large changes of font size in highly
-segmented regions from within the invocation. A future update will provide a 
-way to do this in a more well-behaved manner.
-
-#table(columns: (1fr, 1fr), stroke: none, align: center)[
+#table(columns: (1fr, 1fr, 1fr), stroke: none, align: center)[
   #text(fill: red, size: 20pt)[*Wrong*]
-  #show-code("font-size-inside")
+  #show-code("font-size-inside", resize: -2pt)
   #show-page("font-size-inside", width: 5cm)
 ][
   #text(fill: green, size: 20pt)[*Correct*]
-  #show-code("font-size-outside")
+  #show-code("font-size-outside", resize: -2pt)
   #show-page("font-size-outside", width: 5cm)
+][
+  #text(fill: green, size: 20pt)[*Correct*]
+  #show-code("font-size-content", resize: -2pt)
+  #show-page("font-size-content", width: 5cm)
 ]
 
 #pagebreak()
 
 == Hyphenation and language
-
-The language is not yet configurable. This feature will come soon.
+#new.new("hyphenation and language")
 
 Hyphenation can only be fetched contextually, and highly influences how text
-is split between boxes.
-Thus hyphenation can currently only be enabled or disabled outside of the
-```typ #meander.reflow``` invocation. A future update will provide a means
-to change it more locally.
+is split between boxes. Language indirectly influences layout because it determines
+hyphenation rules.
+To control the hyphenation and language, use the same approach as for the text
+size: either ```typ #set``` them outside of ```typ #reflow```,
+or pass them as parameters to ```typ #content```.
 
-#table(columns: (1fr, 1fr), stroke: none, align: center)[
+#table(columns: (1fr, 1fr, 1fr), stroke: none, align: center)[
   #text(fill: red, size: 20pt)[*Wrong*]
-  #show-code("text-hyphenate-inside")
+  #show-code("text-hyphenate-inside", resize: -2pt)
   #show-page("text-hyphenate-inside", width: 5cm)
 ][
   #text(fill: green, size: 20pt)[*Correct*]
-  #show-code("text-hyphenate-outside")
+  #show-code("text-hyphenate-outside", resize: -2pt)
   #show-page("text-hyphenate-outside", width: 5cm)
+][
+  #text(fill: green, size: 20pt)[*Correct*]
+  #show-code("text-hyphenate-content", resize: -2pt)
+  #show-page("text-hyphenate-content", width: 5cm) 
 ]
+
+#pagebreak()
+
+= Interfacing with other content
+
+This section explains the parameters that are available to make
+a ```typ #reflow``` invocation better integrate with surrounding content.
+
+== Placement <placement>
+#new.new("placement options")
+
+Placement options control how a ```typ #reflow``` invocation is visible
+by and sees other content.
+
+=== `page`
+
+The default, and least opinionated, mode is `placement: page`.
+- suitable for: one or more pages that `meander` has full control over.
+- advantages: supports `pagebreak`s, several invocations can be superimposed,
+  flexible.
+- drawbacks: superimposed with content that follows.
+
+=== `box`
+
+The option `placement: box` will emit non-`place`d boxes to simulate the
+actual space taken by the `meander`-controlled layout.
+- suitable for: an invocation that is part of a larger page.
+- advantages: supports `pagebreak`s, content that follows is automatically placed after.
+- drawbacks: cannot superimpose multiple invocations.
+
+#table(columns: (1fr, 1fr), stroke: none)[
+  Here is a layout that is not (as easily) achievable in `page` as it is in `box`:
+  #show-code("placement-box")
+  Only text in red is actually controlled by `meander`, the rest is naturally
+  placed before and after. This makes it possible to hand over to `meander` only
+  a few paragraphs where a complex layout is required, then fall back to the native
+  Typst layout engine.
+
+  For reference, to the right is the same page if we omit `placement: box`,
+  where we can see a glitchy superimposition of text.
+][
+  #show-page("placement-box", width: 7cm)
+  #align(right)[
+    #v(-2cm)
+    #show-page("placement-box-bad", width: 3cm)
+  ]
+]
+
+=== `float`
+
+Finally, `placement: float` produces a layout that spans at most a page,
+but in exchange it can take the whole page even if some content has already
+been placed.
+- suitable for: single page layouts.
+- advantages: gets the whole page even if some content has already been written.
+- drawbacks: does not support `pagebreak`s, does not consider other content.
+
+== Overflow
+#new.new("overflow handlers")
+
+When the content overflows the current container, you may specify how you
+want that to be handled. There are essentially 3 ways of doing that:
+prevent overflow, overflow to a predefined layout, or overflow to a custom layout.
+
+=== No overflow
+
+The default behavior is `overflow: false` because it avoids panics while
+still alerting that something is wrong. The red warning box suggests adding
+more containers or a pagebreak to fit the remaining text.
+Setting `overflow: true` will silently ignore the overflow, while
+`overflow: panic` will immediately abort compilation.
+#table(columns: (1fr, 1fr, 1fr), align: center, stroke: none,
+  [
+    `overflow: false`
+    #show-page("overflow-false")
+    #show-code("overflow-false")
+  ],[
+    `overflow: true`
+    #show-page("overflow-true")
+    #show-code("overflow-true")
+  ],[
+    `overflow: panic`
+    #show-page("overflow-panic")
+    #show-code("overflow-panic")
+  ]
+)
+
+=== Predefined layouts
+
+The above options are more useful if you absolutely want the content to fit
+in the defined layout. A commonly desired behavior is for the overflow
+to simply integrate with the layout as gracefully as possible.
+That is the purpose of the two options that follow.
+
+With `overflow: pagebreak`, any content that overflows is placed on the next page.
+This is typically most useful in conjunction with `placement: page`,
+and is outright incompatible with `placement: float` (see @placement).
+#table(columns: (1fr, 1fr, 1fr), stroke: none,
+  show-code("overflow-pagebreak/doc"),
+  show-page("overflow-pagebreak/doc.1"),
+  show-page("overflow-pagebreak/doc.2"),
+)
+As shown above from the fact that it does not receive the `text-fill: blue` styling,
+the text that overflows to the second page is not controlled by `meander`.
+
+As for `overflow: text`, it is similarly best suited in conjunction with `placement: box`,
+and simply writes the text after the end of the layout.
+#table(columns: (1fr, 1fr, 1fr), stroke: none,
+  show-code("overflow-text/doc"),
+  show-page("overflow-text/doc.1"),
+  show-page("overflow-text/doc.2"),
+)
+
+In both cases, any content that follows the ```typ #reflow``` invocation
+will more or less gracefully follow after the overflowing text,
+possibly with the need to slightly adjust paragraph breaks if needed.
+
+=== Custom layouts
+
+If your desired output does not fit in the above predefined behaviors,
+you can fall back to writing a custom overflow handler. Any function
+that returns `content` can serve as handler, including another invocation of
+```typ #reflow```.
+This function will be given as input a dictionary with fields:
+- `styled` has all styling options applied and is generally what you should use,
+- `structured` is suitable for placing in another ```typ #reflow``` invocation,
+- `raw` uses an internal representation that you can iterate over, but
+  that is not guaranteed to be stable. Use as last resort only.
+
+#table(columns: (1fr, 1fr), stroke: none,
+  [
+    For example here is a handler that adds a header and some styling options
+    to the text that overflows:
+    #show-code("overflow-handler")
+  ],
+  show-page("overflow-handler"),
+)
+
+See also an answer I gave to
+#link("https://github.com/Vanille-N/meander.typ/issues/1#issuecomment-3306100761")[issue \#1]
+which demonstrates how passing a ```typ #reflow``` layout as overflow handler
+can achieve layouts not otherwise supported.
+These applications should remain last-resort measures, and if you find that
+a layout you would want to achieve is only possible by chaining together
+several ```typ #reflow``` handlers, consider instead
+#link("https://github.com/Vanille-N/meander.typ/issues")[reaching out]
+to see if there is a way to make this layout better supported.
+
+#pagebreak()
+
+= Modularity (WIP)
+
+Because meander is cleanly split into three algorithms
+(content segmentation, page segmentation, text threading),
+there are plans to provide
+- configuration options for each of those steps
+- the ability to replace entirely an algorithm by either a variant,
+  or a user-provided alternative that follows the same signature.
 
 #pagebreak()
 
