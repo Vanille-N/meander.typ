@@ -10,6 +10,8 @@ Bisection
 
 Segmentation
 - hack to solve the issue where a single `container` on the page will overflow vertically
+- `colbreak` jumps to the next container
+- full containers now count as obstacles to other containers
 
 Display
 - parameters can be passed to `container` to apply alignment and color post-hoc

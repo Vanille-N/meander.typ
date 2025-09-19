@@ -24,7 +24,7 @@
 #let title-box = box(width: 100%, inset: 5mm,  align(center, title-text))
 #let center-box = box(width: 5cm, center-text)
 
-#meander.reflow({
+#meander.reflow(debug: true, overflow: panic, {
   import meander: *
   placed(top, title-box)
   placed(
@@ -34,24 +34,10 @@
     center-box,
   )
   container(align: right, width: 48%)
-  content(right-text)
-})
-
-#meander.reflow({
-  import meander: *
-  placed(top, display: false, title-box)
-  placed(
-    center,
-    dy: 4cm,
-    boundary: contour.margin(5mm),
-    display: false,
-    center-box,
-  )
-  placed(
-    right,
-    boundary: contour.margin(5mm),
-    box(width: 48%, height: 81%),
-  )
   container()
+
+  content(right-text)
+  colbreak()
   content(left-text)
 })
+

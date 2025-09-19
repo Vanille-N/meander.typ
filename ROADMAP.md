@@ -18,7 +18,6 @@
       in a `has-text`.
 
 ## Page segmentation
-- [ ] include previous containers when segmenting vertically.
 - [ ] layout save slots
   - [ ] save an obstacle for a future invocation
   - [ ] save a filled content box for a future invocation
@@ -55,6 +54,8 @@
 
 ## Documentation
 
+- [ ] text-as-obstacle
+- [ ] colbreak
 - [ ] non-doc regular comments about the algorithm
 - [ ] container styling
 - [ ] Remind that meander can segment an arbitrary container, not just an entire page

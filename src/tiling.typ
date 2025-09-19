@@ -65,6 +65,10 @@
   /// - `text-fill`: color of text
   /// -> dictionnary
   style: (:),
+  /// Margin around the eventually filled container so that text from
+  /// other paragraphs doesn't come too close.
+  /// -> length
+  margin: 5mm,
 ) = {
   ((
     type: box,
@@ -74,12 +78,28 @@
     width: width,
     height: height,
     style: style,
+    margin: margin,
   ),)
 }
 
+/// Continue layout to next page.
 #let pagebreak() = {
   ((
     type: std.pagebreak,
+  ),)
+}
+
+/// Continue content to next container.
+#let colbreak() = {
+  ((
+    type: std.colbreak,
+    data: none,
+    style: (
+      size: auto,
+      lang: auto,
+      leading: auto,
+      hyphenate: auto,
+    )
   ),)
 }
 
@@ -252,10 +272,21 @@
       assert(lo >= hi)
       assert(zone.width >= 0pt)
       debug += place(dx: zone.x, dy: hi)[#box(width: zone.width, height: lo - hi, fill: pat-allowed(30pt), stroke: green)]
-      zones-to-fill.push((x: zone.x, y: hi, height: lo - hi, width: zone.width, bounds: bounds, style: style))
+      zones-to-fill.push((x: zone.x, y: hi, height: lo - hi, width: zone.width, bounds: bounds, style: style, margin: obj.margin))
     }
   }
   (type: box, debug: debug, display: none, blocks: zones-to-fill)
+}
+
+/// Applies an element's margin to itself
+/// -> elem
+#let add-auto-margin(elem) = {
+  if "margin" not in elem { return elem }
+  elem.x -= elem.margin
+  elem.y -= elem.margin
+  elem.width += 2 * elem.margin
+  elem.height += 2 * elem.margin
+  elem
 }
 
 /// This function is reentering, allowing interactive computation of the layout.
@@ -342,6 +373,8 @@
     } else if obj.type == std.pagebreak {
       pages.push(elems)
       elems = ()
+    } else if obj.type == std.colbreak {
+      flow.push(obj)
     } else {
       panic("Unknown element of type " + repr(obj.type))
     }

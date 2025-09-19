@@ -28,23 +28,38 @@
   size: none,
 ) = {
   assert(size != none)
-  let full = ()
-  let body-queue = body.rev()
-  let body = (data: none)
   let text-size = text.size
   let par-leading = par.leading
-  for cont in boxes {
-    if body.data == none {
-      if body-queue.len() == 0 {
-        continue
-      } else {
-        body = body-queue.pop()
-      }
+
+  let full = ()
+
+  let body-queue = body.rev()
+  let body = (data: none)
+  let cont-queue = boxes.rev()
+  let cont = none
+  let current-fill = none
+  let force-break = false
+
+  while true {
+    if cont == none {
+      if cont-queue.len() == 0 { break }
+      cont = cont-queue.pop()
     }
-    text-size = body.style.size
-    par-leading = body.style.leading
-    if text-size == auto { text-size = text.size }
-    if par-leading == auto { par-leading = par.leading }
+    if body.data == none {
+      if body-queue.len() == 0 { break }
+      body = body-queue.pop()
+    }
+
+    if body.type == std.colbreak {
+      force-break = true
+    }
+
+    if current-fill == none {
+      text-size = body.style.size
+      par-leading = body.style.leading
+      if text-size == auto { text-size = text.size }
+      if par-leading == auto { par-leading = par.leading }
+    }
     // Leave it a little room
     // 0.5em margin at the bottom to let it potentially add an extra line
     let old-lo = cont.y + cont.height
@@ -79,25 +94,45 @@
         }
       }
     }
-    if new-hi > lo { continue }
+    if new-hi > lo {
+      // Drop this box
+      cont = none
+      continue
+    }
     cont.y = new-hi
     cont.height = lo - new-hi
 
     import "bisect.typ" as bisect
     let max-dims = measure(box(height: cont.height, width: cont.width), ..size)
-    let (fits, overflow) = bisect.fill-box(max-dims, size: size, cfg: body.style)[#body.data]
-    if fits == none { continue }
+    let (fits, overflow) = bisect.fill-box(max-dims, size: size, cfg: body.style, [#current-fill] + [#body.data])
+    if fits == none {
+      // Drop this box
+      cont = none
+      continue
+    }
+    if overflow == none and body-queue.len() > 0 and not force-break {
+      // It all fits, try more
+      current-fill = fits
+      body.data = none
+      continue
+    }
     let actual-dims = measure(box(width: cont.width)[#fits], ..size)
-    if actual-dims.height < 1mm { continue }
+    if actual-dims.height < 1mm {
+      // Drop this box
+      cont = none
+      continue
+    }
     cont.width = actual-dims.width
     cont.height = actual-dims.height
     full.push((cont, fits))
+    current-fill = none
     body.data = overflow
+    if force-break {
+      break
+    }
   }
   let overflow = body-queue
-  if body.data != none {
-    overflow.push(body)
-  }
+  if body.data != none { overflow.push(body) }
   (full: full, overflow: overflow.rev())
 }
 
@@ -200,6 +235,7 @@
               content
             })
           })
+          data = tiling.push-elem(data, (blocks: (tiling.add-auto-margin(container),)))
           maximum-height = calc.max(maximum-height, container.y + container.height)
         }
       }

@@ -6,7 +6,7 @@
   )
 }
 
-#meander.reflow(overflow: true,  debug: true, {
+#meander.reflow(overflow: true, debug: true, {
   import meander: *
   placed(
     top + left,
@@ -22,7 +22,7 @@
 
 #pagebreak()
 
-#meander.reflow({
+#meander.reflow(overflow: true, {
   import meander: *
   container(align: left, width: 25%, style: (align: left))
   container(align: center, width: 45%, style: (align: center))
