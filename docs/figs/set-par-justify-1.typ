@@ -6,8 +6,9 @@
   //@ <...>
   import meander: *
   for i in range(100) {
-    container(dy: i * 1%, height: 2%)
+    placed(right, dy: i * 1%, box(width: 0%, height: 2%))
   }
+  container()
   //@ </...>
   content[
 

@@ -1,5 +1,7 @@
 #import "../_preamble.typ": *
 //@ <doc>
+
+//#set block(spacing: 0em)
 // First half-page
 #meander.regions({
   import meander: *
@@ -18,10 +20,9 @@
   pagebreak()
 
   placed(top + center, my-img-3)
+  placed(horizon, my-img-4)
   container(height: 50%, width: 48%)
   container(align: right, height: 50%, width: 48%)
-
-  placed(horizon, my-img-4)
 })
 
 // Takes over for the last half-page

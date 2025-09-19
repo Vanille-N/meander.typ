@@ -435,15 +435,19 @@ rule outside of the invocation of ```typ #meander.reflow``` altogether.
 
 #pagebreak()
 
-== Font size
+== Font size and paragraph leading
 #new.new("local font size control")
 
 The font size indirectly affects layout because it determines the spacing between
 lines. When a linebreak occurs between containers, Meander needs to manually
 insert the appropriate spacing there. Since the spacing is affected by font size,
-make sure to update the font size outside of the ```typ #meander.reflow```
+make sure to update the font size outside of the ```typ #reflow```
 invocation if you want the correct line spacing. Alternatively, `size`
 can be passed as a parameter of `content` and it will be interpreted as the text size.
+
+Analogously, if you wish to change the spacing between lines,
+use either a ```typ #set par(leading: 1em)``` outside of ```typ #reflow```,
+or pass `leading: 1em` as a parameter to `content`.
 
 #table(columns: (1fr, 1fr, 1fr), stroke: none, align: center)[
   #text(fill: red, size: 20pt)[*Wrong*]
