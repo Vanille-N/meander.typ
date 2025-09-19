@@ -166,7 +166,9 @@
   let (width, height) = measure(obj.content, ..data.size)
   let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: width, height: height)
   let dims = geometry.resolve(data.size, x: x, y: y, width: width, height: height)
-  let display = place[#move(dx: dims.x, dy: dims.y)[#obj.content]]
+  let display = if obj.display {
+    place[#move(dx: dims.x, dy: dims.y)[#obj.content]]
+  } else { none }
 
   // Apply the boundary redrawing functions in order to know the true
   // footprint of the object in the layout.
@@ -360,25 +362,47 @@
   /// or only their hitbox (`false`).
   /// -> bool
   display: true,
-) = layout(size => {
-  let (pages,) = separate(seq)
-  for (idx, elems) in pages.enumerate() {
-    if idx != 0 {
-      colbreak()
-    }
-    let data = (elems: elems.rev(), size: size, obstacles: ())
-    while true {
-      // Compute
-      let (elem, _data) = next-elem(data)
-      if elem == none { break }
-      data = _data
-
-      // Show
-      if display { elem.display }
-      elem.debug
-
-      // Record
-      data = push-elem(data, elem)
+  /// Controls relation to other content on the page.
+  /// See analoguous `placement` option on `reflow`.
+  placement: page,
+) = {
+  // TODO: extract to aux function. Same for `reflow`.
+  let wrapper(inner) = {
+    if placement == page {
+      set block(spacing: 0em)
+      layout(size => inner(size))
+    } else if placement == float {
+      place(top + left)[
+        #box(width: 100%, height: 100%)[
+          #layout(size => inner(size))
+        ]
+      ]
+    } else if placement == box {
+      layout(size => inner(size))
+    } else {
+      panic("Invalid placement option")
     }
   }
-})
+  wrapper(size => {
+    let (pages,) = separate(seq)
+    for (idx, elems) in pages.enumerate() {
+      if idx != 0 {
+        colbreak()
+      }
+      let data = (elems: elems.rev(), size: size, obstacles: ())
+      while true {
+        // Compute
+        let (elem, _data) = next-elem(data)
+        if elem == none { break }
+        data = _data
+
+        // Show
+        if display { elem.display }
+        elem.debug
+
+        // Record
+        data = push-elem(data, elem)
+      }
+    }
+  })
+}
