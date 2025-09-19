@@ -39,3 +39,18 @@
   content[#lorem(600)]
 })
 
+#pagebreak()
+
+#meander.reflow(overflow: true,  debug: true, {
+  import meander: *
+  placed(
+    top + left,
+    boundary: contour.horiz(div: 25, y => (0,0)),
+    box(width: 1cm, height: 100%),
+  )
+  container()
+  content(leading: 1em, size: 8pt)[#lorem(100)]
+  content(leading: 0.5em, size: 14pt)[#lorem(100)]
+  content(leading: 0.5em + 10pt, size: 12pt)[#lorem(100)]
+})
+

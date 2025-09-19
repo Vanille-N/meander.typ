@@ -6,7 +6,7 @@ Bisection
 - now capable of splitting links and aligned content
 - hyphenation now auto-detects the language
 - parameters can be passed to `content` to update the style locally
-- box spacing now respects `text.size` (but not `par.leading` yet)
+- box spacing now respects `text.size` and `par.leading`.
 
 Segmentation
 - hack to solve the issue where a single `container` on the page will overflow vertically
@@ -14,6 +14,9 @@ Segmentation
 Display
 - parameters can be passed to `container` to apply alignment and color post-hoc
 - placement options can control the relationship to other content on the page
+
+Internal
+- tiling algorithm is now interactive, which will enable more complex layouts in the future
 
 Bugfix
 - "unreachable" path was hit

@@ -32,6 +32,7 @@
   let body-queue = body.rev()
   let body = (data: none)
   let text-size = text.size
+  let par-leading = par.leading
   for cont in boxes {
     if body.data == none {
       if body-queue.len() == 0 {
@@ -41,28 +42,30 @@
       }
     }
     text-size = body.style.size
+    par-leading = body.style.leading
     if text-size == auto { text-size = text.size }
+    if par-leading == auto { par-leading = par.leading }
     // Leave it a little room
     // 0.5em margin at the bottom to let it potentially add an extra line
-    let old-lo = cont.dy + cont.height
+    let old-lo = cont.y + cont.height
     let new-lo = old-lo + geometry.resolve(size, y: 0.5 * text-size).y
     new-lo = calc.min(new-lo, cont.bounds.y + cont.bounds.height)
     for no-box in avoid {
-      if geometry.intersects((cont.dx, cont.dx + cont.width), (no-box.x, no-box.x + no-box.width), tolerance: 1mm) {
+      if geometry.intersects((cont.x, cont.x + cont.width), (no-box.x, no-box.x + no-box.width), tolerance: 1mm) {
         if geometry.intersects((old-lo, new-lo), (no-box.y, no-box.y), tolerance: 0mm) {
           new-lo = calc.min(new-lo, no-box.y)
         }
       }
     }
-    cont.height = new-lo - cont.dy
+    cont.height = new-lo - cont.y
     // As much as it wants on the top to fill previously unused space
-    let old-hi = cont.dy
+    let old-hi = cont.y
     let new-hi = cont.bounds.y
-    let lineskip = geometry.resolve(size, y: 0.65 * text-size).y
-    let lo = cont.dy + cont.height
+    let lineskip = geometry.resolve(size, y: par-leading.em * text-size + par-leading.abs).y
+    let lo = cont.y + cont.height
     for no-box in avoid {
       if new-hi > lo { continue }
-      if geometry.intersects((cont.dx, cont.dx + cont.width), (no-box.x, no-box.x + no-box.width), tolerance: 1mm) {
+      if geometry.intersects((cont.x, cont.x + cont.width), (no-box.x, no-box.x + no-box.width), tolerance: 1mm) {
         if geometry.intersects((new-hi, lo), (no-box.y, no-box.y + no-box.height), tolerance: 1mm) {
           new-hi = calc.max(new-hi, no-box.y + no-box.height)
         }
@@ -70,14 +73,14 @@
     }
     for (full-box,_) in full {
       if new-hi > lo { continue }
-      if geometry.intersects((cont.dx, cont.dx + cont.width), (full-box.dx, full-box.dx + full-box.width), tolerance: 1mm) {
-        if geometry.intersects((new-hi, lo), (full-box.dy, full-box.dy + full-box.height + lineskip), tolerance: 1mm) {
-          new-hi = calc.max(new-hi, full-box.dy + full-box.height + lineskip)
+      if geometry.intersects((cont.x, cont.x + cont.width), (full-box.x, full-box.x + full-box.width), tolerance: 1mm) {
+        if geometry.intersects((new-hi, lo), (full-box.y, full-box.y + full-box.height + lineskip), tolerance: 1mm) {
+          new-hi = calc.max(new-hi, full-box.y + full-box.height + lineskip)
         }
       }
     }
     if new-hi > lo { continue }
-    cont.dy = new-hi
+    cont.y = new-hi
     cont.height = lo - new-hi
 
     import "bisect.typ" as bisect
@@ -98,14 +101,14 @@
   (full: full, overflow: overflow.rev())
 }
 
-/// Segment the input content according to the tiling algorithm,
+/// Segment the input sequence according to the tiling algorithm,
 /// then thread the flowing text through it.
 ///
 /// -> content
 #let reflow(
   /// See module `tiling` for how to format this content.
-  /// -> content
-  ct,
+  /// -> seq
+  seq,
   /// Whether to show the boundaries of boxes.
   /// -> bool
   debug: false,
@@ -129,6 +132,7 @@
 ) = {
   let wrapper(inner) = {
     if placement == page {
+      // TODO: there's a bug here visible in section IV.b of the docs
       set block(spacing: 0em)
       layout(size => inner(size))
     } else if placement == float {
@@ -145,8 +149,9 @@
   }
   wrapper(size => {
     import "tiling.typ" as tiling
-    let (flow, pages) = tiling.separate(ct)
-    for (idx, (containers, obstacles)) in pages.enumerate() {
+    let (flow, pages) = tiling.separate(seq)
+
+    for (idx, elems) in pages.enumerate() {
       let maximum-height = 0pt
       if idx != 0 {
         if placement == float {
@@ -154,41 +159,49 @@
         }
         colbreak()
       }
-      let forbidden = tiling.forbidden-rectangles(obstacles, size: size)
-      forbidden.display
-      if debug {
-        forbidden.debug
-      }
-      for block in forbidden.rects {
-        maximum-height = calc.max(maximum-height, block.y + block.height)
-      }
+      let data = (elems: elems.rev(), size: size, obstacles: ())
+      while true {
+        // Compute
+        let (elem, _data) = tiling.next-elem(data)
+        if elem == none { break }
+        data = _data
 
-      let allowed = tiling.tolerable-rectangles(containers, avoid: forbidden.rects, size: size)
-
-      let (full, overflow) = smart-fill-boxes(
-        size: size,
-        avoid: forbidden.rects,
-        boxes: allowed.rects,
-        flow,
-      )
-      flow = overflow
-      for (container, content) in full {
-        let style = container.style
-        for (key, val) in container.style {
-          if key == "align" {
-            content = align(val, content)
-          } else if key == "text-fill" {
-            content = text(fill: val, content)
-          } else {
-            panic("Container does not support the styling option '" + key + "'")
+        if elem.type == place {
+          elem.display
+          if debug { elem.debug }
+          data = tiling.push-elem(data, elem)
+          for block in elem.blocks {
+            maximum-height = calc.max(maximum-height, block.y + block.height)
           }
+          continue
         }
-        place(dx: container.dx, dy: container.dy, {
-          box(width: container.width, height: container.height, stroke: if debug { green } else { none }, {
-            content
+        assert(elem.type == box)
+        let (full, overflow) = smart-fill-boxes(
+          size: size,
+          avoid: data.obstacles,
+          boxes: elem.blocks,
+          flow,
+        )
+        flow = overflow
+        for (container, content) in full {
+          let style = container.style
+          for (key, val) in container.style {
+            if key == "align" {
+              content = align(val, content)
+            } else if key == "text-fill" {
+              content = text(fill: val, content)
+            } else {
+              panic("Container does not support the styling option '" + key + "'")
+            }
+          }
+          // TODO: this needs a new push-elem, but with the actual dimensions not the original ones.
+          place(dx: container.x, dy: container.y, {
+            box(width: container.width, height: container.height, stroke: if debug { green } else { none }, {
+              content
+            })
           })
-        })
-        maximum-height = calc.max(maximum-height, container.dy + container.height)
+          maximum-height = calc.max(maximum-height, container.y + container.height)
+        }
       }
       // This box fills the space occupied by the meander canvas,
       // and thus fills the same vertical space, allowing surrounding text
@@ -197,6 +210,7 @@
         box(width: 100%, height: maximum-height)
       }
     }
+    // Prepare data for the overflow handler
     if flow != () {
       if overflow == false {
         place(top + left)[#box(width: 100%, height: 100%)[
@@ -227,7 +241,7 @@
         panic("The containers provided cannot hold the remaining text: " + repr(flow))
       } else if type(overflow) == function {
         overflow((
-          raw: ct,
+          raw: flow,
           structured: {
             // TODO: apply the styles
             for ct in flow {

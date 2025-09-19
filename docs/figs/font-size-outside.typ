@@ -4,12 +4,12 @@
 #meander.reflow({
   //@ <...>
   import meander: *
-  container()
   placed(
     left,
     boundary: contour.horiz(div: 100, _ => (0, 1)),
     line(end: (0%, 100%), stroke: white)
   )
+  container()
   //@ </...>
   content[
 

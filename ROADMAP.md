@@ -25,11 +25,11 @@
     - [ ] including configurable margins
   - [ ] overflow to a predefined layout
 - [ ] allowing containers to ignore specific labeled obstacles
+- [ ] automatically order obstacles before containers, except if there are labels
 
 ## Threading
 - [ ] handle paragraph breaks
 - [ ] relax upper bounds on text growing vertically
-- [ ] line spacing not properly updated when par.leading changes
 - [ ] very small text (4pt) is only ever threaded two lines at a time
 - [ ] send content to one specific container
 - [ ] priority levels to fill boxes in a different order than they were defined

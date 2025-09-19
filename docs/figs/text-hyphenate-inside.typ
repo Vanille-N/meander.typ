@@ -7,11 +7,12 @@
   //@ <...>
   import meander: *
   for i in range(100) {
-    container(dy: i * 1%, height: 5%)
+    placed(right, dy: i * 1%, box(height: 5%, width: 0%))
   }
+  container()
   //@ </...>
   content[
     #set text(hyphenate: true)
-    #lorem(100)
+    #lorem(70)
   ]
 })
