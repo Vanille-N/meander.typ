@@ -1,5 +1,7 @@
 #import "new.typ"
 
+#set page("a4", margin: 1cm)
+
 #align(center)[
   #text(size: 30pt)[*Meander*] \
   #text(size: 25pt)[User guide]
@@ -70,8 +72,9 @@
 
   *Versions* \
   - #link(repo)[`dev`]
-  - #link(repo + "releases/tag/v0.2.1")[`0.2.1`]
+  - #link(repo + "releases/tag/v0.2.2")[`0.2.2`]
     (#link("https://typst.app/universe/package/meander")[`latest`])
+  - #link(repo + "releases/tag/v0.2.1")[`0.2.1`]
   - #link(repo + "releases/tag/v0.2.0")[`0.2.0`]
   - #link(repo + "releases/tag/v0.1.0")[`0.1.0`]
 ][
@@ -112,9 +115,9 @@ by the flowing content.
   Below is a single page whose layout is fully determined by Meander.
   Multi-page setups are also possible, see @multi-page.
 
-  #show-code("simple-example")
+  #show-code("simple-example", resize: -1pt)
 ][
-  #show-page("simple-example", width: 7cm)
+  #show-page("simple-example", width: 6cm)
 ]
 
 Meander is expected to respect the majority of styling options,
@@ -134,9 +137,9 @@ Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if
   (at the cost of potentially performance issues if there are too many,
   but experiments have shown that up to \~100 obstacles is no problem).
 
-  #show-code("multi-obstacles")
+  #show-code("multi-obstacles", resize: -1pt)
 ][
-  #show-page("multi-obstacles")
+  #show-page("multi-obstacles", width: 6cm)
 ]
 
 == Columns <two-columns>
@@ -145,9 +148,9 @@ Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if
   In order to simulate a multi-column layout, you can provide several
   ```typ container``` invocations. They will be filled in the order provided.
 
-  #show-code("two-columns")
+  #show-code("two-columns", resize: -1pt)
 ][
-  #show-page("two-columns")
+  #show-page("two-columns", width: 6cm)
 ]
 
 #pagebreak()
@@ -155,6 +158,9 @@ Note: paragraph breaks may behave incorrectly. You can insert vertical spaces if
 = Showcase
 
 A selection of nontrivial examples of what is feasible.
+You can find the source code on the #link(repo + "tree/master/examples")[repository],
+and the following sections will give you more details on how to achieve these kinds
+of layouts.
 
 #table(columns: (1fr, 1fr), stroke: gray, align: center + horizon,
   [
@@ -217,14 +223,14 @@ which has implications for how your text will be laid out.
 Indeed compare the following situations that result in the same boxes but in
 different orders:
 
-#table(columns: (1fr, 1fr), stroke: none)[
+#table(columns: (1fr, 1fr), stroke: none, align: center)[
   #show-code("4-regions-1")
 ][
   #show-code("4-regions-2")
 ][
-  #show-page("4-regions-1", width: 6cm)
+  #show-page("4-regions-1", width: 4cm)
 ][
-  #show-page("4-regions-2", width: 6cm)
+  #show-page("4-regions-2", width: 4cm)
 ]
 And even in the example above, the box *1* will be filled before the first
 line of *2* is used.
@@ -258,12 +264,11 @@ precisely.
 Here is our starting point: a simple double-column page
 with a cutout in the middle for an image.
 
-#show-code("square-hole")
-#table(columns: (1fr, 1fr), stroke: none)[
-  #show-page("square-hole-debug", width: 6cm)
-][
-  #show-page("square-hole", width: 6cm)
-]
+#table(columns: (1fr, 1fr, 1fr), stroke: none, align: center,
+  show-code("square-hole"),
+  show-page("square-hole-debug", width: 5cm),
+  show-page("square-hole", width: 5cm),
+)
 Meander sees all obstacles as rectangular, so the circle leaves a big
 ugly #link("https://www.youtube.com/watch?v=6pDH66X3ClA")[square hole] in our page.
 
@@ -273,6 +278,8 @@ box transformers to change the way the object affects the layout.
 These transformations are normalized to the interval $[0, 1]$ for convenience.
 The default `boundary` value is ```typ #contour.margin(5pt)```.
 
+#pagebreak()
+
 ```typ #meander.contour.grid``` is one such redrawing function,
 from $[0, 1] times [0, 1]$ to `bool`, returning for each normalized
 coordinate `(x, y)` whether it belongs to the obstacle.
@@ -280,16 +287,17 @@ coordinate `(x, y)` whether it belongs to the obstacle.
 So instead of placing directly the circle, we write:
 #show-code("circle-hole")
 This results in the new subdivisions of containers below.
-#table(columns: (1fr, 1fr), stroke: none)[
-  #show-page("circle-hole-debug", width: 6cm) 
-][
-  #show-page("circle-hole", width: 6cm)
-]
+#table(columns: (1fr, 1fr), stroke: none, align: center,
+  show-page("circle-hole-debug", width: 5cm),
+  show-page("circle-hole", width: 5cm),
+)
 This enables in theory drawing arbitrary paragraph shapes.
 Note the high density of obstacles on the debug view above:
 this works here but we are getting close to the resolution limit of meander,
 so don't try to draw obstacles with a resolution too much lower than the normal
 line height.
+
+#pagebreak()
 
 === As stacked rectangles
 
@@ -298,17 +306,17 @@ has some horizontal or vertical regularity, here are some other suggestions:
 
 #table(columns: (1fr, 1fr), stroke: none, inset: (y: 2mm), align: center,
   table.hline(stroke: gray),
-  show-page("contour-1", width: 5cm),
+  show-page("contour-1", width: 4cm),
   show-code("contour-1"),
   table.hline(stroke: gray),
   show-code("contour-2"),
-  show-page("contour-2", width: 5cm),
+  show-page("contour-2", width: 4cm),
   table.hline(stroke: gray),
-  show-page("contour-3", width: 5cm),
+  show-page("contour-3", width: 4cm),
   show-code("contour-3"),
   table.hline(stroke: gray),
   show-code("contour-4"),
-  show-page("contour-4", width: 5cm),
+  show-page("contour-4", width: 4cm),
   table.hline(stroke: gray),
 )
 
@@ -326,8 +334,6 @@ To summarize,
 
 All of these functions operate on values normalized to $[0, 1]$.
 
-#pagebreak()
-
 === As ASCII art
 
 Another method of specifying contours is by drawing a rough shape of the obstacle
@@ -338,7 +344,7 @@ shape of your image.
 #table(columns: (1fr, 1fr), stroke: none)[
   #show-code("ascii-sheet")
 ][
-  #show-page("ascii-sheet")
+  #show-page("ascii-sheet", width: 6cm)
 ]
 See #link(repo + "tree/master/examples/5181-b/main.typ")[`examples/5181-b/main.typ`] for a nontrivial use-case.
 
@@ -356,49 +362,10 @@ is segmented into. This means
   fine, and I have test cases with up to \~100)
 - text may not fit in the boxes, and the vertical stretching of boxes still
   needs improvements.
-In the meantime it is highly discouraged to use a subdivision that results
+In the meantime it is discouraged to use a subdivision that results
 in obstacles much smaller than the font height.
 
-#pagebreak()
-
-== Multi-page setups <multi-page>
-
-Meander can deal with text that spans multiple pages,
-you just need to place ```typ #pagebreak```s appropriately.
-Note that ```typ #pagebreak``` only affects the obstacles and containers,
-while ```typ #content``` blocks ignore them entirely.
-
-#show-code("two-pages/doc")
-#table(columns: (1fr, 1fr), stroke: none)[
-  #show-page("two-pages/doc.1", width: 6cm)
-][
-  #show-page("two-pages/doc.2", width: 6cm)
-]
-
-#pagebreak()
-
-If you run into performance issues, consider finding spots where you can break
-the ```typ #reflow``` invocation. As long as you don't insert a ```typ #pagebreak```
-explicitly, several ```typ #reflow```s can coexist on the same page.
-
-#table(columns: (70%, 35%), stroke: none,
-  show-code("junction/doc"),
-  [
-    #show-page("junction/doc.1", width: 5cm)
-    #show-page("junction/doc.2", width: 5cm)
-  ],
-)
-
-*Note:* the default behavior if the content provided overflows the available
-containers is *not* to put in on the next page, but rather to show a warning.
-You can manually enable the overflow going to the next page by passing
-to ```typ #reflow``` the parameter `overflow: pagebreak`.
-Other options include `overflow: panic` if you want accidental overflows to
-trigger an immediate panic.
-
-#pagebreak()
-
-= Style-sensitive layout <styling-layout>
+== Styling <styling-layout>
 
 Meander respects most styling options through a dedicated content segmentation
 algorithm. Bold, italic, underlined, stroked, highlighted, colored, etc. text
@@ -409,7 +376,7 @@ There are however styling parameters that have a consequence on layout,
 and some of them require special handling.
 Some of these restrictions may be relaxed or entirely lifted by future updates.
 
-== Paragraph justification
+=== Paragraph justification
 
 In order to properly justify text across boxes, Meander needs to have contextual
 access to ```typ #par.justify```, which is only updated via a ```typ #set``` rule.
@@ -422,20 +389,18 @@ rule outside of the invocation of ```typ #meander.reflow``` altogether.
 #table(columns: (1fr, 1fr, 1fr), stroke: none, align: center)[
   #text(fill: red, size: 20pt)[*Wrong*]
   #show-code("par-justify", resize: -2pt)
-  #show-page("par-justify", width: 5cm)
+  #show-page("par-justify", width: 4cm)
 ][
   #text(fill: green, size: 20pt)[*Correct*]
   #show-code("set-par-justify", resize: -2pt)
-  #show-page("set-par-justify", width: 5cm)
+  #show-page("set-par-justify", width: 4cm)
 ][
   #text(fill: green, size: 20pt)[*Correct*]
   #show-code("set-par-justify-1", resize: -2pt)
-  #show-page("set-par-justify-1", width: 5cm) 
+  #show-page("set-par-justify-1", width: 4cm) 
 ]
 
-#pagebreak()
-
-== Font size and paragraph leading
+=== Font size and paragraph leading
 #new.new("local font size control")
 
 The font size indirectly affects layout because it determines the spacing between
@@ -449,23 +414,23 @@ Analogously, if you wish to change the spacing between lines,
 use either a ```typ #set par(leading: 1em)``` outside of ```typ #reflow```,
 or pass `leading: 1em` as a parameter to `content`.
 
+#pagebreak()
+
 #table(columns: (1fr, 1fr, 1fr), stroke: none, align: center)[
   #text(fill: red, size: 20pt)[*Wrong*]
   #show-code("font-size-inside", resize: -2pt)
-  #show-page("font-size-inside", width: 5cm)
+  #show-page("font-size-inside", width: 4cm)
 ][
   #text(fill: green, size: 20pt)[*Correct*]
   #show-code("font-size-outside", resize: -2pt)
-  #show-page("font-size-outside", width: 5cm)
+  #show-page("font-size-outside", width: 4cm)
 ][
   #text(fill: green, size: 20pt)[*Correct*]
   #show-code("font-size-content", resize: -2pt)
-  #show-page("font-size-content", width: 5cm)
+  #show-page("font-size-content", width: 4cm)
 ]
 
-#pagebreak()
-
-== Hyphenation and language
+=== Hyphenation and language
 #new.new("hyphenation and language")
 
 Hyphenation can only be fetched contextually, and highly influences how text
@@ -478,18 +443,86 @@ or pass them as parameters to ```typ #content```.
 #table(columns: (1fr, 1fr, 1fr), stroke: none, align: center)[
   #text(fill: red, size: 20pt)[*Wrong*]
   #show-code("text-hyphenate-inside", resize: -2pt)
-  #show-page("text-hyphenate-inside", width: 5cm)
+  #show-page("text-hyphenate-inside", width: 4cm)
 ][
   #text(fill: green, size: 20pt)[*Correct*]
   #show-code("text-hyphenate-outside", resize: -2pt)
-  #show-page("text-hyphenate-outside", width: 5cm)
+  #show-page("text-hyphenate-outside", width: 4cm)
 ][
   #text(fill: green, size: 20pt)[*Correct*]
   #show-code("text-hyphenate-content", resize: -2pt)
-  #show-page("text-hyphenate-content", width: 5cm) 
+  #show-page("text-hyphenate-content", width: 4cm) 
 ]
 
 #pagebreak()
+
+=== Applying styles to containers
+#new.new("post-threading style")
+
+```typ #container``` accepts a `style` dictionary that may contain the following
+keys:
+- `text-fill`: the color of the text in this container,
+- `align`: the left/center/right alignment of content,
+- and more to come.
+
+These options have in common that they do not affect layout so they can be applied
+post-threading to the entire box. Future updates may lift this restriction.
+#table(columns: (2fr, 1fr), stroke: none)[
+  #show-code("post-style")
+][
+  #show-page("post-style", width: 4cm)
+]
+
+== Multi-page setups <multi-page>
+#new.new("pagebreak and colbreak")
+
+Meander can deal with text that spans multiple pages,
+you just need to place ```typ #pagebreak```s appropriately.
+Note that ```typ #pagebreak``` only affects the obstacles and containers,
+while ```typ #content``` blocks ignore them entirely.
+
+#table(columns: (2fr, 1fr, 1fr), stroke: none)[
+  #show-code("two-pages/doc", resize: -2pt)
+][
+  #show-page("two-pages/doc.1")
+][
+  #show-page("two-pages/doc.2")
+]
+
+If you run into performance issues, consider finding spots where you can break
+the ```typ #reflow``` invocation. As long as you don't insert a ```typ #pagebreak```
+explicitly, several ```typ #reflow```s can coexist on the same page.
+
+#table(columns: (70%, 35%), stroke: none,
+  show-code("junction/doc", resize: -2.1pt),
+  [
+    #show-page("junction/doc.1", width: 4cm)
+    #show-page("junction/doc.2", width: 4cm)
+  ],
+)
+
+*Note:* the default behavior if the content provided overflows the available
+containers is *not* to put in on the next page, but rather to show a warning.
+You can manually enable the overflow going to the next page by passing
+to ```typ #reflow``` the parameter `overflow: pagebreak`.
+Other options include `overflow: panic` if you want accidental overflows to
+trigger an immediate panic.
+
+Analogously, ```typ #colbreak``` breaks to the next container.
+Note that ```typ #pagebreak``` is a _container_ separator while
+```typ #colbreak``` is a _content_ separator. The next container may be
+on the next page, so the right way to create an entirely new page for both
+containers and content is a ```typ #pagebreak``` *and* a ```typ #colbreak```.
+
+#show-code("colbreak/doc", resize: -2pt)
+#table(columns: (1fr, 1fr, 1fr), stroke: none,
+  show-page("colbreak/doc.1"),
+  show-page("colbreak/doc.2"),
+  show-page("colbreak/doc.3"),
+)
+
+#pagebreak()
+
 
 = Interfacing with other content
 
@@ -562,15 +595,15 @@ Setting `overflow: true` will silently ignore the overflow, while
 #table(columns: (1fr, 1fr, 1fr), align: center, stroke: none,
   [
     `overflow: false`
-    #show-page("overflow-false")
+    #show-page("overflow-false", width: 5cm)
     #show-code("overflow-false")
   ],[
     `overflow: true`
-    #show-page("overflow-true")
+    #show-page("overflow-true", width: 5cm)
     #show-code("overflow-true")
   ],[
     `overflow: panic`
-    #show-page("overflow-panic")
+    #show-page("overflow-panic", width: 5cm)
     #show-code("overflow-panic")
   ]
 )
@@ -623,7 +656,7 @@ This function will be given as input a dictionary with fields:
     to the text that overflows:
     #show-code("overflow-handler")
   ],
-  show-page("overflow-handler"),
+  show-page("overflow-handler", width: 5cm),
 )
 
 See also an answer I gave to
@@ -643,7 +676,7 @@ to see if there is a way to make this layout better supported.
 Because meander is cleanly split into three algorithms
 (content segmentation, page segmentation, text threading),
 there are plans to provide
-- configuration options for each of those steps
+- additional configuration options for each of those steps
 - the ability to replace entirely an algorithm by either a variant,
   or a user-provided alternative that follows the same signature.
 

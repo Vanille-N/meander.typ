@@ -1,4 +1,9 @@
 #import "_preamble.typ": *
+#align(center + horizon)[
+  #text(fill: red, size: 90pt)[
+    *(panics)*
+  ]
+]
 /*
 //@ <doc>
 #meander.reflow(

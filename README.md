@@ -121,6 +121,7 @@ Meander allows precise control over the boundaries of obstacles, to draw complex
 For a more in-depth introduction, including
 - debug mode,
 - alternative recontouring techniques,
+- styling options,
 - multi-page handling and page overflow options,
 - tips to get better segmentation,
 <!-- @scrybe(if publish; grep https; grep {{version}}) -->

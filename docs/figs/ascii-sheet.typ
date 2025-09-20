@@ -17,10 +17,8 @@
 //@ <doc>
 #meander.reflow(debug: true, {
   import meander: *
-  placed(
-    top + left,
-    boundary:
-      contour.margin(6mm) +
+  placed(top + left,
+    boundary: contour.margin(6mm) +
       contour.ascii-art(
         ```
         # / \
