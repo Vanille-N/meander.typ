@@ -12,9 +12,10 @@ Segmentation
 - hack to solve the issue where a single `container` on the page will overflow vertically
 - `colbreak` jumps to the next container
 - full containers now count as obstacles to other containers
+- containers have a configurable margin
 
 Display
-- parameters can be passed to `container` to apply alignment and color post-hoc
+- styling options can be passed to `container` to apply alignment and color post-hoc
 - placement options can control the relationship to other content on the page
 
 Internal

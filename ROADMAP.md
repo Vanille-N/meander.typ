@@ -14,8 +14,7 @@
 - [ ] single word on line will overflow if box is too small
 - [ ] raw code seems to possibly trigger an assertion error
 - [ ] crashes when we try to `split-word` a `sym.angle.l`
-- [ ] improper justification when the split occurs in a sequence rather than
-      in a `has-text`.
+- [ ] improper justification when the split occurs in a sequence rather than in a `has-text`.
 
 ## Page segmentation
 - [ ] layout save slots
@@ -25,6 +24,7 @@
   - [ ] overflow to a predefined layout
 - [ ] allowing containers to ignore specific labeled obstacles
 - [ ] automatically order obstacles before containers, except if there are labels
+- [ ] container margin 4 directions
 
 ## Threading
 - [ ] handle paragraph breaks
@@ -54,9 +54,7 @@
 
 ## Documentation
 
-- [ ] text-as-obstacle
 - [ ] colbreak
 - [ ] non-doc regular comments about the algorithm
-- [ ] container styling
 - [ ] Remind that meander can segment an arbitrary container, not just an entire page
 
