@@ -28,15 +28,26 @@
   /// Inner content.
   /// -> content
   content,
+  /// Optional unique name so that future elements can refer to this one.
+  /// -> label | none
+  name: none,
+  /// Optional set of tags so that future element can refer to this one
+  /// and others with the same tag.
+  /// -> array(label)
+  tags: (),
 ) = {
   ((
     type: place,
     align: align,
     dx: dx,
     dy: dy,
-    boundary: boundary,
     display: display,
-    content: content
+    boundary: boundary,
+    content: content,
+    aux: (
+      name: name,
+      tags: tags,
+    ),
   ),)
 }
 
@@ -69,6 +80,16 @@
   /// other paragraphs doesn't come too close.
   /// -> length
   margin: 5mm,
+  /// One or more labels that will not affect this element's positioning.
+  /// -> array(label)
+  ignore-labels: (),
+  /// Optional unique name so that future elements can refer to this one.
+  /// -> label | none
+  name: none,
+  /// Optional set of tags so that future element can refer to this one
+  /// and others with the same tag.
+  /// -> array(label)
+  tags: (),
 ) = {
   ((
     type: box,
@@ -77,8 +98,13 @@
     dy: dy,
     width: width,
     height: height,
-    style: style,
     margin: margin,
+    aux: (
+      style: style,
+      ignore-labels: ignore-labels,
+      name: name,
+      tags: tags,
+    ),
   ),)
 }
 
@@ -187,7 +213,7 @@
   let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: width, height: height)
   let dims = geometry.resolve(data.size, x: x, y: y, width: width, height: height)
   let display = if obj.display {
-    place[#move(dx: dims.x, dy: dims.y)[#obj.content]]
+    place[#move(dx: dims.x, dy: dims.y)[#{obj.content}]]
   } else { none }
 
   // Apply the boundary redrawing functions in order to know the true
@@ -202,11 +228,21 @@
   }
   let forbidden = ()
   let debug = []
-  for obj in bounds {
-    forbidden.push(obj)
-    debug += place[#move(dx: obj.x, dy: obj.y)[#box(stroke: red, fill: pat-forbidden(30pt), width: obj.width, height: obj.height)]]
+  for dims in bounds {
+    forbidden.push((..dims, aux: obj.aux))
+    debug += place[#move(dx: dims.x, dy: dims.y)[#box(stroke: red, fill: pat-forbidden(30pt), width: dims.width, height: dims.height)]]
   }
   (type: place, debug: debug, display: display, blocks: forbidden)
+}
+
+#let is-unobservable(container, obstacle) = {
+  let tags = obstacle.aux.tags + (obstacle.aux.name,)
+  for label in container.aux.ignore-labels {
+    if label in tags {
+      return true
+    }
+  }
+  false
 }
 
 /// See: `next-elem` to explain `data`.
@@ -221,61 +257,81 @@
   /// -> container
   obj,
 ) = {
+  // TODO: handle ignore-labels
+
+  // Calculate the absolute dimensions of the container
   let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: obj.width, height: obj.height)
   let dims = geometry.resolve(data.size, x: x, y: y, width: obj.width, height: obj.height)
-  // Cut the zone horizontally
+  // Select only the obstacles that may intersect this container
+  let relevant-obstacles = data.obstacles.filter(exclude => {
+    geometry.intersects((dims.x, dims.x + dims.width), (exclude.x, exclude.x + exclude.width)) and not is-unobservable(obj, exclude)
+  })
+  // Cut the zone horizontally at every top or bottom of an intersecting obstacle
   let horizontal-marks = (dims.y, dims.y + dims.height)
-  for no-zone in data.obstacles {
-    if dims.y <= no-zone.y and no-zone.y <= dims.y + dims.height {
-      horizontal-marks.push(no-zone.y)
-    }
-    if dims.y <= no-zone.y + no-zone.height and no-zone.y + no-zone.height <= dims.y + dims.height {
-      horizontal-marks.push(no-zone.y + no-zone.height)
+  for exclude in relevant-obstacles {
+    for line in (exclude.y, exclude.y + exclude.height) {
+      if geometry.between(dims.y, line, dims.y + dims.height) {
+        horizontal-marks.push(line)
+      }
     }
   }
+  // This hack helps solve a problem when the container has the height of the whole
+  // page: `measure(box(height: 100%), ..size).height` is equal to
+  // `measure(box(height: 200%), ..size).height`
   if horizontal-marks.len() == 2 and dims.height == data.size.height {
     horizontal-marks.push(data.size.height / 2)
   }
   horizontal-marks = horizontal-marks.sorted()
 
   let debug = []
-  let zones-to-fill = ()
+  let all-zones = ()
+  // Then for every horizontal region delimited by two adjacent marks,
+  // compute the vertical segments.
   for (hi, lo) in horizontal-marks.windows(2) {
+    // Further filter the obstacles for better performance.
+    let relevant-obstacles = relevant-obstacles.filter(exclude => {
+      geometry.intersects((hi, lo), (exclude.y, exclude.y + exclude.height), tolerance: 1mm)
+    })
     let vertical-marks = (dims.x, dims.x + dims.width)
-    let relevant-forbidden = ()
-    for no-zone in data.obstacles {
-      if geometry.intersects((hi, lo), (no-zone.y, no-zone.y + no-zone.height), tolerance: 1mm) {
-        relevant-forbidden.push(no-zone)
-        if geometry.between(dims.x, no-zone.x, dims.x + dims.width) {
-          vertical-marks.push(no-zone.x)
-        }
-        if geometry.between(dims.x, no-zone.x + no-zone.width, dims.x + dims.width) {
-          vertical-marks.push(no-zone.x + no-zone.width)
+    for exclude in relevant-obstacles {
+      for line in (exclude.x, exclude.x + exclude.width) {
+        if geometry.between(dims.x, line, dims.x + dims.width) {
+          vertical-marks.push(line)
         }
       }
     }
-    let vertical-marks = vertical-marks.sorted()
-    let valid-zones = ()
+    vertical-marks = vertical-marks.sorted()
+
+    // A zone is naturally the space between two adjacent vertical marks,
+    // if and only if it does not intersect any obstacle.
+    let new-zones = ()
     for (l, r) in vertical-marks.windows(2) {
       if r - l < 1mm { continue }
       let available = true
-      for no-zone in relevant-forbidden {
-        if geometry.intersects((l, r), (no-zone.x, no-zone.x + no-zone.width), tolerance: 1mm) { available = false }
+      for exclude in relevant-obstacles {
+        if geometry.intersects((l, r), (exclude.x, exclude.x + exclude.width), tolerance: 1mm) {
+          available = false
+        }
       }
       if available {
-        valid-zones.push((x: l, width: r - l))
+        new-zones.push((x: l, width: r - l))
       }
     }
-    let bounds = dims
-    let style = obj.style
-    for zone in valid-zones {
+    for zone in new-zones {
       assert(lo >= hi)
       assert(zone.width >= 0pt)
-      debug += place(dx: zone.x, dy: hi)[#box(width: zone.width, height: lo - hi, fill: pat-allowed(30pt), stroke: green)]
-      zones-to-fill.push((x: zone.x, y: hi, height: lo - hi, width: zone.width, bounds: bounds, style: style, margin: obj.margin))
+      debug += place(dx: zone.x, dy: hi)[
+        #box(width: zone.width, height: lo - hi, fill: pat-allowed(30pt), stroke: green)
+      ]
+      all-zones.push((
+        x: zone.x, y: hi, height: lo - hi, width: zone.width,
+        bounds: dims, // upper limits on how this zone can grow
+        margin: obj.margin,
+        aux: obj.aux,
+      ))
     }
   }
-  (type: box, debug: debug, display: none, blocks: zones-to-fill)
+  (type: box, debug: debug, display: none, blocks: all-zones)
 }
 
 /// Applies an element's margin to itself
@@ -287,6 +343,16 @@
   elem.width += 2 * elem.margin
   elem.height += 2 * elem.margin
   elem
+}
+
+#let create-data(size: none, elems: ()) = {
+  assert(size != none)
+  (
+    elems: elems.rev(),
+    size: size,
+    obstacles: (),
+    labels: (:),
+  )
 }
 
 /// This function is reentering, allowing interactive computation of the layout.
@@ -326,6 +392,20 @@
 ) = {
   let data = data
   for block in elem.blocks {
+    if block.aux.name != none {
+      let s = str(block.aux.name)
+      if s in data.labels {
+        panic("name " + s + " should be unique")
+      }
+      data.labels.insert(s, false)
+    }
+    for tag in block.aux.tags {
+      let s = str(tag)
+      if not data.labels.at(s, default: true) {
+        panic("name " + s + " should be unique")
+      }
+      data.labels.insert(s, true)
+    }
     data.obstacles.push(block)
   }
   data
@@ -422,7 +502,7 @@
       if idx != 0 {
         colbreak()
       }
-      let data = (elems: elems.rev(), size: size, obstacles: ())
+      let data = create-data(size: size, elems: elems)
       while true {
         // Compute
         let (elem, _data) = next-elem(data)

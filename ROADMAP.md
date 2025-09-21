@@ -22,7 +22,6 @@
   - [ ] save a filled content box for a future invocation
     - [ ] including configurable margins
   - [ ] overflow to a predefined layout
-- [ ] allowing containers to ignore specific labeled obstacles
 - [ ] automatically order obstacles before containers, except if there are labels
 - [ ] container margin 4 directions
 
@@ -35,14 +34,13 @@
 
 ## Performance
 - [ ] Dichotomy in bisection
-- [ ] eliminate obvious non-candidates from tiling
-  - [ ] do not use as horizontal marks the obstacles that don't intersect the container
 
 ## QoL
 
 - [ ] group displacement
 - [ ] group labeling
 - [ ] inverse retiling (define a container with a complex shape through retiling functions)
+- [ ] define styles based on labels
 
 ## Parameterization
 
@@ -51,6 +49,9 @@
   - [ ] tiling
   - [ ] bisection
   - [ ] threading
+
+## Refactoring
+- [ ] extract regions and reflow's `wrapper`.
 
 ## Documentation
 

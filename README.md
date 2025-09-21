@@ -25,7 +25,7 @@ The function `meander.reflow` splits the input sequence into
 #let my-img-4 = box(width: 5cm, height: 5cm, fill: red)
 #let my-img-5 = box(width: 4cm, height: 3cm, fill: yellow)
 
-#import "@local/meander:0.2.2"
+#import "@local/meander:0.2.3"
 
 #meander.reflow({
   import meander: *
@@ -60,7 +60,7 @@ Use multiple `container`s to produce layouts in columns.
 #let my-img-2 = box(width: 5cm, height: 3cm, fill: blue)
 #let my-img-3 = box(width: 8cm, height: 4cm, fill: green)
 
-#import "@local/meander:0.2.2"
+#import "@local/meander:0.2.3"
 
 #meander.reflow({
   import meander: *
@@ -86,7 +86,7 @@ Meander allows precise control over the boundaries of obstacles, to draw complex
 <!-- @scrybe(if publish; jump import; grep preview; grep {{version}}) -->
 <!-- @scrybe(jump import; until ```; diff gallery/circle-hole.typ) -->
 ```typ
-#import "@local/meander:0.2.2"
+#import "@local/meander:0.2.3"
 
 #meander.reflow({
   import meander: *

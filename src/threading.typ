@@ -1,4 +1,5 @@
 #import "geometry.typ"
+#import "tiling.typ" as tiling
 
 /// Thread text through a list of boxes in order,
 /// allowing the boxes to stretch vertically to accomodate for uneven tiling.
@@ -66,6 +67,7 @@
     let new-lo = old-lo + geometry.resolve(size, y: 0.5 * text-size).y
     new-lo = calc.min(new-lo, cont.bounds.y + cont.bounds.height)
     for no-box in avoid {
+      if tiling.is-unobservable(cont, no-box) { continue }
       if geometry.intersects((cont.x, cont.x + cont.width), (no-box.x, no-box.x + no-box.width), tolerance: 1mm) {
         if geometry.intersects((old-lo, new-lo), (no-box.y, no-box.y), tolerance: 0mm) {
           new-lo = calc.min(new-lo, no-box.y)
@@ -79,6 +81,7 @@
     let lineskip = geometry.resolve(size, y: par-leading.em * text-size + par-leading.abs).y
     let lo = cont.y + cont.height
     for no-box in avoid {
+      if tiling.is-unobservable(cont, no-box) { continue }
       if new-hi > lo { continue }
       if geometry.intersects((cont.x, cont.x + cont.width), (no-box.x, no-box.x + no-box.width), tolerance: 1mm) {
         if geometry.intersects((new-hi, lo), (no-box.y, no-box.y + no-box.height), tolerance: 1mm) {
@@ -183,7 +186,6 @@
     }
   }
   wrapper(size => {
-    import "tiling.typ" as tiling
     let (flow, pages) = tiling.separate(seq)
 
     for (idx, elems) in pages.enumerate() {
@@ -194,7 +196,7 @@
         }
         colbreak()
       }
-      let data = (elems: elems.rev(), size: size, obstacles: ())
+      let data = tiling.create-data(size: size, elems: elems)
       while true {
         // Compute
         let (elem, _data) = tiling.next-elem(data)
@@ -219,8 +221,7 @@
         )
         flow = overflow
         for (container, content) in full {
-          let style = container.style
-          for (key, val) in container.style {
+          for (key, val) in container.aux.style {
             if key == "align" {
               content = align(val, content)
             } else if key == "text-fill" {
