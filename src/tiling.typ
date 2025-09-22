@@ -116,9 +116,27 @@
 }
 
 /// Continue content to next container.
+/// Has the same internal fields as `content` so that we don't have to
+/// check for `key in elem` all the time.
+/// -> flowing
 #let colbreak() = {
   ((
     type: std.colbreak,
+    data: none,
+    style: (
+      size: auto,
+      lang: auto,
+      leading: auto,
+      hyphenate: auto,
+    )
+  ),)
+}
+
+/// Continue content to next container after filling the current container
+/// with whitespace.
+#let colfill() = {
+  ((
+    type: pad,
     data: none,
     style: (
       size: auto,
@@ -235,7 +253,15 @@
   (type: place, debug: debug, display: display, blocks: forbidden)
 }
 
-#let is-unobservable(container, obstacle) = {
+/// Eliminates non-candidates by determining if the obstacle is ignored by the container.
+#let is-ignored(
+  /// Must have the field `_.aux.ignore-labels`,
+  /// as containers do.
+  container,
+  /// Must have the fields `_.aux.tags` and `_.aux.name`,
+  /// as obstacles do.
+  obstacle,
+) = {
   let tags = obstacle.aux.tags + (obstacle.aux.name,)
   for label in container.aux.ignore-labels {
     if label in tags {
@@ -264,7 +290,7 @@
   let dims = geometry.resolve(data.size, x: x, y: y, width: obj.width, height: obj.height)
   // Select only the obstacles that may intersect this container
   let relevant-obstacles = data.obstacles.filter(exclude => {
-    geometry.intersects((dims.x, dims.x + dims.width), (exclude.x, exclude.x + exclude.width)) and not is-unobservable(obj, exclude)
+    geometry.intersects((dims.x, dims.x + dims.width), (exclude.x, exclude.x + exclude.width)) and not is-ignored(obj, exclude)
   })
   // Cut the zone horizontally at every top or bottom of an intersecting obstacle
   let horizontal-marks = (dims.y, dims.y + dims.height)
@@ -334,9 +360,9 @@
   (type: box, debug: debug, display: none, blocks: all-zones)
 }
 
-/// Applies an element's margin to itself
+/// Applies an element's margin to itself.
 /// -> elem
-#let add-auto-margin(elem) = {
+#let add-self-margin(elem) = {
   if "margin" not in elem { return elem }
   elem.x -= elem.margin
   elem.y -= elem.margin
@@ -345,7 +371,16 @@
   elem
 }
 
-#let create-data(size: none, elems: ()) = {
+/// Initializes the initial value of the internal data for the reentering
+/// `next-elem`.
+#let create-data(
+  /// Dimensions of the page
+  /// -> (width: length, height: length)
+  size: none,
+  /// Elements to dispense in order
+  /// -> (..elem,)
+  elems: (),
+) = {
   assert(size != none)
   (
     elems: elems.rev(),
@@ -454,6 +489,8 @@
       pages.push(elems)
       elems = ()
     } else if obj.type == std.colbreak {
+      flow.push(obj)
+    } else if obj.type == pad {
       flow.push(obj)
     } else {
       panic("Unknown element of type " + repr(obj.type))

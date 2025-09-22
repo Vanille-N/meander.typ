@@ -51,6 +51,13 @@
       body = body-queue.pop()
     }
 
+    if body.type == pad {
+      full.push((cont, current-fill))
+      while cont-queue.len() > 0 {
+        full.push((cont-queue.pop(), none))
+      }
+      break
+    }
     if body.type == std.colbreak {
       force-break = true
     }
@@ -67,7 +74,7 @@
     let new-lo = old-lo + geometry.resolve(size, y: 0.5 * text-size).y
     new-lo = calc.min(new-lo, cont.bounds.y + cont.bounds.height)
     for no-box in avoid {
-      if tiling.is-unobservable(cont, no-box) { continue }
+      if tiling.is-ignored(cont, no-box) { continue }
       if geometry.intersects((cont.x, cont.x + cont.width), (no-box.x, no-box.x + no-box.width), tolerance: 1mm) {
         if geometry.intersects((old-lo, new-lo), (no-box.y, no-box.y), tolerance: 0mm) {
           new-lo = calc.min(new-lo, no-box.y)
@@ -81,7 +88,7 @@
     let lineskip = geometry.resolve(size, y: par-leading.em * text-size + par-leading.abs).y
     let lo = cont.y + cont.height
     for no-box in avoid {
-      if tiling.is-unobservable(cont, no-box) { continue }
+      if tiling.is-ignored(cont, no-box) { continue }
       if new-hi > lo { continue }
       if geometry.intersects((cont.x, cont.x + cont.width), (no-box.x, no-box.x + no-box.width), tolerance: 1mm) {
         if geometry.intersects((new-hi, lo), (no-box.y, no-box.y + no-box.height), tolerance: 1mm) {
@@ -236,7 +243,7 @@
               content
             })
           })
-          data = tiling.push-elem(data, (blocks: (tiling.add-auto-margin(container),)))
+          data = tiling.push-elem(data, (blocks: (tiling.add-self-margin(container),)))
           maximum-height = calc.max(maximum-height, container.y + container.height)
         }
       }

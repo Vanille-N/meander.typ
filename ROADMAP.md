@@ -31,6 +31,7 @@
 - [ ] very small text (4pt) is only ever threaded two lines at a time
 - [ ] send content to one specific container
 - [ ] priority levels to fill boxes in a different order than they were defined
+- [X] colfill
 
 ## Performance
 - [ ] Dichotomy in bisection
@@ -55,6 +56,7 @@
 
 ## Documentation
 
+- [ ] obstacle labels
 - [ ] use latest updates to simplify the README examples a bit
 - [ ] non-doc regular comments about the algorithm
 - [ ] Remind that meander can segment an arbitrary container, not just an entire page

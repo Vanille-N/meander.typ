@@ -22,3 +22,4 @@
   colbreak()
   content[#lorem(50)]
 })
+

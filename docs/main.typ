@@ -165,20 +165,28 @@ of layouts.
 #table(columns: (1fr, 1fr), stroke: gray, align: center + horizon,
   [
     #image("/examples/5181-a/main.svg", width: 7.5cm)
+    #show: align.with(bottom)
     #link(repo + "tree/master/examples/5181-a/main.typ")[`examples/5181-a/main.typ`] \
     Motivated by #link(typst-repo + "issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (a)]
   ],
   [
     #image("/examples/5181-b/main.svg", width: 7.5cm)
-    #v(1.9cm)
+    #show: align.with(bottom)
     #link(repo + "tree/master/examples/5181-b/main.typ")[`examples/5181-b/main.typ`] \
     Motivated by #link(typst-repo + "issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (b)]
   ],
   [
     #image("/examples/talmudifier/main.svg", width: 7.5cm)
+    #show: align.with(bottom)
     #link(repo + "tree/master/examples/talmudifier/main.typ")[`examples/talmudifier/main.typ`] \
     From #link("https://github.com/subalterngames/talmudifier")[`github:subalterngames/talmudifier`] \
     Motivated by #link(typst-repo + "issues/5181#issuecomment-2661180292")[`github:typst/typst` \#5181 (c)]
+  ],
+  [
+    #image("/examples/cow/main.svg", width: 7.5cm)
+    #show: align.with(bottom)
+    #link(repo + "tree/master/examples/cow/main.typ")[`examples/cow/main.typ`] \
+    Motivated by #link("https://forum.typst.app/t/is-there-an-equivalent-to-latex-s-parshape/1006/3")["Is there an equivalent to LaTeX's \\parshape?" (Typst forum)]
   ],
 )
 
@@ -512,7 +520,8 @@ Analogously, ```typ #colbreak``` breaks to the next container.
 Note that ```typ #pagebreak``` is a _container_ separator while
 ```typ #colbreak``` is a _content_ separator. The next container may be
 on the next page, so the right way to create an entirely new page for both
-containers and content is a ```typ #pagebreak``` *and* a ```typ #colbreak```.
+containers and content is a ```typ #pagebreak``` *and* a ```typ #colbreak```...
+or you could just end the ```typ #reflow``` and start a new one.
 
 #show-code("colbreak/doc", resize: -2pt)
 #table(columns: (1fr, 1fr, 1fr), stroke: none,
