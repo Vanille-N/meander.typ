@@ -255,10 +255,15 @@
 /// - `\`: negative
 #let ascii-art(
   /// Draw the shape of the image in ascii art.
-  /// -> code
+  /// -> code | str
   ascii
 ) = (block => {
-  let ascii = ascii.text.split("\n")
+  let ascii = if type(ascii) == raw {
+    ascii.text
+  } else {
+    ascii
+  }
+  let ascii = ascii.split("\n")
   let imax = calc.max(ascii.len(), 1)
   let jmax = calc.max(..ascii.map(x => x.len()), 1)
   let interp(chr) = {

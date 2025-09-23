@@ -24,6 +24,7 @@
   - [ ] overflow to a predefined layout
 - [ ] automatically order obstacles before containers, except if there are labels
 - [ ] container margin 4 directions
+- [ ] optimize the rectangles in ascii (need fewer of them for performance)
 
 ## Threading
 - [ ] handle paragraph breaks
@@ -42,6 +43,7 @@
 - [ ] group labeling
 - [ ] inverse retiling (define a container with a complex shape through retiling functions)
 - [ ] define styles based on labels
+- [ ] retiling function by concatenating two others
 
 ## Parameterization
 
