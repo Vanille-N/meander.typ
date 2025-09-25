@@ -1,0 +1,15 @@
+run +args:
+  ./src/autocontour/main.py {{args}}
+
+install:
+  pipx install . --force
+
+build:
+  python3 -m build
+
+test-publish:
+  python3 -m twine upload --repository testpypi dist/*
+
+publish:
+  python3 -m twine upload dist/*
+

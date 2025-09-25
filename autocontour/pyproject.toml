@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autocontour"
+version = "0.0.1"
+authors = [
+  { name="Neven Villani", email="vanille@crans.org" },
+]
+description = "Auxiliary tool to generate image boundaries for the Typst package Meander"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: Unix",
+]
+license = "MIT"
+license-files = ["LICENSE"]
+
+[project.urls]
+Homepage = "https://github.com/Vanille-N/meander.typ/tree/master/autocontour"
+Issues = "https://github.com/Vanille-N/meander.typ/issues"
+
+[project.scripts]
+autocontour = "autocontour.main:main"
