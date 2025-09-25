@@ -1,4 +1,5 @@
 #import "std.typ"
+#import "utils.typ"
 
 /// Core function to create an obstacle.
 /// -> obstacle
@@ -27,12 +28,9 @@
   /// Inner content.
   /// -> content
   content,
-  /// Optional unique name so that future elements can refer to this one.
-  /// -> label | none
-  name: none,
   /// Optional set of tags so that future element can refer to this one
   /// and others with the same tag.
-  /// -> array(label)
+  /// -> label | array(label)
   tags: (),
 ) = {
   ((
@@ -43,10 +41,7 @@
     display: display,
     boundary: boundary,
     content: content,
-    aux: (
-      name: name,
-      tags: tags,
-    ),
+    tags: utils.coerce-to-array(tags),
   ),)
 }
 
@@ -81,13 +76,10 @@
   margin: 5mm,
   /// One or more labels that will not affect this element's positioning.
   /// -> array(label)
-  ignore-labels: (),
-  /// Optional unique name so that future elements can refer to this one.
-  /// -> label | none
-  name: none,
+  invisible: (),
   /// Optional set of tags so that future element can refer to this one
   /// and others with the same tag.
-  /// -> array(label)
+  /// -> label | array(label)
   tags: (),
 ) = {
   ((
@@ -98,12 +90,9 @@
     width: width,
     height: height,
     margin: margin,
-    aux: (
-      style: style,
-      ignore-labels: ignore-labels,
-      name: name,
-      tags: tags,
-    ),
+    tags: utils.coerce-to-array(tags),
+    invisible: utils.coerce-to-array(invisible),
+    style: style,
   ),)
 }
 

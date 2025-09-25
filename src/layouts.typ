@@ -141,7 +141,7 @@
         )
         flow = overflow
         for (container, content) in full {
-          for (key, val) in container.aux.style {
+          for (key, val) in container.style {
             if key == "align" {
               content = align(val, content)
             } else if key == "text-fill" {

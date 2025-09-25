@@ -11,26 +11,26 @@
     center, dy: cutout-offset,
     boundary: contour.grid(div: 20, (x,y) => norm(x,y) <= 1),
     box(width: cutout-width, height: cutout-width),
-    tags: (<interior>,),
+    tags: <interior>,
   )
   placed(
     center, dy: cutout-offset,
     boundary: contour.grid(div: 20, (x,y) => norm(x,y) >= 0.7),
     box(width: cutout-width, height: cutout-width),
-    tags: (<exterior>,),
+    tags: <exterior>,
   )
   container(
     width: 50% - 3mm,
     margin: 6mm,
-    ignore-labels: (<exterior>,),
+    invisible: <exterior>,
   )
   container(
     align: center, dy: cutout-offset,
     width: cutout-width, height: cutout-width,
-    ignore-labels: (<interior>,),
+    invisible: <interior>,
   )
   container(
-    ignore-labels: (<exterior>,),
+    invisible: <exterior>,
   )
   content[
     #set par(justify: true)

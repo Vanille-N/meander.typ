@@ -3,7 +3,7 @@
 ## v0.2.2 -> dev
 
 ### Segmentation
-- obstacles have labels and containers have an `ignore-label` field
+- obstacles have labels and containers have an `invisible` field
 
 ### Performance
 - better choice of horizontal marks by eliminating obvious failures

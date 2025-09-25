@@ -58,7 +58,7 @@
   let forbidden = ()
   let debug = []
   for dims in bounds {
-    forbidden.push((..dims, aux: obj.aux))
+    forbidden.push((..dims, tags: obj.tags))
     debug += place[#move(dx: dims.x, dy: dims.y)[#box(stroke: red, fill: pat-forbidden(30pt), width: dims.width, height: dims.height)]]
   }
   (type: place, debug: debug, display: display, blocks: forbidden)
@@ -66,16 +66,15 @@
 
 /// Eliminates non-candidates by determining if the obstacle is ignored by the container.
 #let is-ignored(
-  /// Must have the field `_.aux.ignore-labels`,
+  /// Must have the field `_.aux.invisible`,
   /// as containers do.
   container,
-  /// Must have the fields `_.aux.tags` and `_.aux.name`,
+  /// Must have the field `_.tags`,
   /// as obstacles do.
   obstacle,
 ) = {
-  let tags = obstacle.aux.tags + (obstacle.aux.name,)
-  for label in container.aux.ignore-labels {
-    if label in tags {
+  for label in container.invisible {
+    if label in obstacle.tags {
       return true
     }
   }
@@ -94,8 +93,6 @@
   /// -> container
   obj,
 ) = {
-  // TODO: handle ignore-labels
-
   // Calculate the absolute dimensions of the container
   let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: obj.width, height: obj.height)
   let dims = geometry.resolve(data.size, x: x, y: y, width: obj.width, height: obj.height)
@@ -164,7 +161,9 @@
         x: zone.x, y: hi, height: lo - hi, width: zone.width,
         bounds: dims, // upper limits on how this zone can grow
         margin: obj.margin,
-        aux: obj.aux,
+        style: obj.style,
+        invisible: obj.invisible,
+        tags: obj.tags,
       ))
     }
   }
@@ -238,14 +237,7 @@
 ) = {
   let data = data
   for block in elem.blocks {
-    if block.aux.name != none {
-      let s = str(block.aux.name)
-      if s in data.labels {
-        panic("name " + s + " should be unique")
-      }
-      data.labels.insert(s, false)
-    }
-    for tag in block.aux.tags {
+    for tag in block.tags {
       let s = str(tag)
       if not data.labels.at(s, default: true) {
         panic("name " + s + " should be unique")

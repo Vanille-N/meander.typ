@@ -14,9 +14,8 @@
 
 #meander.reflow(debug: true, {
   import meander: *
-  placed(top + left, img(5cm, 5cm, blue, 1), tags: (<A>,))
-  // TODO: ignore-tags
-  container(ignore-labels: (<A>,))
+  placed(top + left, img(5cm, 5cm, blue, 1), tags: <A>)
+  container(invisible: <A>)
   container()
 
   content[#lorem(50)]
@@ -37,8 +36,8 @@
       ```
     ),
     img(50pt, 50pt, blue, 1),
-    tags: (<A>,),
+    tags: <A>,
   )
-  container(tags: (<B>,))
+  container(tags: <B>)
   content[#lorem(50)] 
 })
