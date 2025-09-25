@@ -1,5 +1,5 @@
-#import "/src/threading.typ": *
-#import "/src/tiling.typ": container, placed, content, regions
+#import "/src/elems.typ": container, placed, content
+#import "/src/layouts.typ": regions, reflow
 #import "/src/contour.typ"
 
 #let fakeimg(align, dx: 0pt, dy: 0pt, fill: white, width: 1cm, height: 1cm) = {

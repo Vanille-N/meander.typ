@@ -1,4 +1,5 @@
-#import "/src/tiling.typ": container, regions, placed, content
+#import "/src/elems.typ": container, placed, content
+#import "/src/layouts.typ": regions
 #import "/src/contour.typ"
 
 #let fakeimg(align, dx: 0pt, dy: 0pt, fill: white, width: 1cm, height: 1cm) = {

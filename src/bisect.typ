@@ -15,7 +15,7 @@
 /// Essentially all remaining functions in this file are about defining content
 /// that can be split and the correct way to invoke `fits-inside` on them.
 ///
-/// ```example
+/// ```typ
 /// #let dims = (width: 100%, height: 50%)
 /// #box(width: 7cm, height: 3cm)[#layout(size => context {
 ///   let words = [#lorem(12)]
@@ -25,7 +25,7 @@
 /// })]
 /// ```
 ///
-/// ```example
+/// ```typ
 /// #let dims = (width: 100%, height: 50%)
 /// #box(width: 7cm, height: 3cm)[#layout(size => context {
 ///   let words = [#lorem(15)]
@@ -62,7 +62,7 @@
 /// Inspired by `wrap-it`'s implementation
 /// (see: `_rewrap` in #link("https://github.com/ntjess/wrap-it/blob/main/wrap-it.typ")[`github:ntjess/wrap-it`])
 ///
-/// ```example
+/// ```typ
 /// #let content = box(stroke: red)[Initial]
 /// #let (inner, rebuild) = default-rebuild(
 ///   content, "body",
@@ -73,7 +73,7 @@
 /// Rebuild: #rebuild("foo")
 /// ```
 ///
-/// ```example
+/// ```typ
 /// #let content = [*_Initial_*]
 /// #let (inner, rebuild) = default-rebuild(
 ///   content, "body",
@@ -84,7 +84,7 @@
 /// Rebuild: #rebuild("foo")
 /// ```
 ///
-/// ```example
+/// ```typ
 /// #let content = [a:b]
 /// #let (inner, rebuild) = default-rebuild(
 ///   content, "children",

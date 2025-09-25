@@ -29,7 +29,7 @@
   /// Tested value.
   /// -> length
   b,
-  /// Upper bound. Asserted to be `>= c`.
+  /// Upper bound. Asserted to be `>= a`.
   /// -> length
   c,
 ) = {
@@ -60,11 +60,10 @@
 
 /// Converts relative and contextual lengths to absolute.
 /// The return value will contain each of the arguments once converted,
-/// with arguments that contain `'x'` or start with `'w'` being interpreted as
-/// horizontal, and arguments that contain `'y'` or start with `'h'` being
-/// interpreted as vertical.
-/// #v(2cm)
-/// ```example
+/// with arguments that begin or end with `'x'` or start with `'w'` being
+/// interpreted as horizontal, and arguments that begin or end with `'y'`
+/// or start with `'h'` being interpreted as vertical.
+/// ```typ
 /// #context resolve(
 ///     (width: 100pt, height: 200pt),
 ///     x: 10%, y: 50% + 1pt,
@@ -77,6 +76,8 @@
   /// Size of the container as given by the `layout` function.
   /// -> (width: length, height: length)
   size,
+  /// Arbitrary many length arguments, automatically inferred to be horizontal
+  /// or vertical.
   /// -> dictionary
   ..args
 ) = {

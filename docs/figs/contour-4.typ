@@ -4,14 +4,14 @@
 //@ <doc>
 #meander.reflow({
   import meander: *
-  placed(left + horizon,
+  placed(top,
     boundary:
-      contour.horiz(
+      contour.vert(
         div: 25,
-        y => if y <= 0.5 {
-          (0, 2 * (0.5 - y))
+        x => if x <= 0.5 {
+          (0, 2 * (0.5 - x))
         } else {
-          (0, 2 * (y - 0.5))
+          (0, 2 * (x - 0.5))
         },
       ) +
       contour.margin(5mm)
@@ -20,11 +20,11 @@
     #cetz.canvas({
       import cetz.draw: *
       merge-path(fill: yellow, {
-        line((0, 0), (0, 6))
-        line((), (5, 6))
+        line((0, 0), (8, 0))
+        line((), (8, -5))
         line((), (0, 0))
-        line((), (0, -6))
-        line((), (5, -6))
+        line((), (-8, 0))
+        line((), (-8, -5))
         line((), (0, 0))
       })
     })
@@ -32,6 +32,6 @@
   ]
   //@ <...>
   container()
-  content[#lorem(600)]
+  content[#lorem(590)]
   //@ </...>
 })

@@ -37,7 +37,7 @@
 /// Drops all boundaries.
 /// Using `boundary: phantom` will let other content flow over this object.
 /// -> function
-#let phantom = (block => (),)
+#let phantom() = (block => (),)
 
 /// Helper function to turn a fractional box into an absolute one.
 /// -> (x: length, y: length, width: length, height: length)
@@ -258,7 +258,7 @@
   /// -> code | str
   ascii
 ) = (block => {
-  let ascii = if type(ascii) == raw {
+  let ascii = if type(ascii) == type(``) {
     ascii.text
   } else {
     ascii

@@ -14,7 +14,8 @@
 
 #meander.reflow(debug: true, {
   import meander: *
-  placed(top + left, img(5cm, 5cm, blue, 1), name: <A>)
+  placed(top + left, img(5cm, 5cm, blue, 1), tags: (<A>,))
+  // TODO: ignore-tags
   container(ignore-labels: (<A>,))
   container()
 
@@ -23,3 +24,21 @@
   content[#lorem(50)]
 })
 
+#pagebreak()
+
+#meander.reflow(debug: true, {
+  import meander: *
+  placed(
+    top + left,
+    boundary: contour.ascii-art(
+      ```
+      #
+      ##
+      ```
+    ),
+    img(50pt, 50pt, blue, 1),
+    tags: (<A>,),
+  )
+  container(tags: (<B>,))
+  content[#lorem(50)] 
+})

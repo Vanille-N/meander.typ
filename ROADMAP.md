@@ -25,6 +25,7 @@
 - [ ] automatically order obstacles before containers, except if there are labels
 - [ ] container margin 4 directions
 - [ ] optimize the rectangles in ascii (need fewer of them for performance)
+  - [ ] rotate + flip ascii map
 
 ## Threading
 - [ ] handle paragraph breaks
@@ -33,9 +34,10 @@
 - [ ] send content to one specific container
 - [ ] priority levels to fill boxes in a different order than they were defined
 - [X] colfill
+- [ ] apply styles to structured overflow
 
 ## Performance
-- [ ] Dichotomy in bisection
+- [ ] Dichotomy in bisection (?)
 
 ## QoL
 
@@ -62,4 +64,5 @@
 - [ ] use latest updates to simplify the README examples a bit
 - [ ] non-doc regular comments about the algorithm
 - [ ] Remind that meander can segment an arbitrary container, not just an entire page
+- [ ] example of colbreak vs colfill
 

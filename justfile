@@ -1,7 +1,7 @@
 typstc cmd file fmt="pdf":
-  typst {{ cmd }} --root=. {{ file }} {{ replace(file, ".typ", "." + fmt) }}
+  typst {{ cmd }} --root=. --font-path=. {{ file }} {{ replace(file, ".typ", "." + fmt) }}
 
-doc: (typstc "watch" "docs/main.typ")
+doc: (typstc "watch" "docs/docs.typ")
 
 figs force="":
   cd docs && if [ "{{force}}" = force ]; then touch figs/_preamble.typ; fi && make figs

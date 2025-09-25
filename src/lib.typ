@@ -1,9 +1,5 @@
-#import "bisect.typ"
+#import "elems.typ": placed, container, content, pagebreak, colbreak, colfill
 
-#import "tiling.typ"
-#import tiling: placed, container, content, regions, pagebreak, colbreak, colfill
-
-#import "threading.typ"
-#import threading: reflow
+#import "layouts.typ": reflow, regions
 
 #import "contour.typ"

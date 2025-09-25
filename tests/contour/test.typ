@@ -1,6 +1,5 @@
-#import "/src/tiling.typ": placed, container, content
-#import "/src/threading.typ": reflow
-#import "/src/contour.typ"
+#import "/src/lib.typ" as meander
+#import meander: reflow, placed, container, content, contour
 
 #reflow(debug: true, {
   placed(
@@ -172,7 +171,7 @@
 #reflow(debug: true, {
   placed(
     center + horizon,
-    boundary: contour.phantom,
+    boundary: contour.phantom(),
     circle(radius: 5cm, fill: yellow),
   )
   container()
