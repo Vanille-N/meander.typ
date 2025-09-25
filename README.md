@@ -1,5 +1,4 @@
 # Meander
-_Text threading and image wrap-around for Typst._
 
 `meander` provides a core function `reflow` to segment pages and wrap content around images.
 

@@ -2,7 +2,6 @@
 #import "@preview/swank-tex:0.1.0": LaTeX
 #import "@preview/tidy:0.4.3"
 
-
 #let repo = "https://github.com/Vanille-N/meander.typ/"
 #let typst-repo = "https://github.com/typst/typst/"
 
@@ -63,40 +62,30 @@
 
 #show: mantys(
   ..toml("../typst.toml"),
-  show-urls-in-footnotes: false,
-  /*
-  name: "mantys",
-  version: "1.0.0",
-  authors: (
-    "Jonas Neugebauer",
-  ),
-  license: "MIT",
-  description: "Helpers to build manuals for Typst packages.",
-  repository: "https://github.com/jneug/typst-mantys",
-  */
-
-  /// Uncomment one of the following lines to load the above
-  /// package information directly from the typst.toml file
-  // ..toml("../typst.toml"),
-  // ..toml("typst.toml"),
-
   title: "MEANDER",
   subtitle: "User guide",
   date: datetime.today(),
+
   show-index: false,
+  show-urls-in-footnotes: false,
 
   abstract: [
-    MEANDER implements a content layout algorithm that supports wrapping text around images of arbitrary shape.
-    Though very different in its modeling, MEANDER can be seen as a Typst alternative to #LaTeX's `wrapfig` and `parshape`.
+    MEANDER implements a content layout algorithm that supports wrapping text
+    around images of arbitrary shape.
+    In practice, this makes MEANDER a temporary solution to
+    #link(typst-repo + "issues/5181")[issue \#5181],
+    and it will eventually become obsolete when Typst includes the feature
+    natively.
+    Though very different in its modeling, MEANDER can be seen as a Typst
+    alternative to #LaTeX's `wrapfig` and `parshape`.
 
-    Internally this is enabled by
-    1. a page segmentation algorithm that detects floating content and arranges containers around them,
-    // TODO: content in color
-    2. a text bisection algorithm to recursively explore and split `content`,
-    3. a threading algorithm (threading is when text that overflows from one box continues to a different box).
+    Internally this is enabled by the following algorithms:
+    1. page tiling arranges containers around floating content,
+    2. text bisection recursively explores and splits `content`,
+    3. threading is the process of making text overflow to another box.
 
     #box[
-      #twocols[
+      #twocols(frac: 60%)[
         *Contributions* \
         If you have ideas or complaints, you're welcome
         to contribute to MEANDER by submitting a
@@ -115,14 +104,10 @@
         #show-page("cover")
       ]
     ]
+
+    #colbreak()
+    #colbreak()
   ],
-
-  // examples-scope: (
-  //   scope: (:),
-  //   imports: (:)
-  // )
-
-  // theme: themes.modern
 )
 
 = Quick start
@@ -910,7 +895,11 @@ This manual uses #universe("mantys") and #universe("tidy").
 
 == Acknowledgements
 
+MEANDER would have taken much more effort had I not had access to
+#universe("wrap-it")'s source code to understand the internal representation
+of content, so thanks to #github-user("ntjess").
+
 MEANDER started out as an idea in the Typst Discord server;
-thank you to everyone who gave input and encouragements.
+thanks to everyone who gave input and encouragements.
 
 
