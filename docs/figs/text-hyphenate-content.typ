@@ -12,7 +12,6 @@
   container()
   //@ </...>
   content(hyphenate: true)[
-
     #lorem(70)
   ]
 })

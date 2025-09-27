@@ -4,7 +4,7 @@
 
 <!-- @scrybe(not version; panic Please specify a version number) -->
 <!-- @scrybe(if publish; grep https; grep {{version}}) -->
-See the [documentation](docs/main.pdf).
+See the [documentation](docs/docs.pdf).
 
 ## Quick start
 
@@ -124,5 +124,5 @@ For a more in-depth introduction, including
 - multi-page handling and page overflow options,
 - tips to get better segmentation,
 <!-- @scrybe(if publish; grep https; grep {{version}}) -->
-please consult the [documentation](docs/main.pdf).
+please consult the [documentation](docs/docs.pdf).
 

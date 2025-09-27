@@ -3,8 +3,10 @@
 #meander.reflow(
   placement: box,
   overflow: tt => [
-    #set text(fill: red, size: 25pt)
-    *The following content overflows:*
+    #set text(fill: red)
+    #text(size: 25pt)[
+      *The following content overflows:*
+    ]
     _#{tt.styled}_
   ], {
   import meander: *

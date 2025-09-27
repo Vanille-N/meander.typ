@@ -2,6 +2,12 @@
 #import "@preview/swank-tex:0.1.0": LaTeX
 #import "@preview/tidy:0.4.3"
 
+// TODO: context
+
+// TODO: add to each section a link to the relevant docs.
+
+#show regex("Introduced in "): "Since "
+
 #let repo = "https://github.com/Vanille-N/meander.typ/"
 #let typst-repo = "https://github.com/typst/typst/"
 
@@ -50,7 +56,7 @@
   import path as mod
   tidy-module(
     name,
-    module: if module { name } else { none },
+    module: if module == true { name } else if module == false { none } else { module },
     read(path),
     scope: scope,
   )
@@ -70,25 +76,24 @@
   show-urls-in-footnotes: false,
 
   abstract: [
-    MEANDER implements a content layout algorithm that supports wrapping text
-    around images of arbitrary shape.
+    MEANDER implements a content layout algorithm that supports automatically
+    wrapping text around figures, and with a bit of extra work it can handle
+    images of arbitrary shape.
     In practice, this makes MEANDER a temporary solution to
-    #link(typst-repo + "issues/5181")[issue \#5181],
-    and it will eventually become obsolete when Typst includes the feature
-    natively.
-    Though very different in its modeling, MEANDER can be seen as a Typst
-    alternative to #LaTeX's `wrapfig` and `parshape`.
+    #link(typst-repo + "issues/5181")[issue \#5181].
+    When Typst eventually includes that feature natively, either MEANDER will
+    become obsolete, or the additional options it provides will be reimplemented
+    on top of the builtin features, greatly simplifying the codebase.
 
-    Internally this is enabled by the following algorithms:
-    1. page tiling arranges containers around floating content,
-    2. text bisection recursively explores and splits `content`,
-    3. threading is the process of making text overflow to another box.
+    Though very different in its modeling, MEANDER can be seen as a Typst
+    alternative to #LaTeX's `wrapfig` and `parshape`, effectively
+    enabling the same kinds of outputs.
 
     #box[
-      #twocols(frac: 60%)[
+      #twocols(frac: 57%)[
         *Contributions* \
-        If you have ideas or complaints, you're welcome
-        to contribute to MEANDER by submitting a
+        If you have ideas for improvements, or if you encounter a bug,
+        you are encouraged to contribute to MEANDER by submitting a
         #link(repo + "issues")[bug report],
         #link(repo + "issues")[feature request],
         or #link(repo)[pull request].
@@ -110,13 +115,15 @@
   ],
 )
 
+// TODO: array type constructor
+
 = Quick start
 
-The main function provided by MEANDER is ```typ #meander.reflow```,
+The main function provided by MEANDER is @cmd:meander:reflow,
 which takes as input
 a sequence of "containers", "obstacles", and "flowing content",
-created respectively by the functions ```typc container(..)```, ```typc placed(..)```,
-and ```typc content(..)```.
+created respectively by the functions @cmd:container, @cmd:placed,
+and @cmd:content.
 Obstacles are placed on the page with a fixed layout. After excluding the zones
 occupied by obstacles, the containers are segmented into boxes then filled
 by the flowing content.
@@ -126,14 +133,15 @@ More details about MEANDER's model are given in
 
 == A simple example
 
-Below is a single page whose layout is fully determined by MEANDER. The general pattern of ```typc placed(..)``` + ```typc container(..)``` + ```typc content(..)``` is
+Below is a single page whose layout is fully determined by MEANDER.
+The general pattern of @cmd:placed + @cmd:container + @cmd:content is
 almost universal.
 
-Within a ```typ #meander.reflow``` block, use ```typc placed(..)```
-(same parameters as the standard function ```typc place(..)```)
+Within a @cmd:meander:reflow block, use @cmd:placed
+(same parameters as the standard function #typ.place)
 to position obstacles made of arbitrary content on the page,
-specify areas where text is allowed with ```typc container(..)```,
-then give the actual content to be written there using ```typc content(..)```.
+specify areas where text is allowed with @cmd:container,
+then give the actual content to be written there using @cmd:content.
 
 #twocols(frac: 51.5%)[
   #show-code("simple-example", resize: -1pt)
@@ -156,7 +164,7 @@ then give the actual content to be written there using ```typc content(..)```.
 
 == Multiple obstacles
 
-A single ```typ #meander.reflow``` invocation can contain multiple ```typc placed(..)``` objects.
+A single @cmd:meander:reflow invocation can contain multiple @cmd:placed objects.
 A possible limitation would be performance if the number of obstacles grows too large, but experiments have shown that up to \~100 obstacles is still workable.
 
 #info-alert[
@@ -174,17 +182,18 @@ A possible limitation would be performance if the number of obstacles grows too 
 
 #info-alert[
   Technically, MEANDER can only handle rectangular obstacles.
-  However, thanks to this ability to handle an arbitrary number of obstacles, we can approximate a non-rectangular obstacle using sereval rectangles.
+  However, thanks to this ability to wrap around an arbitrary number of obstacles,
+  we can approximate a non-rectangular obstacle using sereval rectangles.
   See concrete applications and techniques for defining
-  these rectangular tilings in
-  @contouring.
+  these rectangular tilings in @contouring.
 ]
 
 == Columns <two-columns>
 
-Similarly, MEANDER can also handle multiple occurrences of ```typc container(..)```.
-They will be filled in the order provided, leaving a (configurable) margin between one and the next.
-Among other things, this can allow producing a layout in columns, including columns of uneven width
+Similarly, MEANDER can also handle multiple occurrences of @cmd:container.
+They will be filled in the order provided, leaving a (configurable) margin
+between one and the next. Among other things, this can allow producing a layout
+in columns, including columns of uneven width
 (a longstanding #link(typst-repo + "issues/1460")[typst issue]).
 
 #twocols(frac: 54%)[
@@ -192,6 +201,29 @@ Among other things, this can allow producing a layout in columns, including colu
 ][
   #show-page("two-columns")
 ]
+
+== Going further
+
+If you want to learn more advanced features or if there's a glitch in your
+layout, here are my suggestions.
+
+In any case, I recommend briefly reading @explain-algo, as having a basic
+understanding of what happens behind the scenes can't hurt.
+
+To learn how to handle non-rectangular obstacles, see @contouring.
+
+If you have issues with text size or paragraph leading,
+or if you want to enable hyphenation only for a single paragraph,
+you can find details in @styling-layout.
+
+To produce layouts that span more or less than a single page, see @multi-page.
+If you are specifically looking to give MEANDER only a single paragraph
+and you want the rest of the text to gracefully fit around, consult @placement.
+If you want to learn about what to do when text overflows the provided containers,
+this is covered in @overflow.
+
+For more obscure applications, you can read @interactive,
+or dive directly into the module documentation in @api.
 
 = Understanding the algorithm <explain-algo>
 
@@ -211,8 +243,8 @@ When you write some layout such as the one below,
 MEANDER receives a sequence of elements that it splits into obstacles,
 containers, and content.
 #show-code("debug-reflow-code", resize: -1pt)
-First the ```typc measure(..)``` of each obstacle is computed, their positioning
-is inferred from the alignment parameter of ```typc placed(..)```, and they are
+First the #typ.measure of each obstacle is computed, their positioning
+is inferred from the alignment parameter of @cmd:placed, and they are
 placed on the page. The regions they cover as marked as forbidden.
 
 Then the same job is done for the containers, marking those regions as allowed.
@@ -220,7 +252,7 @@ The two sets of computed regions are combined by subtracting the forbidden regio
 from the allowed ones, giving a rectangular subdivision of the usable areas.
 
 You can have a visual representation of these regions by replacing
-```typ #meander.reflow``` with ```typ #meander.regions```, with the same inputs.
+@cmd:meander:reflow with @cmd:meander:regions, with the same inputs.
 
 #figure(
   [
@@ -251,7 +283,7 @@ which does not fit in the container ```typc box(width: 5cm, height: 5cm)```:
 
 MEANDER will determine that
 1. the content fits in the box until "eius-", and everything afterwards is overflow,
-2. splitting `strong` text is equivalent to applying ```typc strong(..)``` to both
+2. splitting `strong` text is equivalent to applying #typ.strong to both
    halves,
 3. therefore the content can be separated into
   - on the one hand, the text that fits ```typc strong("Lorem ... eius-")```
@@ -282,12 +314,12 @@ The exact boundaries of containers may be altered in the process for better spac
 
 #figure(
   show-page("debug-reflow", width: 4.5cm),
-  caption: [Debug view of the final output of ```typ #meander.reflow```],
+  caption: [Debug view of the final output of ```typ #meander.reflow.with(debug: true)```],
 )
 
 #info-alert[
-  Every piece of content produced by ```typ #meander.reflow``` is placed,
-  and therefore does not affect layout outside of ```typ #meander.reflow```.
+  Every piece of content produced by @cmd:meander:reflow is placed,
+  and therefore does not affect layout outside of @cmd:meander:reflow.
   See @placement for solutions.
 ]
 
@@ -331,9 +363,9 @@ with a cutout in the middle for an image.
 MEANDER sees all obstacles as rectangular, so the circle leaves a big
 ugly #link("https://www.youtube.com/watch?v=6pDH66X3ClA")[square hole] in the page.
 Fortunately the desired circular shape is easy to describe in equations,
-and we can do so using the function ```typc contour.grid(..)```,
+and we can do so using the function @cmd:contour:grid,
 which takes as input a 2D formula normalized to $[0,1]$,
-i.e. a function from $[0,1] times [0,1]$ to ```typc bool```. // TODO: bool type
+i.e. a function from $[0,1] times [0,1]$ to #typ.t.bool.
 
 #show-code("circle-hole")
 This results in the new subdivisions of containers below.
@@ -359,21 +391,20 @@ As before, they are all normalized between $0$ and $1$.
 
 === Horizontal rectangles
 
-```typc contour.horiz(..)``` and ```typc contour.width(..)```
-produce horizontal layers of varying width.
-```typc contour.horiz(..)``` works on a `(left, right)` basis
+@cmd:contour:horiz and @cmd:contour:width produce horizontal layers of varying width.
+@cmd:contour:horiz works on a `(left, right)` basis
 (the parameterizing function should return the two extremities of the obstacle),
-while ```typc contour.width(..)``` works on an `(anchor, width)` basis.
+while @cmd:contour:width works on an `(anchor, width)` basis.
 
 #twocols(frac: 40%,
   show-page("contour-1"),
   show-code("contour-1"),
 )
 
-The interpretation of `flush` for ```typc contour.width(..)``` is as follows:
-- if `flush = left`, the `anchor` point will be the left of the obstacle;
-- if `flush = center`, the `anchor` point will be the middle of the obstacle;
-- if `flush = right`, the `anchor` point will be the right of the obstacle.
+The interpretation of #arg[flush] for @cmd:contour:width is as follows:
+- if #arg(flush: left), the `anchor` point will be the left of the obstacle;
+- if #arg(flush: center), the `anchor` point will be the middle of the obstacle;
+- if #arg(flush: right), the `anchor` point will be the right of the obstacle.
 #twocols(frac: 60%,
   show-code("contour-2"),
   show-page("contour-2"),
@@ -381,18 +412,17 @@ The interpretation of `flush` for ```typc contour.width(..)``` is as follows:
 
 === Vertical rectangles
 
-```typc contour.vert(..)``` and ```typc contour.height(..)```
-produce vertical layers of varying height.
+@cmd:contour:vert and @cmd:contour:height produce vertical layers of varying height.
 
 #twocols(frac: 40%,
   show-page("contour-4"),
   show-code("contour-4"),
 )
 
-The interpretation of `flush` for ```typc contour.height(..)``` is as follows:
-- if `flush = top`, the `anchor` point will be the top of the obstacle;
-- if `flush = horizon`, the `anchor` point will be the middle of the obstacle;
-- if `flush = bottom`, the `anchor` point will be the bottom of the obstacle.
+The interpretation of #arg[flush] for @cmd:contour:height is as follows:
+- if #arg(flush: top), the `anchor` point will be the top of the obstacle;
+- if #arg(flush: horizon), the `anchor` point will be the middle of the obstacle;
+- if #arg(flush: bottom), the `anchor` point will be the bottom of the obstacle.
 #twocols(frac: 60%,
   show-code("contour-3"),
   show-page("contour-3"),
@@ -400,7 +430,7 @@ The interpretation of `flush` for ```typc contour.height(..)``` is as follows:
 
 == Autocontouring
 
-The contouring function ```typc contour.ascii-art(..)``` takes as input
+The contouring function @cmd:contour:ascii-art takes as input
 a string or raw code and uses it to draw the shape of the image.
 The characters that can occur are:
 #twocols(frac: 52%,
@@ -415,7 +445,7 @@ you may use the auxiliary tool
 to produce a first draft.
 This small Python script will read an image, pixelate it, apply a customizable
 threshold function, and produce a `*.contour` file that can be given as input
-to ```typc contour.ascii-art(..)```.
+to @cmd:contour:ascii-art.
 
 #codesnippet[```sh
   # Install the script
@@ -423,17 +453,23 @@ to ```typc contour.ascii-art(..)```.
 
   # Run on `image.png` down to 15 by 10 pixels, with an 80% threshold.
   $ autocontour image.png 15x10 80%
-```]
+
+  # Then use your text editor of choice to tweak `image.png.contour`
+  # if it is not perfect.
+  ```
+]
 #codesnippet[```typ
   #meander.reflow({
     import meander: *
     placed(top + left,
+      // Import statically generated boundary.
       boundary: contour.ascii-art(read("image.png.contour")),
       image("image.png"),
     )
     // ...
   })
-```]
+  ```
+]
 
 #info-alert[
   You can read more about `autocontour` on the dedicated #link("https://github.com/Vanille-N/meander.typ/tree/master/autocontour/README.md")[`README.md`]
@@ -513,7 +549,7 @@ access to ```typ #par.justify```, which is only updated via a ```typ #set``` rul
 As such *do not* use ```typ #par(justify: true)[...]```.
 
 Instead prefer ```typ #[#set par(justify: true); ...]```, or put the ```typ #set```
-rule outside of the invocation of ```typ #meander.reflow``` altogether.
+rule outside of the invocation of @cmd:meander:reflow altogether.
 
 #wrong-way(
   show-code("par-justify", resize: -2pt),
@@ -530,32 +566,32 @@ rule outside of the invocation of ```typ #meander.reflow``` altogether.
   show-page("set-par-justify-1", width: 3.2cm),
 )
 
-== Font size and `par` leading
+== Font size and leading
 
 The font size indirectly affects layout because it determines the spacing between
 lines. When a linebreak occurs between containers, MEANDER needs to manually
 insert the appropriate spacing there. Since the spacing is affected by font size,
-make sure to update the font size outside of the ```typ #meander.reflow```
-invocation if you want the correct line spacing. Alternatively, `size`
-can be passed as a parameter of `content` and it will be interpreted as the text size.
+make sure to update the font size outside of the @cmd:meander:reflow.
+invocation if you want the correct line spacing. Alternatively, #arg[size]
+can be passed as a parameter of @cmd:content and it will be interpreted as the text size.
 
 Analogously, if you wish to change the spacing between lines,
-use either a ```typ #set par(leading: 1em)``` outside of ```typ #meander.reflow```,
-or pass ```typc leading: 1em``` as a parameter to `content`. // TODO: type
+use either a ```typ #set par(leading: 1em)``` outside of @cmd:meander:reflow,
+or pass #arg(leading: 1em) as a parameter to @cmd:content.
 
 #wrong-way(
   show-code("font-size-inside", resize: -2pt),
-  show-page("font-size-inside", width: 2.9cm),
+  show-page("font-size-inside", width: 2.6cm),
 )
 
 #right-way(
   show-code("font-size-outside", resize: -2pt),
-  show-page("font-size-outside", width: 2.9cm),
+  show-page("font-size-outside", width: 2.6cm),
 )
 
 #right-way(
   show-code("font-size-content", resize: -2pt),
-  show-page("font-size-content", width: 2.9cm),
+  show-page("font-size-content", width: 2.6cm),
 )
 
 == Hyphenation and language
@@ -564,30 +600,30 @@ Hyphenation can only be fetched contextually, and highly influences how text
 is split between boxes. Language indirectly influences layout because it determines
 hyphenation rules.
 To control the hyphenation and language, use the same approach as for the text
-size: either ```typ #set``` them outside of ```typ #meander.reflow```,
-or pass them as parameters to `content`. // TODO: type
+size: either ```typ #set``` them outside of @cmd:meander:reflow,
+or pass them as parameters to #typ.t.content.
 
 #wrong-way(
   show-code("text-hyphenate-inside", resize: -2pt),
-  show-page("text-hyphenate-inside", width: 2.9cm),
+  show-page("text-hyphenate-inside", width: 2.6cm),
 )
 
 #right-way(
   show-code("text-hyphenate-outside", resize: -2pt),
-  show-page("text-hyphenate-outside", width: 2.9cm),
+  show-page("text-hyphenate-outside", width: 2.6cm),
 )
 
 #right-way(
   show-code("text-hyphenate-content", resize: -2pt),
-  show-page("text-hyphenate-content", width: 2.9cm),
+  show-page("text-hyphenate-content", width: 2.6cm),
 )
 
 === Styling containers
 
-```typc container(..)``` accepts a `style` dictionary that may contain the following
+@cmd:container accepts a #arg[style] dictionary that may contain the following
 keys:
-- `text-fill`: the color of the text in this container,
-- `align`: the left/center/right alignment of content,
+- #arg[text-fill]: the color of the text in this container,
+- #arg[align]: the left/center/right alignment of content,
 - and more to come.
 
 These options have in common that they do not affect layout so they can be applied
@@ -603,31 +639,31 @@ post-threading to the entire box. Future updates may lift this restriction.
 == Pagebreak
 
 MEANDER can deal with text that spans multiple pages,
-you just need to place ```typc pagebreak()```s appropriately.
-Note that ```typc pagebreak()``` only affects the obstacles and containers,
-while ```typc content(..)``` blocks ignore them entirely.
+you just need to place one or more @cmd:pagebreak appropriately.
+Note that @cmd:pagebreak only affects the obstacles and containers,
+while @cmd:content blocks ignore them entirely.
 
 The layout below spans two pages:
-- obstacles and containers before the ```typc pagebreak()``` go to the first page,
-- obstacles and containers after the ```typc pagebreak()``` go to the second page,
-- ```typc content(..)``` is page-agnostic and will naturally overflow to the second
+- obstacles and containers before the @cmd:pagebreak go to the first page,
+- obstacles and containers after the @cmd:pagebreak go to the second page,
+- @cmd:content is page-agnostic and will naturally overflow to the second
   page when all containers from the first page are full.
 #twocols[
   #show-code("two-pages/doc", resize: -2pt)
 ][
   #show-page("two-pages/doc.1", width: 3.5cm)
   #show-page("two-pages/doc.2", width: 3.5cm)
-  Notice: text from a 1-column layout overflows into a 2-column layout.
+  *Notice:* text from a 1-column layout overflows into a 2-column layout.
 ]
 
 == Colbreak
 
-Analogously, ```typc colbreak()``` breaks to the next container.
-Note that ```typc pagebreak()``` is a _container_ separator while
-```typc colbreak()``` is a _content_ separator. The next container may be
+Analogously, @cmd:colbreak breaks to the next container.
+Note that @cmd:pagebreak is a _container_ separator while
+@cmd:colbreak is a _content_ separator. The next container may be
 on the next page, so the right way to create an entirely new page for both
-containers and content is a ```typc pagebreak()``` *and* a ```typc colbreak()```...
-or you could just end the ```typ #meander.reflow``` and start a new one.
+containers and content is a @cmd:pagebreak *and* a @cmd:colbreak...
+or you could just end the @cmd:meander:reflow and start a new one.
 
 #show-code("colbreak/doc", resize: -2pt)
 #table(columns: (1fr, 1fr, 1fr), stroke: none,
@@ -636,40 +672,64 @@ or you could just end the ```typ #meander.reflow``` and start a new one.
   show-page("colbreak/doc.3"),
 )
 
+== Colfill
+
+Contrary to @cmd:colbreak which breaks to the next container,
+@cmd:colfill fills the current container, _then_ breaks to the next
+container.
+There is sometimes a subtle difference between these behaviors,
+as demonstrated by the examples below.
+Choose whichever is appropriate based on your use-case.
+#twocols(frac: 70%)[
+  #show-code("break-or-fill")
+][
+  #show-page("break-or-fill")
+]
+#twocols(frac: 70%)[
+  #show-code("fill-or-break")
+][
+  #show-page("fill-or-break")
+]
+#info-alert[
+  Recall that filled containers count as obstacles for future containers,
+  so there is a difference between dropping containers and filling them with
+  nothing.
+]
+
 == Placement <placement>
 
-Placement options control how a ```typ #meander.reflow``` invocation is visible
+Placement options control how a @cmd:meander:reflow invocation is visible
 by and sees other content. This is important because MEANDER
 places all its contents, so it is by default invisible to the native layout.
 
-=== `page`
+=== Default
 
-The default, and least opinionated, mode is `placement: page`.
-- suitable for: one or more pages that `meander` has full control over.
-- advantages: supports `pagebreak`s, several invocations can be superimposed,
+The default, and least opinionated, mode is #arg(placement: page).
+- suitable for: one or more pages that MEANDER has full control over.
+- advantages: supports @cmd:pagebreak, several invocations can be superimposed,
   flexible.
 - drawbacks: superimposed with content that follows.
 
-=== `box`
+=== Inline
 
-The option `placement: box` will emit non-`place`d boxes to simulate the
+The option #arg(placement: box) will emit non-`place`d boxes to simulate the
 actual space taken by the MEANDER-controlled layout.
 - suitable for: an invocation that is part of a larger page.
-- advantages: supports ```typc pagebreak()```, content that follows is automatically placed after.
+- advantages: supports @cmd:pagebreak, content that follows is automatically placed after.
 - drawbacks: cannot superimpose multiple invocations.
 
-=== `float`
+=== Full page
 
-Finally, `placement: float` produces a layout that spans at most a page,
+Finally, #arg(placement: float) produces a layout that spans at most a page,
 but in exchange it can take the whole page even if some content has already
 been placed.
 - suitable for: single page layouts.
 - advantages: gets the whole page even if some content has already been written.
-- drawbacks: does not support `pagebreak`s, does not consider other content.
+- drawbacks: does not support @cmd:pagebreak, does not consider other content.
 
 === Use-case
 
-Below is a layout that is not (as easily) achievable in `page` as it is in `box`.
+Below is a layout that is not (as easily) achievable in #typ.page as it is in #typ.box.
 Only text in red is actually controlled by MEANDER, the rest is naturally
 placed before and after. This makes it possible to hand over to MEANDER only
 a few paragraphs where a complex layout is required, then fall back to the native
@@ -677,45 +737,45 @@ Typst layout engine.
 #table(columns: (1fr, 1fr), stroke: none)[
   #show-code("placement-box")
 
-  For reference, to the right is the same page if we omit `placement: box`,
+  For reference, to the right is the same page if we omit #arg(placement: box),
   where we can see a glitchy superimposition of text.
 ][
   #show-page("placement-box", width: 7cm)
   #align(right)[
-    #v(-2cm)
+    #v(-3cm)
     #show-page("placement-box-bad", width: 3cm)
   ]
 ]
 
-== Overflow
+== Overflow <overflow>
 
 By default, if the content provided overflows the available containers,
 it will show a warning. This behavior is configurable.
 
 === No overflow
 
-The default behavior is ```typc overflow: false``` because it avoids panics while
+The default behavior is #arg(overflow: false) because it avoids panics while
 still alerting that something is wrong. The red warning box suggests adding
-more containers or a pagebreak to fit the remaining text.
-Setting ```typc overflow: true``` will silently ignore the overflow, while
-```typc overflow: panic``` will immediately abort compilation.
+more containers or a @cmd:pagebreak to fit the remaining text.
+Setting #arg(overflow: true) will silently ignore the overflow, while
+#arg(overflow: panic) will immediately abort compilation.
 
 #twocols(
-  [```typc overflow: false``` \
+  [#arg(overflow: false) \
     #show-code("overflow-false", resize: -2pt)
   ],
   show-page("overflow-false", width: 3.5cm),
 )
 
 #twocols(
-  [```typc overflow: true``` \
+  [#arg(overflow: true) \
     #show-code("overflow-true", resize: -2pt)
   ],
   show-page("overflow-true", width: 3.5cm),
 )
 
 #twocols(
-  [```typc overflow: panic``` \
+  [#arg(overflow: panic) \
     #show-code("overflow-panic", resize: -2pt)
   ],
   show-page("overflow-panic", width: 3.5cm),
@@ -728,10 +788,10 @@ in the defined layout. A commonly desired behavior is for the overflow
 to simply integrate with the layout as gracefully as possible.
 That is the purpose of the two options that follow.
 
-With ```typc overflow: pagebreak```, any content that overflows is placed on the next page.
-This is typically most useful in conjunction with ```typc placement: page```,
-and is outright incompatible with ```typc placement: float```
-(because it does not support pagebreaks; see @placement).
+With #arg(overflow: pagebreak), any content that overflows is placed on the next page.
+This is typically most useful in conjunction with #arg(placement: page),
+and is outright incompatible with #arg(placement: float)
+(because it does not support @cmd:pagebreak; see @placement).
 #twocols[
   #show-code("overflow-pagebreak/doc", resize: -2pt)
 ][
@@ -741,8 +801,8 @@ and is outright incompatible with ```typc placement: float```
   The overflow is in black, and is naturally followed by native text in red.
 ]
 
-As for `overflow: text`, it is similarly best suited in conjunction with `placement: box`,
-and simply writes the text after the end of the layout.
+As for #arg(overflow: text), it is similarly best suited in conjunction
+with #arg(placement: box), and simply writes the text after the end of the layout.
 #twocols[
   #show-code("overflow-text/doc", resize: -2pt)
 ][
@@ -750,39 +810,96 @@ and simply writes the text after the end of the layout.
   #show-page("overflow-text/doc.2", width: 3.5cm)
 ]
 
-In both cases, any content that follows the ```typ #reflow``` invocation
+In both cases, any content that follows the @cmd:meander:reflow invocation
 will more or less gracefully follow after the overflowing text,
 possibly with the need to slightly adjust paragraph breaks if needed.
 
 === Custom layouts
 
+#warning-alert[
+  Before resorting to one of these solutions, check if there isn't a better way to do
+  whatever you're trying to achieve.
+  If it really is the only solution, consider
+  #link("https://github.com/Vanille-N/meander.typ/issues")[reaching out]
+  to see if there is a way to make your desired layout better supported
+  and available to other people.
+]
+
 If your desired output does not fit in the above predefined behaviors,
-you can fall back to writing a custom overflow handler. Any function
-that returns `content` can serve as handler, including another invocation of
-```typ #reflow```.
-This function will be given as input a dictionary with fields:
-- `styled` has all styling options applied and is generally what you should use,
-- `structured` is suitable for placing in another ```typ #reflow``` invocation,
-- `raw` uses an internal representation that you can iterate over, but
+you can fall back to storing it to a state or writing a custom overflow handler.
+Any function #lambda("overflow", ret:content) can serve as handler,
+including another invocation of @cmd:meander:reflow.
+This function will be given as input an object of type @type:overflow,
+which is concretely a dictionary with fields:
+- #arg[styled] is #typ.t.content with all styling options applied and is generally
+  what you should use,
+- #arg[structured] is an array of @type:elem, suitable for placing in another
+  @cmd:meander:reflow invocation,
+- #arg[raw] uses an internal representation that you can iterate over, but
   that is not guaranteed to be stable. Use as last resort only.
+
+Similarly if you pass as overflow a `state`, it will receive any content that overflows
+in the same 3 formats, and you can use ```typc state.get()``` on it afterwards.
 
 For example here is a handler that adds a header and some styling options
 to the text that overflows:
-#twocols(frac: 67.5%)[
+#twocols(frac: 63%)[
   #show-code("overflow-handler", resize: -1pt)
 ][
   #show-page("overflow-handler")
 ]
 
+And here is one that stores to a state to be retrieved later:
+#twocols(frac: 63%)[
+  #show-code("overflow-state", resize: -1pt)
+][
+  #show-page("overflow-state")
+]
+#warning-alert[
+  Use in moderation. Chaining multiple of these together can make your
+  layout diverge.
+]
+
 See also an answer I gave to
 #link("https://github.com/Vanille-N/meander.typ/issues/1#issuecomment-3306100761")[issue \#1]
-which demonstrates how passing a ```typ #meander.reflow``` layout as overflow handler
+which demonstrates how passing a @cmd:meander:reflow layout as overflow handler
 can achieve layouts not otherwise supported.
-These applications should remain last-resort measures, and if you find that
-a layout you would want to achieve is only possible by chaining together
-several ```typ #meander.reflow``` handlers, consider instead
-#link("https://github.com/Vanille-N/meander.typ/issues")[reaching out]
-to see if there is a way to make this layout better supported.
+Use this only as a last-resort solution.
+
+= Inter-element interaction <interactive>
+
+MEANDER allows attaching tags to elements, and applying properties based on those tags.
+More features are planned, including
+- positioning an element relative to a previous one,
+- changing the default style of elements with some tag.
+Open a #link(repo + "issues")[feature request] if you have an idea of a behavior
+based on tags that should be supported.
+
+You can put one or more tags on any obstacle or container by adding a parameter
+#arg[tags] that contains a #typ.t.label or an array of #typ.t.label. For example:
+- ```typc placed(..., tags: <A>)```
+- ```typc container(..., tags: (<B>, <C>))```
+
+== Invisible obstacles
+
+By passing one or more tags to the parameter #arg[invisible] of ```typc container(..)```,
+you can make it unaffected by the obstacles in question.
+#info-alert[
+  This is already doable globally by setting #arg[boundary] to @cmd:contour:phantom.
+  The innovation of #arg[invisible] is that this can be done on a per-container basis.
+]
+Below is an interesting application of this feature.
+The @cmd:placed obstacles all receive a tag ```typc <x>```,
+and the second container has #arg(invisible: <x>).
+Therefore the @cmd:placed elements count as obstacles to the first
+container but not the second.
+The first container is immediately filled with empty content and counts as
+an obstacle to the second container.
+#twocols[
+  #show-code("invisible")
+][
+  #show-page("invisible")
+]
 
 = Showcase
 
@@ -819,17 +936,59 @@ You can find the source code for these on the #link(repo + "tree/master/examples
   Motivated by #link("https://forum.typst.app/t/is-there-an-equivalent-to-latex-s-parshape/1006/3")["Is there an equivalent to LaTeX's \\parshape?" (Typst forum)]
 ]
 
-= Public API
+= Public API <api>
 
-== Elements
+These are the user-facing functions of MEANDER.
+
+// TODO: colors
+#custom-type("state")
+#custom-type("elem")
+#custom-type("block") // Don't forget the optional bounds and styles
+#custom-type("blocks")
+#custom-type("contour")
+#custom-type("align")
+#custom-type("size")
+#custom-type("overflow")
+
+== Elements <elem-doc>
+
+All constructs that are valid within a ```typ #meander.reflow({ .. })``` block.
+Note that they all produce an object that is a singleton dictionary,
+so that the ```typ #meander.reflow({ .. })``` invocation is automatically
+passed as input the concatenation of all these elements.
+For clarity we use the more descriptive type @type:elem,
+instead of the internal representation `(dictionary,)`
 
 #show-module("elems")
 
 == Layouts
 
-#show-module("layouts")
+These are the toplevel invocations.
+They expect a sequence of `elem` as input, and produce `content`.
 
-= Internal module details
+#show-module("layouts", module: "meander")
+
+== Contouring <contouring-doc>
+
+Functions for approximating non-rectangular boundaries.
+We refer to those collectively as being of type @type:contour.
+They can be concatenated with `+` which will apply contours successively.
+// TODO: define a `contour` custom type.
+
+#show-module("contour", module: true)
+
+== Std
+
+Some builtin functions or types are shadowed by MEANDER's definitions.
+This module allows you to still access them.
+
+#show-module("std", module: true)
+
+= Internal module details <internal>
+
+== Utils
+
+#show-module("utils", module: true)
 
 == Geometry
 
@@ -838,10 +997,6 @@ You can find the source code for these on the #link(repo + "tree/master/examples
 == Tiling
 
 #show-module("tiling", module: true)
-
-== Contouring
-
-#show-module("contour", module: true)
 
 == Bisection
 
@@ -864,16 +1019,23 @@ there are plans to provide
 
 == Related works
 
-In Typst:
+This package takes a lot of basic ideas from
+#link("https://laurmaedje.github.io/posts/layout-models/")[Typst's own builtin layout model],
+mainly lifting the restriction that all containers must be of the same width,
+but otherwise keeping the container-oriented workflow.
+There are other tools that implement similar features, often with very different
+models internally.
+
+*In Typst:*
 - #universe("wrap-it") has essentially the same output as MEANDER with at
   only one obstacle and one container. It is noticeably more concise for very
   simple cases.
 
-In #LaTeX:
+*In #LaTeX:*
 - #link("https://ctan.org/pkg/wrapfig")[`wrapfig`] can achieve similar results
   as MEANDER as long as the images are rectangular, with the notable difference
-  that it can even affect content outside of the `\begin{wrapfigure}...\end{wrapfigure}`
-  environment.
+  that it can even affect content outside of the
+  ```tex \begin{wrapfigure}...\end{wrapfigure}``` environment.
 - #link("https://ctan.org/pkg/floatflt")[`floatfit`] and
   #link("https://ctan.org/pkg/picins")[`picins`] can do a similar job as `wrapfig` with
   slightly different defaults.
@@ -882,7 +1044,7 @@ In #LaTeX:
   It has the known drawback to attach to the paragraph data that depends on the
   obstacle, and is therefore very sensitive to layout adjustments.
 
-Others:
+*Others:*
 - #link("https://helpx.adobe.com/indesign/using/text-wrap.html")[Adobe InDesign]
   supports threading text and wrapping around images with arbitrary shapes.
 
@@ -890,8 +1052,7 @@ Others:
 
 In order to obtain hyphenation patterns, MEANDER imports
 #universe("hy-dro-gen"), which is a wrapper around #github("typst/hypher").
-
-This manual uses #universe("mantys") and #universe("tidy").
+This manual is built using #universe("mantys") and #universe("tidy").
 
 == Acknowledgements
 

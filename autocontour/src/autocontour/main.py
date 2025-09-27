@@ -178,7 +178,7 @@ class RGB:
 
 @dataclass
 class Pixel:
-    data: RGB | Gray
+    data: RGB | Gray | BW
 
     @staticmethod
     def from_bytes(bb):

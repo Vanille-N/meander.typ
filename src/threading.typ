@@ -2,31 +2,27 @@
 #import "elems.typ"
 #import "tiling.typ"
 
+/// #property(requires-context: true)
 /// Thread text through a list of boxes in order,
 /// allowing the boxes to stretch vertically to accomodate for uneven tiling.
 ///
-/// -> (..content,)
+/// -> (full: , overflow: overflow)
 #let smart-fill-boxes(
   /// Flowing text.
   /// -> content
   body,
-  /// Obstacles to avoid.
-  /// A list of `(x: length, y: length, width: length, height: length)`.
+  /// An array of @type:block to avoid.
   /// -> (..block,)
   avoid: (),
-  /// Boxes to fill.
-  /// A list of `(x: length, y: length, width: length, height: length, bound: block)`.
+  /// An array of @type:block to fill.
   ///
-  /// `bound` is the upper limit of how much to stretch the container,
-  /// i.e. also `(x: length, y: length, width: length, height: length)`.
+  /// The #arg[bound] parameter of @type:block is used to know how much
+  /// the container is allowed to stretch.
   ///
   /// -> (..block,)
   boxes: (),
-  /// How much the baseline can extend downwards (within the limits of `bounds`).
-  /// -> length
-  extend: 1em,
-  /// Dimensions of the container as given by `layout`.
-  /// -> (width: length, height: length)
+  /// Dimensions of the container as given by #typ.layout.
+  /// -> size
   size: none,
 ) = {
   assert(size != none)
@@ -64,10 +60,8 @@
     }
 
     if current-fill == none {
-      text-size = body.style.size
-      par-leading = body.style.leading
-      if text-size == auto { text-size = text.size }
-      if par-leading == auto { par-leading = par.leading }
+      text-size = body.style.at("size", default: text.size)
+      par-leading = body.style.at("leading", default: par.leading)
     }
     // Leave it a little room
     // 0.5em margin at the bottom to let it potentially add an extra line

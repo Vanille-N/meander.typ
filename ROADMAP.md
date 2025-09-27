@@ -26,6 +26,7 @@
 - [ ] container margin 4 directions
 - [ ] optimize the rectangles in ascii (need fewer of them for performance)
   - [ ] rotate + flip ascii map
+- [X] added `anchor` to placed
 
 ## Threading
 - [ ] handle paragraph breaks
@@ -34,7 +35,9 @@
 - [ ] send content to one specific container
 - [ ] priority levels to fill boxes in a different order than they were defined
 - [X] colfill
-- [ ] apply styles to structured overflow
+  - [X] check for maybe bug: does colfill properly fill the current container ?
+- [X] apply styles to structured overflow
+- [X] save overflow to state
 
 ## Performance
 - [ ] Dichotomy in bisection (?)
@@ -46,6 +49,7 @@
 - [ ] inverse retiling (define a container with a complex shape through retiling functions)
 - [ ] define styles based on labels
 - [ ] retiling function by concatenating two others
+- [ ] use default `()` if reflow receives `none`.
 
 ## Parameterization
 
@@ -56,7 +60,7 @@
   - [ ] threading
 
 ## Refactoring
-- [ ] extract regions and reflow's `wrapper`.
+- [X] extract regions and reflow's `wrapper`.
 
 ## Documentation
 
@@ -64,5 +68,5 @@
 - [ ] use latest updates to simplify the README examples a bit
 - [ ] non-doc regular comments about the algorithm
 - [ ] Remind that meander can segment an arbitrary container, not just an entire page
-- [ ] example of colbreak vs colfill
+- [X] example of colbreak vs colfill
 

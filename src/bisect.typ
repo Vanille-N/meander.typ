@@ -2,18 +2,20 @@
 
 #import "geometry.typ"
 
+/// #property(requires-context: true)
 /// Tests if content fits inside a box.
-///
-/// WARNING: horizontal fit is not very strictly checked
-/// A single word may be said to fit in a box that is less wide than the word.
-/// This is an inherent limitation of `measure(box(...))` and I will try
-/// to develop workarounds for future versions.
+/// #warning-alert[
+///   Horizontal fit is not very strictly checked
+///   A single word may be said to fit in a box that is less wide than the word.
+///   This is an inherent limitation of `measure(box(...))` and I will try
+///   to develop workarounds for future versions.
+/// ]
 ///
 /// The closure of this function constitutes the basis of the entire content
-/// splitting algorithm: iteratively add content until it no longer `fits-inside`,
+/// splitting algorithm: iteratively add content until it no longer fits inside the box,
 /// with what "iteratively add content" means being defined by the content structure.
 /// Essentially all remaining functions in this file are about defining content
-/// that can be split and the correct way to invoke `fits-inside` on them.
+/// that can be split and the correct way to invoke @cmd:bisect:fits-inside on them.
 ///
 /// ```typ
 /// #let dims = (width: 100%, height: 50%)
@@ -59,8 +61,8 @@
 /// In practice what we will usually do is recursively split the inner contents
 /// and rebuild the left and right halves separately.
 ///
-/// Inspired by `wrap-it`'s implementation
-/// (see: `_rewrap` in #link("https://github.com/ntjess/wrap-it/blob/main/wrap-it.typ")[`github:ntjess/wrap-it`])
+/// Inspired by #universe("wrap-it")'s implementation
+/// (see: #cmd("_rewrap") in #link("https://github.com/ntjess/wrap-it/blob/main/wrap-it.typ")[`github:ntjess/wrap-it`])
 ///
 /// ```typ
 /// #let content = box(stroke: red)[Initial]
@@ -99,7 +101,8 @@
 #let default-rebuild(
   /// -> content
   ct,
-  /// What "inner" field to fetch (e.g. `"body"`, `"text"`, `"children"`, etc.)
+  /// What "inner" field to fetch (e.g. ```typc "body"```, ```typc "text"```,
+  /// ```typc "children"```, etc.)
   /// -> string
   inner-field,
 ) = {
@@ -126,7 +129,7 @@
   /// If it fits take it, otherwise keep it for later.
   /// -> content
   ct,
-  /// Closure to determine if the content fits (see `fits-inside` above). -> function
+  /// Closure to determine if the content fits (see @cmd:bisect:fits-inside). -> function
   fits-inside,
 ) = {
   if fits-inside(ct) {
@@ -136,18 +139,20 @@
   }
 }
 
+/// Split one word according to hyphenation patterns, if enabled.
+/// -> (content?, content?)
 #let split-word(
   /// Word to split.
   /// -> string
   ww,
-  /// Closure to determine if the content fits (see `fits-inside` above). -> function
+  /// Closure to determine if the content fits (see @cmd:bisect:fits-inside). -> function
   fits-inside,
   /// Extra configuration options. -> dictionary
   cfg,
 ) = {
   assert(cfg.hyphenate != false)
   import "@preview/hy-dro-gen:0.1.1" as hy
-  let syllables = hy.syllables(ww, lang: cfg.lang, fallback: none) // TODO: get the proper language
+  let syllables = hy.syllables(ww, lang: cfg.lang, fallback: none)
   for i in range(syllables.len()) {
     if fits-inside(syllables.slice(0, i + 1).join("") + "-") {
       continue
@@ -168,17 +173,19 @@
   return (left, none)
 }
 
-/// Split content with a `"text"` main field.
-/// Strategy: split by `" "` and take all words that fit.
+/// Split content with a ```typc "text"``` main field.
+///
+/// Strategy: split by ```typc " "``` and take all words that fit.
 /// Then if hyphenation is enabled, split by syllables and take all syllables
-/// that fit. End the block with a linebreak that has the justification of
+/// that fit. End the block with a #typ.linebreak that has the justification of
 /// the paragraph.
+/// -> (content?, content?)
 #let has-text(
   /// Content to split. -> content
   ct,
-  /// Recursively passed around (see `split-dispatch` below). -> function
+  /// Recursively passed around (see @cmd:bisect:dispatch). -> function
   split-dispatch,
-  /// Closure to determine if the content fits (see `fits-inside` above). -> function
+  /// Closure to determine if the content fits (see @cmd:bisect:fits-inside). -> function
   fits-inside,
   /// Extra configuration options. -> dictionary
   cfg,
@@ -226,14 +233,16 @@
   return (rebuild(inner.join(" ")), none)
 }
 
-/// Split content with a `"child"` main field.
+/// Split content with a ```typc "child"``` main field.
+///
 /// Strategy: recursively split the child.
+/// -> (content?, content?)
 #let has-child(
   /// Content to split. -> content
   ct,
-  /// Recursively passed around (see `split-dispatch` below). -> function
+  /// Recursively passed around (see @cmd:bisect:dispatch). -> function
   split-dispatch,
-  /// Closure to determine if the content fits (see `fits-inside` above). -> function
+  /// Closure to determine if the content fits (see @cmd:bisect:fits-inside). -> function
   fits-inside,
   /// Extra configuration options. -> dictionary
   cfg,
@@ -250,14 +259,16 @@
   (left, right)
 }
 
-/// Split content with a `"children"` main field.
+/// Split content with a ```typc "children"``` main field.
+///
 /// Strategy: take all children that fit.
+/// -> (content?, content?)
 #let has-children(
   /// Content to split. -> content
   ct,
-  /// Recursively passed around (see `split-dispatch` below). -> function
+  /// Recursively passed around (see @cmd:bisect:dispatch). -> function
   split-dispatch,
-  /// Closure to determine if the content fits (see `fits-inside` above). -> function
+  /// Closure to determine if the content fits (see @cmd:bisect:fits-inside). -> function
   fits-inside,
   /// Extra configuration options. -> dictionary
   cfg,
@@ -298,14 +309,16 @@
 }
 
 /// Split a `list.item`.
-/// Strategy: recursively split the `body`, and do some magic to simulate
+///
+/// Strategy: recursively split the body, and do some magic to simulate
 /// a bullet point indent.
+/// -> (content?, content?)
 #let is-list-item(
   /// Content to split. -> content
   ct,
-  /// Recursively passed around (see `split-dispatch` below). -> function
+  /// Recursively passed around (see @cmd:bisect:dispatch). -> function
   split-dispatch,
-  /// Closure to determine if the content fits (see `fits-inside` above). -> function
+  /// Closure to determine if the content fits (see @cmd:bisect:fits-inside). -> function
   fits-inside,
   /// Extra configuration options. -> dictionary
   cfg,
@@ -341,14 +354,20 @@
 }
 
 /// Split an `enum.item`.
-/// Strategy: recursively split the `body`, and do some magic to simulate
+///
+/// #warning-alert[
+///   The numbering will reset on the split. I am developping a fix,
+///   in the meantime use explicit numbering.
+/// ]
+/// Strategy: recursively split the body, and do some magic to simulate
 /// a numbering indent.
+/// -> (content?, content?)
 #let is-enum-item(
   /// Content to split. -> content
   ct,
-  /// Recursively passed around (see `split-dispatch` below). -> function
+  /// Recursively passed around (see @cmd:bisect:dispatch). -> function
   split-dispatch,
-  /// Closure to determine if the content fits (see `fits-inside` above). -> function
+  /// Closure to determine if the content fits (see @cmd:bisect:fits-inside). -> function
   fits-inside,
   /// Extra configuration options. -> dictionary
   cfg,
@@ -397,16 +416,19 @@
   (left, right)
 }
 
-/// Split content with a `"body"` main field.
-/// There is a special strategy for `list.item` and `enum.item` which are handled
-/// separately. Elements `strong`, `emph`, `underline`, `stroke`, `overline`,
-/// `highlight` are splittable, the rest are treated as non-splittable.
+/// Split content with a ```typc "body"``` main field.
+/// There is a special strategy for ```typc list.item``` and ```typc enum.item```
+/// which are handled separately.
+/// Elements #typ.strong, #typ.emph, #typ.underline, #typ.stroke, #typ.overline,
+/// #typ.highlight, #typ.par, #typ.align, #typ.link are splittable,
+/// the rest are treated as non-splittable.
+/// -> (content?, content?)
 #let has-body(
   /// Content to split. -> content
   ct,
-  /// Recursively passed around (see `split-dispatch` below). -> function
+  /// Recursively passed around (see @cmd:bisect:dispatch). -> function
   split-dispatch,
-  /// Closure to determine if the content fits (see `fits-inside` above). -> function
+  /// Closure to determine if the content fits (see @cmd:bisect:fits-inside). -> function
   fits-inside,
   /// Extra configuration options. -> dictionary
   cfg,
@@ -434,10 +456,11 @@
 /// Based on the fields on the content, call the appropriate splitting
 /// function. This function is involved in a mutual recursion loop, which is
 /// why all other splitting functions take this one as a parameter.
+/// -> (content?, content?)
 #let dispatch(
   /// Content to split. -> content
   ct,
-  /// Closure to determine if the content fits (see `fits-inside` above). -> function
+  /// Closure to determine if the content fits (see @cmd:bisect:fits-inside). -> function
   fits-inside,
   /// Extra configuration options. -> dictionary
   cfg,
@@ -466,22 +489,23 @@
 /// -> (content, content)
 #let fill-box(
   /// Container size.
-  /// -> (width: length, height: length)
+  /// -> size
   dims,
   /// Content to split.
   /// -> content
   ct,
   /// Parent container size.
-  /// -> (width: length, height: length)
+  /// -> size
   size: none,
   /// Configuration options.
   ///
-  /// - `list-markers: (..content,)`, default value #{([•], [‣], [–]) * 2}.
-  ///   If you change the markers of `list`, put the new value in the parameters
-  ///   so that `list`s are correctly split.
-  /// - `enum-numbering: (..str,)`, default value #{("1.",) * 6}.
-  ///   If you change the numbering style of `enum`, put the new style in
-  ///   the parameters so that `enum`s are correctly split.
+  /// - #arg(list-markers: ([•], [‣], [–]) * 2) an array of content describing
+  ///   the markers used for list items.
+  ///   If you change the default markers, put the new value in the parameters
+  ///   so that lists are correctly split.
+  /// - #arg(enum-numbering: ("1.",) * 6) an array of numbering patterns for enumerations.
+  ///   If you change the numbering style, put the new value in
+  ///   the parameters so that enums are correctly split.
   ///
   /// -> dictionary
   cfg: (:),

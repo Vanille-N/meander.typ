@@ -53,7 +53,7 @@
 
 ### Obstacle control
 - retiling functions added to control the precise boundaries of obstacles
-- margin around obstacles is not parameterizable
+- margin around obstacles is now parameterizable
 - phantom objects that do not count as obstacles
 
 ### Typesetting

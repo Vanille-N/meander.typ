@@ -1,0 +1,12 @@
+#import "_preamble.typ": *
+//@ <doc>
+#meander.reflow({
+  import meander: *
+  container(width: 50%,
+    style: (text-fill: red))
+  container(
+    style: (text-fill: blue))
+  content[#lorem(100)]
+  colbreak()
+  content[#lorem(500)]
+})

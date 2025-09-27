@@ -47,7 +47,7 @@
 
   container(width: 50%, style: (text-fill: red))
   container(style: (text-fill: blue))
-  content[#lorem(100)]
+  content[#lorem(200)]
   colfill()
   content[#lorem(500)]
 })

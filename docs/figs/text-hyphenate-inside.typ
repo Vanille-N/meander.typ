@@ -2,7 +2,6 @@
 #set par(justify: true)
 #set text(size: 28pt, hyphenate: false)
 //@ <doc>
-
 #meander.reflow({
   //@ <...>
   import meander: *

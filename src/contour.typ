@@ -1,14 +1,15 @@
 #import "geometry.typ"
 #import "tiling.typ"
 
+/// #property(since: version(0, 2, 0))
 /// Contouring function that pads the inner image.
-/// -> function
+/// -> contour
 #let margin(
   /// May contain the following parameters, ordered here by decreasing generality
   /// and increasing precedence
-  /// - `length` for all sides, the only possible positional argument
-  /// - `x,y: length` for horizontal and vertical margins respectively
-  /// - `top,bottom,left,right: length` for single-sided margins
+  /// - #arg[length]: #typ.t.length for all sides, the only possible positional argument
+  /// - #arg[x], #arg[y]: #typ.t.length for horizontal and vertical margins respectively
+  /// - #arg[top], #arg[bottom], #arg[left], #arg[right]: #typ.t.length for single-sided margins
   ..args
 ) = ((block) => {
   let pos = args.pos()
@@ -34,19 +35,21 @@
   ),)
 },)
 
+/// #property(since: version(0, 2, 0))
 /// Drops all boundaries.
-/// Using `boundary: phantom` will let other content flow over this object.
-/// -> function
+/// Having as #arg[boundary] a @cmd:contour:phantom will let other content flow over this object.
+/// -> contour
 #let phantom() = (block => (),)
 
+// TODO: move this out of the module
 /// Helper function to turn a fractional box into an absolute one.
-/// -> (x: length, y: length, width: length, height: length)
+/// -> block(length)
 #let frac-rect(
   /// Child dimensions as fractions.
-  /// -> (x: fraction, y: fraction, width: fraction, height: fraction)
+  /// -> block(fraction)
   frac,
   /// Parent dimensions as absolute lengths.
-  /// -> (x: length, y: length, width: length, height: length)
+  /// -> block(length)
   abs,
   /// Currently ignored.
   ..style,
@@ -59,14 +62,17 @@
   ),)
 }
 
+/// #property(since: version(0, 2, 0))
 /// Horizontal segmentation as `(left, right)`
-/// -> function
+/// -> contour
 #let horiz(
   /// Number of subdivisions.
   /// -> int
   div: 5,
   /// For each location, returns the left and right bounds.
-  /// -> function(fraction) => (fraction, fraction)
+  ///
+  /// #lambda(fraction, ret:(fraction,fraction))
+  /// -> function
   fun,
 ) = (block => {
   assert(type(div) == int, message: "div should be an integer")
@@ -81,14 +87,17 @@
   ()
 },)
 
+/// #property(since: version(0, 2, 0))
 /// Vertical segmentation as `(top, bottom)`
-/// -> function
+/// -> contour
 #let vert(
   /// Number of subdivisions.
   /// -> int
   div: 5,
   /// For each location, returns the top and bottom bounds.
-  /// -> function(fraction) => (fraction, fraction)
+  ///
+  /// #lambda(fraction, ret:(fraction,fraction))
+  /// -> function
   fun,
 ) = (block => {
   assert(type(div) == int, message: "div should be an integer")
@@ -103,17 +112,20 @@
   ()
 },)
 
+/// #property(since: version(0, 2, 0))
 /// Horizontal segmentation as `(anchor, width)`.
-/// -> function
+/// -> contour
 #let width(
   /// Number of subdivisions.
   /// -> int
   div: 5,
   /// Relative horizontal alignment of the anchor.
-  /// -> alignment
+  /// -> align
   flush: center,
   /// For each location, returns the position of the anchor and the width.
-  /// -> function(fraction) => (fraction, fraction)
+  ///
+  /// #lambda(fraction, ret:(fraction,fraction))
+  /// -> function
   fun,
 ) = (block => {
   assert(type(div) == int, message: "div should be an integer")
@@ -142,6 +154,7 @@
   ()
 },)
 
+/// #property(since: version(0, 2, 0))
 /// Vertical segmentation as `(anchor, height)`.
 /// -> function
 #let height(
@@ -149,10 +162,12 @@
   /// -> int
   div: 5,
   /// Relative vertical alignment of the anchor.
-  /// -> alignment.
+  /// -> align
   flush: horizon,
   /// For each location, returns the position of the anchor and the height.
-  /// -> function(fraction) => (fraction, fraction)
+  ///
+  /// #lambda(fraction, ret:(fraction,fraction))
+  /// -> function
   fun,
 ) = (block => {
   assert(type(div) == int, message: "div should be an integer")
@@ -181,15 +196,18 @@
   ()
 },)
 
+/// #property(since: version(0, 2, 0))
 /// Cuts the image into a rectangular grid then checks for each cell if
 /// it should be included. The resulting cells are automatically grouped horizontally.
-/// -> function
+/// -> contour
 #let grid(
   /// Number of subdivisions.
   /// -> int | (x: int, y: int)
   div: 5,
   /// Returns for each cell whether it satisfies the 2D equations of the image's boundary.
-  /// -> function(fraction, fraction) => bool
+  ///
+  /// #lambda(fraction, fraction, ret:bool)
+  /// -> function
   fun,
 ) = (block => {
   let (div-x, div-y) = if type(div) == int {
@@ -226,33 +244,35 @@
   ()
 },)
 
+/// #property(since: version(0, 2, 1))
 /// Allows drawing the shape of the image as ascii art.
 ///
 /// Blocks
-/// - `#`: full
-/// - ` `: empty
+/// - ```typc "#"```: full
+/// - ```typc " "```: empty
 ///
 /// Half blocks
-/// - `[`: left
-/// - `]`: right
-/// - `^`: top
-/// - `_`: bottom
+/// - ```typc "["```: left
+/// - ```typc "]"```: right
+/// - ```typc "^"```: top
+/// - ```typc "_"```: bottom
 ///
 /// Quarter blocks
-/// - #raw("`"): top left
-/// - `'`: top right
-/// - `,`: bottom left
-/// - `.`: bottom right
+/// - ```typc "`"```: top left
+/// - ```typc "'"```: top right
+/// - ```typc ","```: bottom left
+/// - ```typc "."```: bottom right
 ///
 /// Anti-quarter blocks
-/// - `J`: top left
-/// - `L`: top right
-/// - `7`: bottom left
-/// - `F`: bottom right
+/// - ```typc "J"```: top left
+/// - ```typc "L"```: top right
+/// - ```typc "7"```: bottom left
+/// - ```typc "F"```: bottom right
 ///
 /// Diagonals
-/// - `/`: positive
-/// - `\`: negative
+/// - ```typc "/"```: positive
+/// - #text(fill: rgb("226600"))[#raw("\"\\\"")]: negative
+/// -> contour
 #let ascii-art(
   /// Draw the shape of the image in ascii art.
   /// -> code | str

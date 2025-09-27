@@ -1,6 +1,6 @@
 // Generalist functions for 1D and 2D geometry
 
-/// Bound a value between `min` and `max`.
+/// Bound a value between #arg[min] and #arg[max].
 /// No constraints on types as long as they support inequality testing.
 /// -> any
 #let clamp(
@@ -60,9 +60,10 @@
 
 /// Converts relative and contextual lengths to absolute.
 /// The return value will contain each of the arguments once converted,
-/// with arguments that begin or end with `'x'` or start with `'w'` being
-/// interpreted as horizontal, and arguments that begin or end with `'y'`
-/// or start with `'h'` being interpreted as vertical.
+/// with arguments that begin or end with ```typc "x"``` or start with
+/// ```typc "w"``` being interpreted as horizontal, and arguments that
+/// begin or end with ```typc "y"``` or start with ```typc "h"``` being
+/// interpreted as vertical.
 /// ```typ
 /// #context resolve(
 ///     (width: 100pt, height: 200pt),
@@ -74,7 +75,7 @@
 /// -> dictionary
 #let resolve(
   /// Size of the container as given by the `layout` function.
-  /// -> (width: length, height: length)
+  /// -> size
   size,
   /// Arbitrary many length arguments, automatically inferred to be horizontal
   /// or vertical.
@@ -109,7 +110,7 @@
 /// -> (x: relative, y: relative)
 #let align(
   /// Absolute alignment.
-  /// -> alignment
+  /// -> align
   alignment,
   /// Horizontal displacement.
   /// -> relative
@@ -123,26 +124,71 @@
   /// Object height.
   /// -> relative
   height: 0pt,
+  /// Anchor point.
+  /// -> align | auto
+  anchor: auto,
 ) = {
-  let x = if alignment.x == left {
-    0% + dx
+  let page-x = if alignment.x == left {
+    0%
   } else if alignment.x == right {
-    100% + dx - width
+    100%
   } else if alignment.x == center {
-    50% + dx - width / 2
+    50%
   } else {
-    0% + dy
+    0%
   }
-  let y = if alignment.y == top {
-    0% + dy
+  let page-y = if alignment.y == top {
+    0%
   } else if alignment.y == bottom {
-    100% + dy - height
+    100%
   } else if alignment.y == horizon {
-    50% + dy - height / 2
+    50%
   } else {
-    0% + dy
+    0%
   }
-  (x: x, y: y)
+  let obj-dx = if anchor == auto {
+    if alignment.x == left {
+      0pt
+    } else if alignment.x == right {
+      -width
+    } else if alignment.x == center {
+      -width / 2
+    } else {
+      0pt
+    }
+  } else {
+    if anchor.x == left {
+      0pt
+    } else if anchor.x == right {
+      -width
+    } else if anchor.x == center {
+      -width / 2
+    } else {
+      -width / 2
+    }
+  }
+  let obj-dy = if anchor == auto {
+    if alignment.y == top {
+      0pt
+    } else if alignment.y == bottom {
+      -height
+    } else if alignment.y == horizon {
+      -height / 2
+    } else {
+      0pt
+    }
+  } else {
+    if anchor.y == top {
+      0pt
+    } else if anchor.y == bottom {
+      -height
+    } else if anchor.y == horizon {
+      -height / 2
+    } else {
+      -height / 2
+    }
+  }
+  (x: page-x + obj-dx + dx, y: page-y + obj-dy + dy)
 }
 
 

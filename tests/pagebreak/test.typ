@@ -66,4 +66,15 @@
 })
 #lorem(50)
 
+#pagebreak()
+
+#let overflow = state("overflow")
+#meander.reflow(debug: true, overflow: overflow, placement: box, {
+  import meander: *
+  container(width: 50% - 3mm, margin: 6mm)
+  container()
+  content[#lorem(1000)]
+})
+#set page(columns: 2)
+#context overflow.get().styled
 

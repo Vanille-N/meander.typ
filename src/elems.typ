@@ -2,10 +2,10 @@
 #import "utils.typ"
 
 /// Core function to create an obstacle.
-/// -> obstacle
+/// -> elem
 #let placed(
   /// Reference position on the page (or in the parent container).
-  /// -> alignment
+  /// -> align
   align,
   /// Horizontal displacement.
   /// -> relative
@@ -13,25 +13,36 @@
   /// Vertical displacement.
   /// -> relative
   dy: 0% + 0pt,
+  /// #property(since: version(0, 2, 0))
   /// An array of functions to transform the bounding box of the content.
-  /// By default, a 5pt margin.
-  /// See `contour.typ` for a list of available functions.
-  /// -> (..function,)
+  /// By default, a ```typc 5pt``` margin.
+  /// See @contouring and @contouring-doc for more information.
+  /// -> contour
   boundary: (auto,),
+  /// #property(since: version(0, 2, 0))
   /// Whether the obstacle is shown.
   /// Useful for only showing once an obstacle that intersects several invocations.
   /// Contrast the following:
-  /// - `boundary: contour.phantom` will display the object without using it as an obstacle,
-  /// - `display: false` will use the object as an obstacle but not display it.
+  /// - #arg[boundary] set to @cmd:contour:phantom will display
+  ///   the object without using it as an obstacle,
+  /// - #arg(display: false) will use the object as an obstacle but not display it.
   /// -> bool
   display: true,
   /// Inner content.
   /// -> content
   content,
+  /// #property(since: version(0, 2, 3))
   /// Optional set of tags so that future element can refer to this one
   /// and others with the same tag.
   /// -> label | array(label)
   tags: (),
+  /// #property(since: version(0, 2, 3))
+  /// Anchor point to the alignment.
+  /// If #typ.v.auto, the anchor is automatically determined from #arg[align].
+  /// If an alignment, the corresponding point of the object will be at the specified
+  /// location.
+  /// -> auto | align
+  anchor: auto,
 ) = {
   ((
     type: place,
@@ -40,16 +51,17 @@
     dy: dy,
     display: display,
     boundary: boundary,
+    anchor: anchor,
     content: content,
     tags: utils.coerce-to-array(tags),
   ),)
 }
 
 /// Core function to create a container.
-/// -> container
+/// -> elem
 #let container(
   /// Location on the page.
-  /// -> alignment
+  /// -> align
   align: top + left,
   /// Horizontal displacement.
   /// -> relative
@@ -63,20 +75,24 @@
   /// Height of the container.
   /// -> relative
   height: 100%,
+  /// #property(since: version(0, 2, 2))
   /// Styling options for the content that ends up inside this container.
   /// If you don't find the option you want here, check if it might be in
-  /// the `style` parameter of `content` instead.
+  /// the #arg[style] parameter of @cmd:content instead.
   /// - `align`: flush text `left`/`center`/`right`
   /// - `text-fill`: color of text
   /// -> dictionnary
   style: (:),
+  /// #property(since: version(0, 2, 2))
   /// Margin around the eventually filled container so that text from
   /// other paragraphs doesn't come too close.
   /// -> length
   margin: 5mm,
+  /// #property(since: version(0, 2, 3))
   /// One or more labels that will not affect this element's positioning.
-  /// -> array(label)
+  /// -> label | array(label)
   invisible: (),
+  /// #property(since: version(0, 2, 3))
   /// Optional set of tags so that future element can refer to this one
   /// and others with the same tag.
   /// -> label | array(label)
@@ -96,43 +112,37 @@
   ),)
 }
 
+/// #property(since: version(0, 2, 1))
 /// Continue layout to next page.
+/// -> obstacle
 #let pagebreak() = {
   ((
     type: std.pagebreak,
   ),)
 }
 
+/// #property(since: version(0, 2, 2))
 /// Continue content to next container.
-/// Has the same internal fields as `content` so that we don't have to
-/// check for `key in elem` all the time.
-/// -> flowing
+/// Has the same internal fields as the output of @cmd:content so that we don't
+/// have to check for ```typc key in elem``` all the time.
+/// -> elem
 #let colbreak() = {
   ((
     type: std.colbreak,
     data: none,
-    style: (
-      size: auto,
-      lang: auto,
-      leading: auto,
-      hyphenate: auto,
-    )
+    style: (:),
   ),)
 }
 
+/// #property(since: version(0, 2, 3))
 /// Continue content to next container after filling the current container
 /// with whitespace.
-/// -> flowing
+/// -> elem
 #let colfill() = {
   ((
     type: pad,
     data: none,
-    style: (
-      size: auto,
-      lang: auto,
-      leading: auto,
-      hyphenate: auto,
-    )
+    style: (:),
   ),)
 }
 
@@ -142,40 +152,38 @@
   /// Inner content.
   /// -> content
   data,
-  /// Applies `#set text(size: ...)`.
+  /// #property(since: version(0, 2, 2))
+  /// Applies ```typ #set text(size: ..)```.
   /// -> length
   size: auto,
-  /// Applies `#set text(lang: ...)`.
+  /// #property(since: version(0, 2, 2))
+  /// Applies ```typ #set text(lang: ..)```.
   /// -> string
   lang: auto,
-  /// Applies `#set text(hyphenate: ...)`.
+  /// #property(since: version(0, 2, 2))
+  /// Applies ```typ #set text(hyphenate: ..)```.
   /// -> bool
   hyphenate: auto,
-  /// Applies `#set par(leading: ...)`.
+  /// #property(since: version(0, 2, 2))
+  /// Applies ```typ #set par(leading: ..)```.
   /// -> length
   leading: auto,
 ) = {
-  if size != auto {
-    data = text(size: size, data)
-  }
-  if lang != auto {
-    data = text(lang: lang, data)
-  }
-  if hyphenate != auto {
-    data = text(hyphenate: hyphenate, data)
-  }
-  if leading != auto {
-    data = [#set par(leading: leading); #data]
+  let style = (
+    size: size,
+    lang: lang,
+    leading: leading,
+    hyphenate: hyphenate,
+  )
+  for (k,v) in style.pairs() {
+    if v == auto {
+      let _ = style.remove(k)
+    }
   }
   ((
     type: text,
-    data: data,
-    style: (
-      size: size,
-      lang: lang,
-      leading: leading,
-      hyphenate: hyphenate,
-    ),
+    data: utils.apply-styles(data, ..style),
+    style: style,
   ),)
 }
 

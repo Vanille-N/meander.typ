@@ -1,6 +1,5 @@
 #import "_preamble.typ": *
 //@ <doc>
-
 #meander.reflow({
   //@ <...>
   import meander: *

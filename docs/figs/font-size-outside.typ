@@ -12,7 +12,6 @@
   container()
   //@ </...>
   content[
-
     #lorem(80)
   ]
 })

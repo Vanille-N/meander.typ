@@ -1,0 +1,4 @@
+build/
+dist/
+venv/
+src/autocontour.egg-info

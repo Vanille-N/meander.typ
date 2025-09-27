@@ -26,20 +26,21 @@
 ]
 
 
-/// See: `next-elem` to explain `data`.
+/// #property(requires-context: true)
+/// See: @cmd:tiling:next-elem to explain #arg[data].
 /// This function computes the effective obstacles from an input object,
 /// as well as the display and debug outputs.
-/// -> elem
-#let elem-of-placed(
+/// -> blocks
+#let blocks-of-placed(
   /// Internal state.
   /// -> opaque
   data,
   /// Object to measure, pad, and place.
-  /// -> placed
+  /// -> elem
   obj,
 ) = {
   let (width, height) = measure(obj.content, ..data.size)
-  let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: width, height: height)
+  let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: width, height: height, anchor: obj.anchor)
   let dims = geometry.resolve(data.size, x: x, y: y, width: width, height: height)
   let display = if obj.display {
     place[#move(dx: dims.x, dy: dims.y)[#{obj.content}]]
@@ -66,10 +67,10 @@
 
 /// Eliminates non-candidates by determining if the obstacle is ignored by the container.
 #let is-ignored(
-  /// Must have the field `_.aux.invisible`,
+  /// Must have the field #arg[invisible],
   /// as containers do.
   container,
-  /// Must have the field `_.tags`,
+  /// Must have the field #arg[tags],
   /// as obstacles do.
   obstacle,
 ) = {
@@ -81,16 +82,16 @@
   false
 }
 
-/// See: `next-elem` to explain `data`.
+/// See: @cmd:tiling:next-elem to explain #arg[data].
 /// Computes the effective containers from an input object,
 /// as well as the display and debug outputs.
-/// -> elem
-#let elem-of-container(
+/// -> blocks
+#let blocks-of-container(
   /// Internal state.
   /// -> opaque
   data,
   /// Container to segment.
-  /// -> container
+  /// -> elem
   obj,
 ) = {
   // Calculate the absolute dimensions of the container
@@ -172,7 +173,11 @@
 
 /// Applies an element's margin to itself.
 /// -> elem
-#let add-self-margin(elem) = {
+#let add-self-margin(
+  /// Inner element.
+  /// -> elem
+  elem
+) = {
   if "margin" not in elem { return elem }
   elem.x -= elem.margin
   elem.y -= elem.margin
@@ -183,9 +188,10 @@
 
 /// Initializes the initial value of the internal data for the reentering
 /// `next-elem`.
+/// -> opaque
 #let create-data(
   /// Dimensions of the page
-  /// -> (width: length, height: length)
+  /// -> size
   size: none,
   /// Elements to dispense in order
   /// -> (..elem,)
@@ -196,20 +202,20 @@
     elems: elems.rev(),
     size: size,
     obstacles: (),
-    labels: (:),
+    //labels: (:),
   )
 }
 
 /// This function is reentering, allowing interactive computation of the layout.
-/// Given its internal state `data`, `next-elem` uses the helper functions
-/// `elem-of-placed` and `elem-of-container` to compute the dimensions of the
-/// next element, which may be an obstacle or a container.
+/// Given its internal state #arg[data], @cmd:tiling:next-elem uses the helper functions
+/// @cmd:tiling:blocks-of-placed and @cmd:tiling:blocks-of-container to compute
+/// the dimensions of the next element, which may be an obstacle or a container.
 /// -> (elem, opaque)
 #let next-elem(
   /// Internal state, stores
-  /// - `size` the available page dimensions,
-  /// - `elems` the remaining elements to handle in reverse order (they will be `pop`ped),
-  /// - `obstacles` the running accumulator of previous obstacles;
+  /// - #arg[size] the available page dimensions,
+  /// - #arg[elems] the remaining elements to handle in reverse order (they will be `pop`ped),
+  /// - #arg[obstacles] the running accumulator of previous obstacles;
   /// -> opaque
   data,
 ) = {
@@ -217,9 +223,9 @@
   if data.elems.len() == 0 { return (none, data) }
   let obj = data.elems.pop()
   if obj.type == place {
-    (elem-of-placed(data, obj), data)
+    (blocks-of-placed(data, obj), data)
   } else if obj.type == box {
-    (elem-of-container(data, obj), data)
+    (blocks-of-container(data, obj), data)
   } else {
     panic("There is a bug in `separate`")
   }
@@ -237,13 +243,6 @@
 ) = {
   let data = data
   for block in elem.blocks {
-    for tag in block.tags {
-      let s = str(tag)
-      if not data.labels.at(s, default: true) {
-        panic("name " + s + " should be unique")
-      }
-      data.labels.insert(s, true)
-    }
     data.obstacles.push(block)
   }
   data
@@ -251,17 +250,6 @@
 
 /// Splits the input sequence into pages of elements (either obstacles or containers),
 /// and flowing content.
-///
-/// An "obstacle" is data produced by the `placed` function.
-/// It can contain arbitrary content, and defines a zone where flowing content
-/// cannot be placed.
-///
-/// A "container" is produced by the function `container`.
-/// It defines a region where (once the obstacles are subtracted) is allowed
-/// to contain flowing content.
-///
-/// Lastly flowing content is produced by the function `content`.
-/// It will be threaded through every available container in order.
 ///
 /// ```typ
 /// #separate({
@@ -274,10 +262,10 @@
 /// })
 /// ```
 ///
-/// -> (pages: array, flow: (..content,))
+/// -> (pages: array(elem), flow: array(elem))
 #let separate(
-  /// A sequence of constructors `placed`, `container`, and `content`.
-  /// -> seq
+  /// A sequence of elements made from @cmd:placed, @cmd:content, @cmd:container, etc.
+  /// -> array(elem)
   seq
 ) = {
   let pages = ()
@@ -301,5 +289,43 @@
   }
   pages.push(elems)
   (flow: flow, pages: pages) 
+}
+
+/// Determines the appropriate layout invocation based on the placement mode.
+/// See details on @cmd:meander:reflow.
+/// -> function
+#let placement-mode(placement) = {
+  if placement == page {
+    (
+      wrapper:
+        (inner) => {
+          set block(spacing: 0em)
+          layout(size => inner(size))
+        },
+      placeholder: (_) => none,
+    )
+  } else if placement == float {
+    (
+      wrapper:
+        (inner) => {
+          place(top + left)[
+            #box(width: 100%, height: 100%)[
+              #layout(size => inner(size))
+            ]
+          ]
+        },
+      placeholder: (_) => none,
+    )
+  } else if placement == box {
+    (
+      wrapper:
+        (inner) => {
+          layout(size => inner(size))
+        },
+      placeholder: (hgt) => box(width: 100%, height: hgt),
+    )
+  } else {
+    panic("Invalid placement option")
+  }
 }
 

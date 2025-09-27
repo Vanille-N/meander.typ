@@ -25,19 +25,14 @@
 
 #pagebreak()
 
+/*
 #meander.reflow(debug: true, {
   import meander: *
-  placed(
-    top + left,
-    boundary: contour.ascii-art(
-      ```
-      #
-      ##
-      ```
-    ),
-    img(50pt, 50pt, blue, 1),
-    tags: <A>,
-  )
-  container(tags: <B>)
-  content[#lorem(50)] 
+  container(tags: <A>)
+  content(lorem(100))
+  colbreak()
+
+  placed((rel: <A>, at: bottom + left), anchor: top + left, dy: 1cm, box(width: 5cm, height: 5cm, fill: red))
+  container()
+  content(lorem(500))
 })
