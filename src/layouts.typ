@@ -22,6 +22,7 @@
   /// Ignored.
   overflow: none,
 ) = {
+  if seq == none { seq = () }
   let (wrapper, placeholder) = tiling.placement-mode(placement)
   wrapper(size => {
     let (pages,) = tiling.separate(seq)
@@ -89,6 +90,7 @@
   /// -> any
   placement: page,
 ) = {
+  if seq == none { seq = () }
   let (wrapper, placeholder) = tiling.placement-mode(placement)
   wrapper(size => {
     let (flow, pages) = tiling.separate(seq)
@@ -163,17 +165,15 @@
         }
       }
       if overflow == false {
-        place(top + left)[#box(width: 100%, height: 100%)[
-          #place(bottom + right)[
-            #box(fill: red, stroke: black, inset: 2mm)[
-              #align(center)[
-                *Warning* \
-                This container is insufficient to hold the full text. \
-                Consider adding more containers or a `pagebreak`.
-              ]
+        place(top + left)[
+          #box(fill: red, stroke: black, inset: 2mm)[
+            #align(center)[
+              *Warning* \
+              This container is insufficient to hold the full text. \
+              Consider adding more containers or a `pagebreak`.
             ]
           ]
-        ]]
+        ]
       } else if overflow == true {
         // Ignore
       } else if overflow == text {

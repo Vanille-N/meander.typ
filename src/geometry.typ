@@ -105,12 +105,104 @@
   ans
 }
 
+/// Resolves an anchor point relative to a region.
+/// -> (x: length, y: length)
+#let in-region(
+  /// A block ```typc (x: length, y: length, width: length, height: length)```.
+  /// -> block
+  region,
+  /// An alignment within the block.
+  /// -> align
+  alignment,
+) = {
+  let x0 = region.x
+  let y0 = region.y
+  let dx = if alignment.x == left {
+    0pt
+  } else if alignment.x == right {
+    region.width
+  } else if alignment.x == center {
+    region.width / 2
+  } else {
+    region.width / 2
+  }
+  let dy = if alignment.y == top {
+    0pt
+  } else if alignment.y == bottom {
+    region.height
+  } else if alignment.y == horizon {
+    region.height / 2
+  } else {
+    region.height / 2
+  }
+  (x: x0 + dx, y: y0 + dy)
+}
+
+/// Apply a transformation in the form of either a scaling or a function.
+/// -> any
+#let apply-transform(
+  /// Value to transform.
+  /// Any type as long as it supports multiplication by a scalar.
+  /// -> any
+  value,
+  /// Scaling to apply, as either a ratio or a function.
+  /// -> function | ratio
+  transform: 100%,
+) = {
+  if type(transform) == function {
+    transform(value)
+  } else {
+    transform * value
+  }
+}
+
+/// Fetch all required answers to geometric queries.
+/// See @queries for details.
+/// -> dictionary
+#let unquery(
+  /// Every field of this object that has an attribute #arg(type: query)
+  /// will be transformed based on previously computed regions.
+  /// -> dictionary
+  obj,
+  /// Regions delimited by items already placed on the page.
+  /// -> dictionary(block)
+  regions: (:),
+) = {
+  let resolved = (:)
+  for (key, val) in obj {
+    if type(val) == dictionary and "type" in val and val.type == query {
+      if str(val.tag) not in regions {
+        panic("No objects with tag <" + str(val.tag) + "> declared yet.")
+      }
+      if val.mode == "pos" {
+        let pos = in-region(regions.at(str(val.tag)), val.at)
+        resolved.insert(key, pos)
+      } else if val.mode == "width" {
+        let width = regions.at(str(val.tag)).width
+        resolved.insert(key, apply-transform(width, transform: val.transform))
+      } else if val.mode == "height" {
+        let height = regions.at(str(val.tag)).height
+        resolved.insert(key, apply-transform(height, transform: val.transform))
+      } else {
+        panic("Unknown query mode: " + mode)
+      }
+    } else {
+      resolved.insert(key, val)
+    }
+  }
+  resolved
+}
+
+
 /// Compute the position of the upper left corner, taking into account the
 /// alignment and displacement.
 /// -> (x: relative, y: relative)
 #let align(
   /// Absolute alignment.
-  /// -> align
+  /// If this is an #typ.t.alignment, it will be computed relative to the page.
+  /// If it is a ```typc (x: length, y: length)```, that will be used as the
+  /// target position.
+  /// -> align | dictionary
   alignment,
   /// Horizontal displacement.
   /// -> relative
@@ -128,7 +220,9 @@
   /// -> align | auto
   anchor: auto,
 ) = {
-  let page-x = if alignment.x == left {
+  let page-x = if type(alignment) == dictionary {
+    alignment.x
+  } else if alignment.x == left {
     0%
   } else if alignment.x == right {
     100%
@@ -137,7 +231,9 @@
   } else {
     0%
   }
-  let page-y = if alignment.y == top {
+  let page-y = if type(alignment) == dictionary {
+    alignment.y
+  } else if alignment.y == top {
     0%
   } else if alignment.y == bottom {
     100%
@@ -191,4 +287,23 @@
   (x: page-x + obj-dx + dx, y: page-y + obj-dy + dy)
 }
 
+/// Helper function to turn a fractional box into an absolute one.
+/// -> block(length)
+#let frac-rect(
+  /// Child dimensions as fractions.
+  /// -> block(fraction)
+  frac,
+  /// Parent dimensions as absolute lengths.
+  /// -> block(length)
+  abs,
+  /// Currently ignored.
+  ..style,
+) = {
+  ((
+    x: abs.x + frac.x * abs.width,
+    y: abs.y + frac.y * abs.height,
+    width: frac.width * abs.width,
+    height: frac.height * abs.height,
+  ),)
+}
 

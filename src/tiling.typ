@@ -40,6 +40,7 @@
   obj,
 ) = {
   let (width, height) = measure(obj.content, ..data.size)
+  let obj = geometry.unquery(obj, regions: data.regions)
   let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: width, height: height, anchor: obj.anchor)
   let dims = geometry.resolve(data.size, x: x, y: y, width: width, height: height)
   let display = if obj.display {
@@ -95,6 +96,7 @@
   obj,
 ) = {
   // Calculate the absolute dimensions of the container
+  let obj = geometry.unquery(obj, regions: data.regions)
   let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: obj.width, height: obj.height)
   let dims = geometry.resolve(data.size, x: x, y: y, width: obj.width, height: obj.height)
   // Select only the obstacles that may intersect this container
@@ -179,10 +181,23 @@
   elem
 ) = {
   if "margin" not in elem { return elem }
-  elem.x -= elem.margin
-  elem.y -= elem.margin
-  elem.width += 2 * elem.margin
-  elem.height += 2 * elem.margin
+  let margin = elem.margin
+  let (left, top, right, bottom) = if type(margin) == dictionary {
+    let rest = margin.at("rest", default: 0pt)
+    let x = margin.at("x", default: rest)
+    let y = margin.at("y", default: rest)
+    let top = margin.at("top", default: y)
+    let bottom = margin.at("bottom", default: y)
+    let left = margin.at("left", default: x)
+    let right = margin.at("right", default: x)
+    (left, top, right, bottom)
+  } else {
+    (margin, margin, margin, margin)
+  }
+  elem.x -= left
+  elem.y -= top
+  elem.width += left + right
+  elem.height += top + bottom
   elem
 }
 
@@ -202,7 +217,7 @@
     elems: elems.rev(),
     size: size,
     obstacles: (),
-    //labels: (:),
+    regions: (:),
   )
 }
 
@@ -244,6 +259,19 @@
   let data = data
   for block in elem.blocks {
     data.obstacles.push(block)
+    for tag in block.tags {
+      let current = data.regions.at(str(tag), default: block)
+      let x = calc.min(current.x, block.x)
+      let y = calc.min(current.y, block.y)
+      let xmax = calc.max(current.x + current.width, block.x + block.width)
+      let ymax = calc.max(current.y + current.height, block.y + block.height)
+      data.regions.insert(str(tag), (
+        x: x,
+        y: y,
+        width: xmax - x,
+        height: ymax - y,
+      ))
+    }
   }
   data
 }

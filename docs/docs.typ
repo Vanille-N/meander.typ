@@ -2,10 +2,6 @@
 #import "@preview/swank-tex:0.1.0": LaTeX
 #import "@preview/tidy:0.4.3"
 
-// TODO: context
-
-// TODO: add to each section a link to the relevant docs.
-
 #show regex("Introduced in "): "Since "
 
 #let repo = "https://github.com/Vanille-N/meander.typ/"
@@ -66,6 +62,36 @@
   table(columns: (frac, 100% - frac), stroke: none, l, r)
 }
 
+#let new-sections = state("new-sections", ())
+#let new(sec) = {
+  sec
+  new-sections.update(secs => {
+    let body = if sec.func() == heading {
+      sec.body
+    } else if sec.func() == [a:].func() {
+      sec.children.at(0).body
+    } else {
+      panic(sec)
+    }
+    secs.push(body)
+    secs
+  })
+}
+
+#show outline.entry: it => {
+  context {
+    if it.element.body in new-sections.final() {
+      show it.element.body.text: it => {
+        highlight(it)
+        text(fill: red, super[*(!)*])
+      }
+      it
+    } else {
+      it
+    }
+  }
+}
+
 #show: mantys(
   ..toml("../typst.toml"),
   title: "MEANDER",
@@ -98,10 +124,12 @@
         #link(repo + "issues")[feature request],
         or #link(repo)[pull request].
 
+        // @scrybe(jump releases; grep {{version}})
         *Versions*
         - #link(repo)[`dev`]
-        - #link(repo + "releases/tag/v0.2.2")[`0.2.2`]
+        - #link(repo + "releases/tag/v0.2.3")[`0.2.3`]
           (#link("https://typst.app/universe/package/meander")[`latest`])
+        - #link(repo + "releases/tag/v0.2.2")[`0.2.2`]
         - #link(repo + "releases/tag/v0.2.1")[`0.2.1`]
         - #link(repo + "releases/tag/v0.2.0")[`0.2.0`]
         - #link(repo + "releases/tag/v0.1.0")[`0.1.0`]
@@ -111,13 +139,41 @@
     ]
 
     #colbreak()
+    #place(box(width: 100%, height: 100%)[
+      #place(bottom + right, dx: 1.5cm)[
+        #box(width: 6.6cm, stroke: gray, radius: 5mm, inset: 5mm)[
+          #set text(fill: gray)
+          #set linebreak(justify: true)
+          #show: align.with(left)
+          // @scrybe(jump update; grep {{version}})
+          Chapters that are
+          #highlight[highlighted]#text(fill: red, super[*(!)*])
+          have received major
+          updates in the latest version `0.2.3`
+        ]
+      ]
+    ])
     #colbreak()
   ],
 )
 
+
 // TODO: array type constructor
 
+// TODO: show the import
+
 = Quick start
+
+Import the latest version of MEANDER with:
+// @scrybe(jump import; grep preview; grep {{version}})
+#codesnippet[```typ
+#import "@preview/meander:0.2.3"
+```]
+#warning-alert[
+  // @scrybe(jump import; grep preview; grep {{version}})
+  Do not ```typ #import "@preview/meander:0.2.3": *``` globally,
+  it would shadow important functions.
+]
 
 The main function provided by MEANDER is @cmd:meander:reflow,
 which takes as input
@@ -137,17 +193,17 @@ Below is a single page whose layout is fully determined by MEANDER.
 The general pattern of @cmd:placed + @cmd:container + @cmd:content is
 almost universal.
 
-Within a @cmd:meander:reflow block, use @cmd:placed
-(same parameters as the standard function #typ.place)
-to position obstacles made of arbitrary content on the page,
-specify areas where text is allowed with @cmd:container,
-then give the actual content to be written there using @cmd:content.
-
 #twocols(frac: 51.5%)[
   #show-code("simple-example", resize: -1pt)
 ][
   #show-page("simple-example")
 ]
+
+Within a @cmd:meander:reflow block, use @cmd:placed
+(same parameters as the standard function #typ.place)
+to position obstacles made of arbitrary content on the page,
+specify areas where text is allowed with @cmd:container,
+then give the actual content to be written there using @cmd:content.
 
 #info-alert[
   MEANDER is expected to automatically respect the majority of styling options,
@@ -428,7 +484,7 @@ The interpretation of #arg[flush] for @cmd:contour:height is as follows:
   show-page("contour-3"),
 )
 
-== Autocontouring
+#new[== Autocontouring]
 
 The contouring function @cmd:contour:ascii-art takes as input
 a string or raw code and uses it to draw the shape of the image.
@@ -618,7 +674,7 @@ or pass them as parameters to #typ.t.content.
   show-page("text-hyphenate-content", width: 2.6cm),
 )
 
-=== Styling containers
+== Styling containers
 
 @cmd:container accepts a #arg[style] dictionary that may contain the following
 keys:
@@ -868,10 +924,16 @@ Use this only as a last-resort solution.
 
 = Inter-element interaction <interactive>
 
-MEANDER allows attaching tags to elements, and applying properties based on those tags.
+MEANDER allows attaching tags to elements.
+These tags can then be used to:
+- control visibility of obstacles to other elements,
+- apply post-processing style parameters,
+- position an element relative to a previous one,
+- measuring the width or height of a placed element.
+
 More features are planned, including
-- positioning an element relative to a previous one,
-- changing the default style of elements with some tag.
+- additional styling options,
+- default parameters controlled by tags.
 Open a #link(repo + "issues")[feature request] if you have an idea of a behavior
 based on tags that should be supported.
 
@@ -880,25 +942,54 @@ You can put one or more tags on any obstacle or container by adding a parameter
 - ```typc placed(..., tags: <A>)```
 - ```typc container(..., tags: (<B>, <C>))```
 
-== Invisible obstacles
+#new[== Locally invisible obstacles]
 
 By passing one or more tags to the parameter #arg[invisible] of ```typc container(..)```,
 you can make it unaffected by the obstacles in question.
+
+#twocols(frac: 57.5%)[
+  #show-code("invisible")
+][
+  #show-page("invisible")
+]
 #info-alert[
   This is already doable globally by setting #arg[boundary] to @cmd:contour:phantom.
   The innovation of #arg[invisible] is that this can be done on a per-container basis.
 ]
-Below is an interesting application of this feature.
+
+#new[== Position and length queries] <querying>
+
+The module ```typ #query``` contains functions that allow referencing properties
+of other elements. For example:
+- whenever an @type:align is required, such as for @cmd:placed or @cmd:container,
+  you can instead pass a location dynamically computed via @cmd:query:position.
+- whenever a #typ.t.length is required, such as for #arg[dx] or #arg[height]
+  or a similar parameter, you can instead pass a length dynamically computed via
+  @cmd:query:height or @cmd:query:width.
+
+#twocols[
+  #show-code("query")
+][
+  #show-page("query")
+  In this example, after giving an absolute position to one image,
+  we create a container with position and dimensions relative to the image,
+  and place another image immediately after the container ends.
+]
+
+#new[== A nontrivial example]
+
+Here is an interesting application of these features.
 The @cmd:placed obstacles all receive a tag ```typc <x>```,
 and the second container has #arg(invisible: <x>).
 Therefore the @cmd:placed elements count as obstacles to the first
 container but not the second.
 The first container is immediately filled with empty content and counts as
 an obstacle to the second container.
-#twocols[
-  #show-code("invisible")
+The queries reduce the amount of lengths we have to compute by hand.
+#twocols(frac: 62%)[
+  #show-code("interactive", resize: -3pt)
 ][
-  #show-page("invisible")
+  #show-page("interactive")
 ]
 
 = Showcase
@@ -973,9 +1064,15 @@ They expect a sequence of `elem` as input, and produce `content`.
 Functions for approximating non-rectangular boundaries.
 We refer to those collectively as being of type @type:contour.
 They can be concatenated with `+` which will apply contours successively.
-// TODO: define a `contour` custom type.
 
 #show-module("contour", module: true)
+
+#new[== Queries <queries>]
+
+Enables interactively fetching properties from previous elements.
+See how to use them in @interactive.
+
+#show-module("query", module: true)
 
 == Std
 
@@ -1027,7 +1124,7 @@ There are other tools that implement similar features, often with very different
 models internally.
 
 *In Typst:*
-- #universe("wrap-it") has essentially the same output as MEANDER with at
+- #universe("wrap-it") has essentially the same output as MEANDER with
   only one obstacle and one container. It is noticeably more concise for very
   simple cases.
 
@@ -1062,5 +1159,4 @@ of content, so thanks to #github-user("ntjess").
 
 MEANDER started out as an idea in the Typst Discord server;
 thanks to everyone who gave input and encouragements.
-
 

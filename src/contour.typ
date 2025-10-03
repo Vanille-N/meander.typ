@@ -1,7 +1,6 @@
 #import "geometry.typ"
 #import "tiling.typ"
 
-/// #property(since: version(0, 2, 0))
 /// Contouring function that pads the inner image.
 /// -> contour
 #let margin(
@@ -35,34 +34,11 @@
   ),)
 },)
 
-/// #property(since: version(0, 2, 0))
 /// Drops all boundaries.
 /// Having as #arg[boundary] a @cmd:contour:phantom will let other content flow over this object.
 /// -> contour
 #let phantom() = (block => (),)
 
-// TODO: move this out of the module
-/// Helper function to turn a fractional box into an absolute one.
-/// -> block(length)
-#let frac-rect(
-  /// Child dimensions as fractions.
-  /// -> block(fraction)
-  frac,
-  /// Parent dimensions as absolute lengths.
-  /// -> block(length)
-  abs,
-  /// Currently ignored.
-  ..style,
-) = {
-  ((
-    x: abs.x + frac.x * abs.width,
-    y: abs.y + frac.y * abs.height,
-    width: frac.width * abs.width,
-    height: frac.height * abs.height,
-  ),)
-}
-
-/// #property(since: version(0, 2, 0))
 /// Horizontal segmentation as `(left, right)`
 /// -> contour
 #let horiz(
@@ -71,7 +47,7 @@
   div: 5,
   /// For each location, returns the left and right bounds.
   ///
-  /// #lambda(fraction, ret:(fraction,fraction))
+  /// #lambda(ratio, ret:(ratio,ratio))
   /// -> function
   fun,
 ) = (block => {
@@ -79,7 +55,7 @@
   let dh = block.height / div
   for i in range(div) {
     let (l, r) = fun((i + 0.5) / div)
-    frac-rect(
+    geometry.frac-rect(
       (x: l, y: i / div, width: r - l, height: 1 / div),
       block,
     )
@@ -87,7 +63,6 @@
   ()
 },)
 
-/// #property(since: version(0, 2, 0))
 /// Vertical segmentation as `(top, bottom)`
 /// -> contour
 #let vert(
@@ -104,7 +79,7 @@
   let dw = block.width / div
   for j in range(div) {
     let (t, b) = fun((j + 0.5) / div)
-    frac-rect(
+    geometry.frac-rect(
       (x: j / div, y: t, width: 1 / div, height: b - t),
       block,
     )
@@ -112,7 +87,6 @@
   ()
 },)
 
-/// #property(since: version(0, 2, 0))
 /// Horizontal segmentation as `(anchor, width)`.
 /// -> contour
 #let width(
@@ -133,17 +107,17 @@
   for i in range(div) {
     let (a, w) = fun((i + 0.5) / div)
     if flush == center {
-      frac-rect(
+      geometry.frac-rect(
         (x: a - w/2, y: i / div, width: w, height: 1 / div),
         block,
       )
     } else if flush == right {
-      frac-rect(
+      geometry.frac-rect(
         (x: 1 - a - w, y: i / div, width: w, height: 1 / div),
         block,
       )
     } else if flush == left {
-      frac-rect(
+      geometry.frac-rect(
         (x: a, y: i / div, width: w, height: 1 / div),
         block,
       )
@@ -154,7 +128,6 @@
   ()
 },)
 
-/// #property(since: version(0, 2, 0))
 /// Vertical segmentation as `(anchor, height)`.
 /// -> function
 #let height(
@@ -175,17 +148,17 @@
   for j in range(div) {
     let (a, h) = fun((j + 0.5) / div)
     if flush == horizon {
-      frac-rect(
+      geometry.frac-rect(
         (x: j / div, y: a - h/2, width: 1 / div, height: h),
         block,
       )
     } else if flush == bottom {
-      frac-rect(
+      geometry.frac-rect(
         (x: j / div, y: a - h, width: 1 / div, height: h),
         block,
       )
     } else if flush == top {
-      frac-rect(
+      geometry.frac-rect(
         (x: j / div, y: 1 - a, width: 1 / div, height: h),
         block,
       )
@@ -196,7 +169,6 @@
   ()
 },)
 
-/// #property(since: version(0, 2, 0))
 /// Cuts the image into a rectangular grid then checks for each cell if
 /// it should be included. The resulting cells are automatically grouped horizontally.
 /// -> contour
@@ -226,7 +198,7 @@
         continue
       } else {
         if start < j {
-          frac-rect(
+          geometry.frac-rect(
             (x: start / div-x, y: i / div-y, width: (j - start) / div-x, height: 1 / div-y),
             block,
           )
@@ -235,7 +207,7 @@
       }
     }
     if start < div-x {
-      frac-rect(
+      geometry.frac-rect(
         (x: start / div-x, y: i / div-y, width: (div-x - start) / div-x, height: 1 / div-y),
         block,
       )
@@ -314,7 +286,7 @@
     for j in range(jmax) {
       let chr = ascii.at(i).at(j, default: " ")
       for (x, y, w, h) in interp(chr) {
-        frac-rect(
+        geometry.frac-rect(
           (x: (j + x) / jmax, y: (i + y) / imax, width: w / jmax, height: h / imax),
           block,
         )

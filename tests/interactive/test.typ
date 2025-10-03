@@ -25,14 +25,22 @@
 
 #pagebreak()
 
-/*
 #meander.reflow(debug: true, {
   import meander: *
-  container(tags: <A>)
+  container(tags: <A>, margin: (y: 2cm, rest: 5mm))
   content(lorem(100))
   colbreak()
 
-  placed((rel: <A>, at: bottom + left), anchor: top + left, dy: 1cm, box(width: 5cm, height: 5cm, fill: red))
-  container()
-  content(lorem(500))
+  placed(
+    query.position(<A>, at: bottom + left),
+    anchor: top + left, dx: 5mm, dy: 1cm,
+    box(width: 5cm, height: 5cm, fill: red),
+    tags: <B>,
+  )
+  container(
+    align: query.position(<B>),
+    width: query.width(<B>, transform: 200%),
+    height: query.height(<B>, transform: x => 3 * x),
+  )
+  content(lorem(250))
 })

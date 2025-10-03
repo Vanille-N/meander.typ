@@ -4,8 +4,8 @@
 /// Core function to create an obstacle.
 /// -> elem
 #let placed(
-  /// Reference position on the page (or in the parent container).
-  /// -> align
+  /// Reference position on the page or relative to a previously placed object.
+  /// -> align | position
   align,
   /// Horizontal displacement.
   /// -> relative
@@ -13,13 +13,11 @@
   /// Vertical displacement.
   /// -> relative
   dy: 0% + 0pt,
-  /// #property(since: version(0, 2, 0))
   /// An array of functions to transform the bounding box of the content.
   /// By default, a ```typc 5pt``` margin.
   /// See @contouring and @contouring-doc for more information.
   /// -> contour
   boundary: (auto,),
-  /// #property(since: version(0, 2, 0))
   /// Whether the obstacle is shown.
   /// Useful for only showing once an obstacle that intersects several invocations.
   /// Contrast the following:
@@ -60,8 +58,8 @@
 /// Core function to create a container.
 /// -> elem
 #let container(
-  /// Location on the page.
-  /// -> align
+  /// Location on the page or position of a previously placed container.
+  /// -> align | location
   align: top + left,
   /// Horizontal displacement.
   /// -> relative
@@ -86,7 +84,9 @@
   /// #property(since: version(0, 2, 2))
   /// Margin around the eventually filled container so that text from
   /// other paragraphs doesn't come too close.
-  /// -> length
+  /// Follows the same convention as #typ.pad if given a dictionary
+  /// (`x`, `y`, `left`, `right`, `rest`, etc.)
+  /// -> length | dictionary
   margin: 5mm,
   /// #property(since: version(0, 2, 3))
   /// One or more labels that will not affect this element's positioning.
