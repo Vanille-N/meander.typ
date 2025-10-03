@@ -339,7 +339,7 @@ which does not fit in the container ```typc box(width: 5cm, height: 5cm)```:
 
 MEANDER will determine that
 1. the content fits in the box until "eius-", and everything afterwards is overflow,
-2. splitting `strong` text is equivalent to applying #typ.strong to both
+2. splitting #typ.strong text is equivalent to applying #typ.strong to both
    halves,
 3. therefore the content can be separated into
   - on the one hand, the text that fits ```typc strong("Lorem ... eius-")```
