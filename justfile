@@ -27,5 +27,5 @@ publish:
   cp -r src release/
   cp README.md LICENSE typst.toml release/
   mkdir release/gallery
-  cp gallery/*.svg release/gallery/
+  cp gallery/*.png release/gallery/
 

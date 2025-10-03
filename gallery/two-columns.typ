@@ -11,7 +11,12 @@
 
   // With two containers we can
   // emulate two columns.
-  container(width: 55%)
-  container(align: right, width: 40%)
+
+  // The first container takes 60%
+  // of the page width.
+  container(width: 60%, margin: 5mm)
+  // The second container automatically
+  // fills the remaining space.
+  container()
   content[#lorem(470)]
 })

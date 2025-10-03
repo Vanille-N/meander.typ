@@ -10,7 +10,7 @@
   // emulate two columns.
 
   // The first container takes 60%
-  // of the page width
+  // of the page width.
   container(width: 60%, margin: 5mm)
   // The second container automatically
   // fills the remaining space.

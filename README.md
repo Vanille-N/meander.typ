@@ -45,7 +45,7 @@ The function `meander.reflow` splits the input sequence into
   ]
 })
 ```
-![a page where text flows between 5 rectangular obstacles](gallery/multi-obstacles.svg)
+![a page where text flows between 5 rectangular obstacles](gallery/multi-obstacles.png)
 
 -----
 
@@ -70,12 +70,18 @@ Use multiple `container`s to produce layouts in columns.
 
   // With two containers we can
   // emulate two columns.
-  container(width: 55%)
-  container(align: right, width: 40%)
+
+  // The first container takes 60%
+  // of the page width.
+  container(width: 60%, margin: 5mm)
+  // The second container automatically
+  // fills the remaining space.
+  container()
+
   content[#lorem(470)]
 })
 ```
-![a two-column page with 3 obstacles](gallery/two-columns.svg)
+![a two-column page with 3 obstacles](gallery/two-columns.png)
 
 ------
 
@@ -97,7 +103,10 @@ Meander allows precise control over the boundaries of obstacles, to draw complex
       contour.margin(1cm) +
       // Then redraw the shape as a grid
       contour.grid(
-        // 25 vertical and horizontal subdivisions (choose whatever looks good)
+        // 25 vertical and horizontal subdivisions.
+        // Just pick a number that looks good.
+        // A good rule of thumb is to start with obstacles
+        // about as high as one line of text.
         div: 25,
         // Equation for a circle of center (0.5, 0.5) and radius 0.5
         (x, y) => calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) <= 1
@@ -114,7 +123,7 @@ Meander allows precise control over the boundaries of obstacles, to draw complex
   ]
 })
 ```
-![text with a circular cutout](gallery/circle-hole.svg)
+![text with a circular cutout](gallery/circle-hole.png)
 
 
 For a more in-depth introduction, including
