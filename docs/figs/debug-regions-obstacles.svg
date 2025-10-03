@@ -8,7 +8,7 @@
                         <g class="typst-group">
                             <g>
                                 <g transform="translate(-0 -0)">
-                                    <path class="typst-shape" fill="#ff851b4d" fill-rule="nonzero" d="M 0 5.6692915 C 0 2.5382283 2.5382283 0 5.6692915 0 L 192.7559 0 C 195.88696 0 198.4252 2.5382283 198.4252 5.6692915 L 198.4252 192.7559 C 198.4252 195.88696 195.88696 198.4252 192.7559 198.4252 L 5.6692915 198.4252 C 2.5382283 198.4252 0 195.88696 0 192.7559 Z "/>
+                                    <path class="typst-shape" fill="#ffdabb" fill-rule="nonzero" d="M 0 5.6692915 C 0 2.5382283 2.5382283 0 5.6692915 0 L 192.7559 0 C 195.88696 0 198.4252 2.5382283 198.4252 5.6692915 L 198.4252 192.7559 C 198.4252 195.88696 195.88696 198.4252 192.7559 198.4252 L 5.6692915 198.4252 C 2.5382283 198.4252 0 195.88696 0 192.7559 Z "/>
                                 </g>
                                 <g transform="translate(91.98798905019684 108.32978592519684)">
                                     <g class="typst-text" transform="scale(1, -1)">
@@ -22,7 +22,7 @@
                         <g class="typst-group">
                             <g>
                                 <g transform="translate(-0 -0)">
-                                    <path class="typst-shape" fill="url(#p7381A2AE1D313869B9BE562B4DF08CB5)" fill-rule="nonzero" stroke="#ff4136" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" d="M 0 0 L 0 208.4252 L 208.4252 208.4252 L 208.4252 0 Z "/>
+                                    <path class="typst-shape" fill="url(#p66BC1ACEBEA5C6998C7490CA09760A00)" fill-rule="nonzero" stroke="#ff4136" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" d="M 0 0 L 0 208.4252 L 208.4252 208.4252 L 208.4252 0 Z "/>
                                 </g>
                             </g>
                         </g>
@@ -31,7 +31,7 @@
                         <g class="typst-group">
                             <g>
                                 <g transform="translate(-0 -0)">
-                                    <path class="typst-shape" fill="#0074d94d" fill-rule="nonzero" d="M 0 5.6692915 C 0 2.5382283 2.5382283 0 5.6692915 0 L 136.06299 0 C 139.19406 0 141.73228 2.5382283 141.73228 5.6692915 L 141.73228 79.37008 C 141.73228 82.501144 139.19406 85.03937 136.06299 85.03937 L 5.6692915 85.03937 C 2.5382283 85.03937 0 82.501144 0 79.37008 Z "/>
+                                    <path class="typst-shape" fill="#b3d5f4" fill-rule="nonzero" d="M 0 5.6692915 C 0 2.5382283 2.5382283 0 5.6692915 0 L 136.06299 0 C 139.19406 0 141.73228 2.5382283 141.73228 5.6692915 L 141.73228 79.37008 C 141.73228 82.501144 139.19406 85.03937 136.06299 85.03937 L 5.6692915 85.03937 C 2.5382283 85.03937 0 82.501144 0 79.37008 Z "/>
                                 </g>
                                 <g transform="translate(63.64153235728347 51.63687253937008)">
                                     <g class="typst-text" transform="scale(1, -1)">
@@ -45,7 +45,7 @@
                         <g class="typst-group">
                             <g>
                                 <g transform="translate(-0 -0)">
-                                    <path class="typst-shape" fill="url(#p7381A2AE1D313869B9BE562B4DF08CB5)" fill-rule="nonzero" stroke="#ff4136" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" d="M 0 0 L 0 95.03937 L 151.73228 95.03937 L 151.73228 0 Z "/>
+                                    <path class="typst-shape" fill="url(#p66BC1ACEBEA5C6998C7490CA09760A00)" fill-rule="nonzero" stroke="#ff4136" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" d="M 0 0 L 0 95.03937 L 151.73228 95.03937 L 151.73228 0 Z "/>
                                 </g>
                             </g>
                         </g>
@@ -54,7 +54,7 @@
                         <g class="typst-group">
                             <g>
                                 <g transform="translate(-0 -0)">
-                                    <path class="typst-shape" fill="#2ecc404d" fill-rule="nonzero" d="M 0 5.6692915 C 0 2.5382283 2.5382283 0 5.6692915 0 L 221.10236 0 C 224.23343 0 226.77165 2.5382283 226.77165 5.6692915 L 226.77165 107.71654 C 226.77165 110.847595 224.23343 113.385826 221.10236 113.385826 L 5.6692915 113.385826 C 2.5382283 113.385826 0 110.847595 0 107.71654 Z "/>
+                                    <path class="typst-shape" fill="#c0f0c6" fill-rule="nonzero" d="M 0 5.6692915 C 0 2.5382283 2.5382283 0 5.6692915 0 L 221.10236 0 C 224.23343 0 226.77165 2.5382283 226.77165 5.6692915 L 226.77165 107.71654 C 226.77165 110.847595 224.23343 113.385826 221.10236 113.385826 L 5.6692915 113.385826 C 2.5382283 113.385826 0 110.847595 0 107.71654 Z "/>
                                 </g>
                                 <g transform="translate(106.16121739665354 65.81010088582677)">
                                     <g class="typst-text" transform="scale(1, -1)">
@@ -68,7 +68,7 @@
                         <g class="typst-group">
                             <g>
                                 <g transform="translate(-0 -0)">
-                                    <path class="typst-shape" fill="url(#p7381A2AE1D313869B9BE562B4DF08CB5)" fill-rule="nonzero" stroke="#ff4136" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" d="M 0 0 L 0 123.385826 L 236.77165 123.385826 L 236.77165 0 Z "/>
+                                    <path class="typst-shape" fill="url(#p66BC1ACEBEA5C6998C7490CA09760A00)" fill-rule="nonzero" stroke="#ff4136" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" d="M 0 0 L 0 123.385826 L 236.77165 123.385826 L 236.77165 0 Z "/>
                                 </g>
                             </g>
                         </g>
@@ -89,7 +89,7 @@
         </symbol>
     </defs>
     <defs id="tilings">
-        <pattern id="t5587D0D1705E83010ED80DD9130ACAB0" width="30" height="30" patternUnits="userSpaceOnUse" viewBox="0 0 30.000 30.000">
+        <pattern id="t2F67AF8BD27593D2058F42E652AA4BE7" width="30" height="30" patternUnits="userSpaceOnUse" viewBox="0 0 30.000 30.000">
             <g>
                 <g transform="translate(0 0)">
                     <g class="typst-group">
@@ -110,6 +110,6 @@
         </pattern>
     </defs>
     <defs id="tilings-refs">
-        <pattern patternTransform="matrix(1 0 0 1 0 0)" id="p7381A2AE1D313869B9BE562B4DF08CB5" href="#t5587D0D1705E83010ED80DD9130ACAB0" xlink:href="#t5587D0D1705E83010ED80DD9130ACAB0"/>
+        <pattern patternTransform="matrix(1 0 0 1 0 0)" id="p66BC1ACEBEA5C6998C7490CA09760A00" href="#t2F67AF8BD27593D2058F42E652AA4BE7" xlink:href="#t2F67AF8BD27593D2058F42E652AA4BE7"/>
     </defs>
 </svg>

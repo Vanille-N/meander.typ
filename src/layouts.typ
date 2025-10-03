@@ -22,6 +22,7 @@
   /// Ignored.
   overflow: none,
 ) = {
+  assert(type(seq) == array, message: "Cannot interpret this object as a layout.")
   if seq == none { seq = () }
   let (wrapper, placeholder) = tiling.placement-mode(placement)
   wrapper(size => {

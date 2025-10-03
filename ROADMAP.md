@@ -25,9 +25,6 @@
 - [ ] automatically order obstacles before containers, except if there are labels
 - [ ] optimize the rectangles in ascii (need fewer of them for performance)
   - [ ] rotate + flip ascii map
-- [X] added `anchor` to placed
-- [X] `position(<tag>)` query
-- [X] `width(<tag>)` and `height(<tag>)` queries
 - [ ] adjust container default width + height to only take the remaining space, not 100%
 
 ## Threading
@@ -61,9 +58,6 @@
 
 ## Documentation
 
-- [ ] obstacle labels
-- [ ] use latest updates to simplify the README examples a bit
 - [ ] non-doc regular comments about the algorithm
 - [ ] Remind that meander can segment an arbitrary container, not just an entire page
-- [ ] queries
 

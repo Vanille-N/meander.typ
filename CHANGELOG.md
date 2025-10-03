@@ -3,10 +3,16 @@
 ## v0.2.2 -> dev
 
 ### Segmentation
-- obstacles have labels and containers have an `invisible` field
 - container margin can be customized on all 4 sides
 - `anchor` option on `placed` allows controlling where the alignment occurs
+
+### Queries
 - new `query` module allows using properties of previous elements during the layout
+- obstacles and containers can have labels
+- containers have an `invisible` option to ignore some obstacles
+- implemented `query.position`
+- implemented `query.width`
+- implemented `query.height`
 
 ### Threading
 - added `colfill` as an alternative to `colbreak`
@@ -15,6 +21,7 @@
 - `reflow` and `regions` no longer crash if passed
   an empty sequence.
 - overflow can be saved to a global state
+- some error messages improved
 
 ### Performance
 - better choice of horizontal marks by eliminating obvious failures

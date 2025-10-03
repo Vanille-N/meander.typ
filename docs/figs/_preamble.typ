@@ -6,7 +6,7 @@
     width: width,
     height: height,
     radius: 2mm,
-    fill: fill.transparentize(70%)
+    fill: fill.darken(-70%)
   )[
     #align(center + horizon)[#label(num)]
   ]
