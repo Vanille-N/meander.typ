@@ -115,3 +115,17 @@
 #test-case[
   #link("https://some.nonsense.org")[#lorem(50)]
 ]
+
+#test-case[
+  #lorem(40)
+  #{for _ in range(30) {
+    sym.angle.l
+    [ ]
+  }}
+]
+
+#test-case[
+  #set par(justify: true)
+  #lorem(41)
+  $1 + 1 = 2$
+]

@@ -2,6 +2,8 @@
 
 #import "geometry.typ"
 
+#let symbol_func = [#sym.angle.l].func()
+
 /// #property(requires-context: true)
 /// Tests if content fits inside a box.
 /// #warning-alert[
@@ -469,7 +471,7 @@
   if ct.func() == parbreak {
     // TODO: this is very ad-hoc
     take-it-or-leave-it(v(1em), fits-inside)
-  } else if ct.has("text") and ct.func() != raw {
+  } else if ct.has("text") and ct.func() != raw and ct.func() != symbol_func {
     has-text(ct, dispatch, fits-inside, cfg)
   } else if ct.has("child") {
     has-child(ct, dispatch, fits-inside, cfg)

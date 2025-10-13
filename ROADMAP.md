@@ -13,7 +13,7 @@
 - [ ] path thought unreachable can be hit during hyphenation calcs
 - [ ] single word on line will overflow if box is too small
 - [ ] raw code seems to possibly trigger an assertion error
-- [ ] crashes when we try to `split-word` a `sym.angle.l`
+- [X] crashes when we try to `split-word` a `sym.angle.l`
 - [ ] improper justification when the split occurs in a sequence rather than in a `has-text`.
 
 ## Page segmentation
@@ -26,6 +26,7 @@
 - [ ] optimize the rectangles in ascii (need fewer of them for performance)
   - [ ] rotate + flip ascii map
 - [ ] adjust container default width + height to only take the remaining space, not 100%
+- [ ] new overflow option: repeat
 
 ## Threading
 - [ ] handle paragraph breaks
@@ -44,7 +45,6 @@
 - [ ] inverse retiling (define a container with a complex shape through retiling functions)
 - [ ] define styles based on labels
 - [ ] retiling function by concatenating two others
-- [ ] better error if reflow/regions receives content
 
 ## Parameterization
 

@@ -150,6 +150,7 @@
           #highlight[highlighted]#text(fill: red, super[*(!)*])
           have received major
           updates in the latest version `0.2.3`
+          // TODO: add major/minor distinction
         ]
       ]
     ])
