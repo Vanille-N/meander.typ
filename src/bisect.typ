@@ -2,7 +2,7 @@
 
 #import "geometry.typ"
 
-#let symbol_func = [#sym.angle.l].func()
+#let symbol_func = [#sym.chevron.l].func()
 
 /// #property(requires-context: true)
 /// Tests if content fits inside a box.
