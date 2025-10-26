@@ -70,8 +70,8 @@
     new-lo = calc.min(new-lo, cont.bounds.y + cont.bounds.height)
     for no-box in avoid {
       if tiling.is-ignored(cont, no-box) { continue }
-      if geometry.intersects((cont.x, cont.x + cont.width), (no-box.x, no-box.x + no-box.width), tolerance: 1pt) {
-        if geometry.intersects((old-lo, new-lo), (no-box.y, no-box.y), tolerance: 1pt) {
+      if geometry.intersects((cont.x, cont.x + cont.width), (no-box.x, no-box.x + no-box.width), tolerance: 1mm) {
+        if geometry.intersects((old-lo, new-lo), (no-box.y, no-box.y), tolerance: 0mm) {
           new-lo = calc.min(new-lo, no-box.y)
         }
       }
@@ -85,15 +85,15 @@
     for no-box in avoid {
       if tiling.is-ignored(cont, no-box) { continue }
       if new-hi > lo { continue }
-      if geometry.intersects((cont.x, cont.x + cont.width), (no-box.x, no-box.x + no-box.width), tolerance: 1pt) {
-        if geometry.intersects((new-hi, lo), (no-box.y, no-box.y + no-box.height), tolerance: 1pt) {
+      if geometry.intersects((cont.x, cont.x + cont.width), (no-box.x, no-box.x + no-box.width), tolerance: 1mm) {
+        if geometry.intersects((new-hi, lo), (no-box.y, no-box.y + no-box.height), tolerance: 1mm) {
           new-hi = calc.max(new-hi, no-box.y + no-box.height)
         }
       }
     }
     for (full-box,_) in full {
       if new-hi > lo { continue }
-      if geometry.intersects((cont.x, cont.x + cont.width), (full-box.x, full-box.x + full-box.width), tolerance: 1pt) {
+      if geometry.intersects((cont.x, cont.x + cont.width), (full-box.x, full-box.x + full-box.width), tolerance: 1mm) {
         if geometry.intersects((new-hi, lo), (full-box.y, full-box.y + full-box.height + lineskip), tolerance: 1pt) {
           new-hi = calc.max(new-hi, full-box.y + full-box.height + lineskip)
         }

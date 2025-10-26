@@ -101,7 +101,7 @@
   let dims = geometry.resolve(data.size, x: x, y: y, width: obj.width, height: obj.height)
   // Select only the obstacles that may intersect this container
   let relevant-obstacles = data.obstacles.filter(exclude => {
-    geometry.intersects((dims.x, dims.x + dims.width), (exclude.x, exclude.x + exclude.width)) and not is-ignored(obj, exclude)
+    geometry.intersects((dims.x, dims.x + dims.width), (exclude.x, exclude.x + exclude.width), tolerance: 1mm) and not is-ignored(obj, exclude)
   })
   // Cut the zone horizontally at every top or bottom of an intersecting obstacle
   let horizontal-marks = (dims.y, dims.y + dims.height)
@@ -127,7 +127,7 @@
   for (hi, lo) in horizontal-marks.windows(2) {
     // Further filter the obstacles for better performance.
     let relevant-obstacles = relevant-obstacles.filter(exclude => {
-      geometry.intersects((hi, lo), (exclude.y, exclude.y + exclude.height), tolerance: 1pt)
+      geometry.intersects((hi, lo), (exclude.y, exclude.y + exclude.height), tolerance: 1mm)
     })
     let vertical-marks = (dims.x, dims.x + dims.width)
     for exclude in relevant-obstacles {
@@ -146,7 +146,7 @@
       if r - l < 1mm { continue }
       let available = true
       for exclude in relevant-obstacles {
-        if geometry.intersects((l, r), (exclude.x, exclude.x + exclude.width), tolerance: 1pt) {
+        if geometry.intersects((l, r), (exclude.x, exclude.x + exclude.width), tolerance: 1mm) {
           available = false
         }
       }

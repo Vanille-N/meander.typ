@@ -119,7 +119,7 @@
 #test-case[
   #lorem(40)
   #{for _ in range(30) {
-    sym.angle.l
+    sym.chevron.l
     [ ]
   }}
 ]

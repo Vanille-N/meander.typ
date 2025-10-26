@@ -15,6 +15,7 @@
 - [ ] raw code seems to possibly trigger an assertion error
 - [X] crashes when we try to `split-word` a `sym.angle.l`
 - [ ] improper justification when the split occurs in a sequence rather than in a `has-text`.
+- [ ] can't measure a `ref`
 
 ## Page segmentation
 - [ ] layout save slots
@@ -37,6 +38,7 @@
 
 ## Performance
 - [ ] Dichotomy in bisection (?)
+- [ ] don't rebuild the entire array all the time
 
 ## QoL
 
@@ -54,10 +56,16 @@
   - [ ] bisection
   - [ ] threading
 
+## Testing
+
+- [ ] continuous testing setup for regressions on fixed issues
+- [ ] `exact` is now useless thanks to tiling improvements
+
 ## Refactoring
 
 ## Documentation
 
 - [ ] non-doc regular comments about the algorithm
 - [ ] Remind that meander can segment an arbitrary container, not just an entire page
+- [ ] README example that includes `placement: box` and container height.
 
