@@ -13,7 +13,6 @@
 - [ ] path thought unreachable can be hit during hyphenation calcs
 - [ ] single word on line will overflow if box is too small
 - [ ] raw code seems to possibly trigger an assertion error
-- [X] crashes when we try to `split-word` a `sym.angle.l`
 - [ ] improper justification when the split occurs in a sequence rather than in a `has-text`.
 - [ ] can't measure a `ref`
 

@@ -24,7 +24,7 @@ The function `meander.reflow` splits the input sequence into
 #let my-img-4 = box(width: 5cm, height: 5cm, fill: red)
 #let my-img-5 = box(width: 4cm, height: 3cm, fill: yellow)
 
-#import "@local/meander:0.2.3"
+#import "@local/meander:0.2.4"
 
 #meander.reflow({
   import meander: *
@@ -59,7 +59,7 @@ Use multiple `container`s to produce layouts in columns.
 #let my-img-2 = box(width: 5cm, height: 3cm, fill: blue)
 #let my-img-3 = box(width: 8cm, height: 4cm, fill: green)
 
-#import "@local/meander:0.2.3"
+#import "@local/meander:0.2.4"
 
 #meander.reflow({
   import meander: *
@@ -85,13 +85,61 @@ Use multiple `container`s to produce layouts in columns.
 
 ------
 
+If your Meander environment shares page(s) with other content,
+use the option `placement: box`.
+The `overflow` parameter determines what happens to text that doesn't
+fit inside the provided containers.
+
+You can see this in effect in the example below:
+- the text in green is before the Meander environment
+- the text in blue is the Meander environment itself
+- the text in black is the overflow handled by Meander
+- the text in red is after the meander environment
+<!-- @scrybe(not publish; jump import; grep local; grep {{version}}) -->
+<!-- @scrybe(not publish; jump import; grep local; grep {{version}}) -->
+<!-- @scrybe(jump import; until ```; diff gallery/placement.typ) -->
+```typ
+#import "@local/meander:0.2.4"
+#set par(justify: true)
+
+#text(fill: green)[
+  #lorem(200)
+]
+
+#meander.reflow(
+  placement: box,
+  overflow: text,
+{
+  import meander: *
+  container(
+    width: 48%,
+    height: 50%,
+    style: (text-fill: blue),
+  )
+  container(
+    width: 48%,
+    height: 50%,
+    align: right,
+    style: (text-fill: blue),
+  )
+
+  content[#lorem(700)]
+})
+
+#text(fill: red)[
+  #lorem(200)
+]
+```
+
+------
+
 Meander allows precise control over the boundaries of obstacles, to draw complex paragraph shapes.
 
 <!-- @scrybe(not publish; jump import; grep local; grep {{version}}) -->
 <!-- @scrybe(if publish; jump import; grep preview; grep {{version}}) -->
 <!-- @scrybe(jump import; until ```; diff gallery/circle-hole.typ) -->
 ```typ
-#import "@local/meander:0.2.3"
+#import "@local/meander:0.2.4"
 
 #meander.reflow({
   import meander: *

@@ -1,6 +1,22 @@
 # Changelog
 
-## v0.2.2 -> dev
+## v0.2.3 -> v0.2.4
+
+### Performance
+- bisection algorithm now uses dichotomy, some compilation times went from 25s to 3s
+
+### Expressivity
+- `internals` module exposes `fill-box` if you need a low-level primitive
+
+### Bugfixes
+- `sym.angle.l` wasn't correctly split
+- nonmonotonicity in paragraph leading due to `geometry`'s `tolerance`
+- compatibility for Typst 0.14 (`angle` deprecated)
+
+### Documentation
+- additional README example
+
+## v0.2.2 -> v0.2.3
 
 ### Segmentation
 - container margin can be customized on all 4 sides

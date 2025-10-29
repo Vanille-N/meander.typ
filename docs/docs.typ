@@ -127,8 +127,9 @@
         // @scrybe(jump releases; grep {{version}})
         *Versions*
         - #link(repo)[`dev`]
-        - #link(repo + "releases/tag/v0.2.3")[`0.2.3`]
+        - #link(repo + "releases/tag/v0.2.4")[`0.2.4`]
           (#link("https://typst.app/universe/package/meander")[`latest`])
+        - #link(repo + "releases/tag/v0.2.3")[`0.2.3`]
         - #link(repo + "releases/tag/v0.2.2")[`0.2.2`]
         - #link(repo + "releases/tag/v0.2.1")[`0.2.1`]
         - #link(repo + "releases/tag/v0.2.0")[`0.2.0`]
@@ -145,11 +146,11 @@
           #set text(fill: gray)
           #set linebreak(justify: true)
           #show: align.with(left)
-          // @scrybe(jump update; grep {{version}})
+          // @scrybe(jump latest; grep {{version}})
           Chapters that are
           #highlight[highlighted]#text(fill: red, super[*(!)*])
           have received major
-          updates in the latest version `0.2.3`
+          updates in the latest version `0.2.4`
           // TODO: add major/minor distinction
         ]
       ]
@@ -168,11 +169,11 @@
 Import the latest version of MEANDER with:
 // @scrybe(jump import; grep preview; grep {{version}})
 #codesnippet[```typ
-#import "@preview/meander:0.2.3"
+#import "@preview/meander:0.2.4"
 ```]
 #warning-alert[
   // @scrybe(jump import; grep preview; grep {{version}})
-  Do not ```typ #import "@preview/meander:0.2.3": *``` globally,
+  Do not ```typ #import "@preview/meander:0.2.4": *``` globally,
   it would shadow important functions.
 ]
 
@@ -485,7 +486,7 @@ The interpretation of #arg[flush] for @cmd:contour:height is as follows:
   show-page("contour-3"),
 )
 
-#new[== Autocontouring]
+== Autocontouring
 
 The contouring function @cmd:contour:ascii-art takes as input
 a string or raw code and uses it to draw the shape of the image.
@@ -943,7 +944,7 @@ You can put one or more tags on any obstacle or container by adding a parameter
 - ```typc placed(..., tags: <A>)```
 - ```typc container(..., tags: (<B>, <C>))```
 
-#new[== Locally invisible obstacles]
+== Locally invisible obstacles
 
 By passing one or more tags to the parameter #arg[invisible] of ```typc container(..)```,
 you can make it unaffected by the obstacles in question.
@@ -958,7 +959,7 @@ you can make it unaffected by the obstacles in question.
   The innovation of #arg[invisible] is that this can be done on a per-container basis.
 ]
 
-#new[== Position and length queries] <querying>
+== Position and length queries <querying>
 
 The module ```typ #query``` contains functions that allow referencing properties
 of other elements. For example:
@@ -977,7 +978,7 @@ of other elements. For example:
   and place another image immediately after the container ends.
 ]
 
-#new[== A nontrivial example]
+== A nontrivial example
 
 Here is an interesting application of these features.
 The @cmd:placed obstacles all receive a tag ```typc <x>```,
@@ -1068,7 +1069,7 @@ They can be concatenated with `+` which will apply contours successively.
 
 #show-module("contour", module: true)
 
-#new[== Queries <queries>]
+== Queries <queries>
 
 Enables interactively fetching properties from previous elements.
 See how to use them in @interactive.
@@ -1082,13 +1083,47 @@ This module allows you to still access them.
 
 #show-module("std", module: true)
 
+#new[== Public internals]
+
+If MEANDER is too high-level for you, you may use the public internals
+made available as lower-level primitives.
+
+#warning-alert[
+  Public internal functions have a lower standard for backwards compatibility.
+  Make sure to pin a specific version.
+]
+
+// @scrybe(jump import; grep {{version}})
+#codesnippet[
+```typ
+#import "@preview/meander:0.2.4": internals.fill-box
+```
+]
+#property(since: version(0, 2, 4))
+This grants you access to the primitive `fill-box`, which is the entry
+point of the content bisection algorithm. It allows you to take as much
+content as fits in a specific box. See @cmd:bisect:fill-box for details.
+
+// @scrybe(jump import; grep {{version}})
+#codesnippet[
+```typ
+#import "@preview/meander:0.2.4": internals.geometry
+```
+]
+#property(since: version(0, 2, 4))
+This grants you access to all the functions in the `geometry` module,
+which implement interesting 1D and 2D primitives. See @geometry for details.
+
+
+#show-module("internals", module: true)
+
 = Internal module details <internal>
 
 == Utils
 
 #show-module("utils", module: true)
 
-== Geometry
+== Geometry <geometry>
 
 #show-module("geometry", module: true)
 

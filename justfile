@@ -8,6 +8,8 @@ figs force="":
   convert -resize 50% docs/figs/multi-obstacles.svg gallery/multi-obstacles.png
   convert -resize 50% docs/figs/two-columns.svg gallery/two-columns.png
   convert -resize 50% docs/figs/circle-hole.svg gallery/circle-hole.png
+  convert -resize 50% docs/figs/overflow-text/doc.1.svg gallery/placement-1.png
+  convert -resize 50% docs/figs/overflow-text/doc.2.svg gallery/placement-2.png
 
 test T: (typstc "watch" "tests/"+T+"/test.typ")
 
@@ -16,10 +18,10 @@ example T fmt="pdf": (typstc "watch" "examples/"+T+"/main.typ" fmt)
 issue N mode="watch" fmt="pdf": (typstc mode "issues/"+N+".typ" fmt)
 
 scrybe:
-  scrybe gallery/*.typ README.md typst.toml --version=0.2.3
+  scrybe gallery/*.typ README.md typst.toml docs/*.typ --version=0.2.4
 
 scrybe-publish:
-  scrybe release/README.md release/typst.toml --publish --version=0.2.3
+  scrybe release/README.md release/typst.toml --publish --version=0.2.4
 
 publish:
   mkdir -p release

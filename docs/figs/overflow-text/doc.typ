@@ -1,5 +1,9 @@
 #import "../_preamble.typ": *
+#set par(justify: true)
 //@ <doc>
+#text(fill: green)[
+  #lorem(200)
+]
 #meander.reflow(
   placement: box,
   overflow: text, {
@@ -16,9 +20,9 @@
     align: right,
     style:
       (text-fill: blue))
-  content[#lorem(1000)]
+  content[#lorem(700)]
 })
 
 #text(fill: red)[
-  #lorem(100)
+  #lorem(200)
 ]
