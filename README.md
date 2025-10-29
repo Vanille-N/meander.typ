@@ -130,6 +130,8 @@ You can see this in effect in the example below:
   #lorem(200)
 ]
 ```
+![Content that overflows the environment (page 1/2)](gallery/placement-1.png)
+![Content that overflows the environment (page 2/2)](gallery/placement-2.png)
 
 ------
 
