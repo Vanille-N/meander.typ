@@ -199,41 +199,60 @@
   let lbreak = [
     #context[#linebreak(justify: par.justify)]
   ]
-  for i in range(inner.len()) {
+  let lo = 0
+  let hi = inner.len()
+  while true {
+    if lo + 1 == hi {
+      break
+    }
+    let mid = int((hi + lo) / 2)
+    if fits-inside(rebuild(inner.slice(0, mid + 1).join(" ")) + atom) {
+      lo = mid
+    } else {
+      hi = mid
+    }
+  }
+  let final-i = none
+  for i in (lo, lo + 1) {
     if fits-inside(rebuild(inner.slice(0, i + 1).join(" ")) + atom) {
       continue
     } else {
-      if cfg.hyphenate == false {
-        let left = if i == 0 { none } else {
-          let left = rebuild(inner.slice(0, i).join(" "))
-          left += lbreak
-          assert(fits-inside(left))
-          left
-        }
-        let right = rebuild(inner.slice(i).join(" "))
-        return (left, right)
-      } else {
-        let overhang = inner.at(i)
-        let before = inner.slice(0, i)
-        let after = inner.slice(i + 1)
-        let (left-rec, right-rec) = split-word(inner.at(i), ww => fits-inside(rebuild((..before, ww).join(" ")) + atom), cfg)
-        let left-words = if left-rec == none { before } else {
-          (..before, left-rec)
-        }
-        let left = if left-words == () { none } else {
-          rebuild(left-words.join(" ")) + lbreak
-        }
-        let right-words = if right-rec == none { after } else {
-          (right-rec, ..after)
-        }
-        let right = rebuild(right-words.join(" "))
-        return (left, right)
-      }
+      final-i = i
+      break
     }
   }
-  // TODO: assert that left fits and find test case that hits this
-  return (rebuild(inner.join(" ")), none)
-}
+  if final-i == none {
+    // TODO: assert that left fits and find test case that hits this
+    return (rebuild(inner.join(" ")), none)
+  }
+  let i = final-i
+  if cfg.hyphenate == false {
+    let left = if i == 0 { none } else {
+      let left = rebuild(inner.slice(0, i).join(" "))
+      left += lbreak
+      assert(fits-inside(left))
+      left
+    }
+    let right = rebuild(inner.slice(i).join(" "))
+    return (left, right)
+  } else {
+    let overhang = inner.at(i)
+    let before = inner.slice(0, i)
+    let after = inner.slice(i + 1)
+    let (left-rec, right-rec) = split-word(inner.at(i), ww => fits-inside(rebuild((..before, ww).join(" ")) + atom), cfg)
+    let left-words = if left-rec == none { before } else {
+      (..before, left-rec)
+    }
+    let left = if left-words == () { none } else {
+      rebuild(left-words.join(" ")) + lbreak
+    }
+    let right-words = if right-rec == none { after } else {
+      (right-rec, ..after)
+    }
+    let right = rebuild(right-words.join(" "))
+    return (left, right)
+  }
+  }
 
 /// Split content with a ```typc "child"``` main field.
 ///
@@ -277,37 +296,64 @@
 ) = {
   let (inner, rebuild) = default-rebuild(ct, "children")
   if not fits-inside([]) { return (none, ct) }
-  for i in range(inner.len()) {
+
+  if inner.len() == 0 {
+    return (none, none)
+  }
+
+  let lo = 0
+  let hi = inner.len()
+  while true {
+    if lo + 1 == hi {
+      break
+    }
+    let mid = int((hi + lo) / 2)
+    if fits-inside(rebuild(inner.slice(0, mid + 1))) {
+      lo = mid
+    } else {
+      hi = mid
+    }
+  }
+
+  let final-i = none
+  for i in range(lo, calc.min(hi + 1, inner.len())) {
     // If inner.at(i) fits, take it
     if fits-inside(rebuild(inner.slice(0, i + 1))) {
       continue
     } else {
-      // Otherwise try to split it
-      let hanging = inner.at(i)
-      let (left, right) = split-dispatch(hanging, ct => fits-inside(rebuild((..inner.slice(0, i), ct))), cfg)
-      assert(fits-inside(rebuild((..inner.slice(0, i), left))))
-      let left = {
-        if left == none {
-          if i == 0 {
-            return (none, rebuild(inner))
-          } else {
-            rebuild(inner.slice(0, i))
-          }
-        } else {
-          rebuild((..inner.slice(0, i), left))
-        }
-      }
-      let right = rebuild({
-        if right == none {
-          inner.slice(i + 1)
-        } else {
-          (right, ..inner.slice(i + 1))
-        }
-      })
-      return (left, right)
+      final-i = i
+      break
     }
   }
-  return (rebuild(inner), none)
+  if final-i == none {
+    return (rebuild(inner), none)
+  }
+  assert(lo <= final-i)
+  assert(final-i <= hi)
+  let i = final-i
+  // Otherwise try to split it
+  let hanging = inner.at(i)
+  let (left, right) = split-dispatch(hanging, ct => fits-inside(rebuild((..inner.slice(0, i), ct))), cfg)
+  assert(fits-inside(rebuild((..inner.slice(0, i), left))))
+  let left = {
+    if left == none {
+      if i == 0 {
+        return (none, rebuild(inner))
+      } else {
+        rebuild(inner.slice(0, i))
+      }
+    } else {
+      rebuild((..inner.slice(0, i), left))
+    }
+  }
+  let right = rebuild({
+    if right == none {
+      inner.slice(i + 1)
+    } else {
+      (right, ..inner.slice(i + 1))
+    }
+  })
+  return (left, right)
 }
 
 /// Split a `list.item`.

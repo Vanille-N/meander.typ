@@ -13,7 +13,7 @@ test T: (typstc "watch" "tests/"+T+"/test.typ")
 
 example T fmt="pdf": (typstc "watch" "examples/"+T+"/main.typ" fmt)
 
-issue N fmt="pdf": (typstc "watch" "issues/"+N+".typ" fmt)
+issue N mode="watch" fmt="pdf": (typstc mode "issues/"+N+".typ" fmt)
 
 scrybe:
   scrybe gallery/*.typ README.md typst.toml --version=0.2.3
