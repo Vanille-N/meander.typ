@@ -27,6 +27,7 @@
   - [ ] rotate + flip ascii map
 - [ ] adjust container default width + height to only take the remaining space, not 100%
 - [ ] new overflow option: repeat
+- [ ] still crashes when regions receives an empty sequence
 
 ## Threading
 - [ ] handle paragraph breaks

@@ -1,0 +1,5 @@
+typstc cmd file fmt:
+  typst {{cmd}} --root=. --font-path=fonts src/{{file}}.typ build/{{file}}.{{fmt}}
+
+build: (typstc "compile" "main" "pdf")
+watch: (typstc "watch" "main" "pdf")
