@@ -26,8 +26,9 @@
 - [ ] optimize the rectangles in ascii (need fewer of them for performance)
   - [ ] rotate + flip ascii map
 - [ ] adjust container default width + height to only take the remaining space, not 100%
-- [ ] new overflow option: repeat
-- [ ] still crashes when regions receives an empty sequence
+- [X] new overflow option: repeat
+- [ ] template("name") to include parts of a previously defined layout
+- [ ] validate compatibility between placement and overflow
 
 ## Threading
 - [ ] handle paragraph breaks
@@ -37,7 +38,6 @@
 - [ ] priority levels to fill boxes in a different order than they were defined
 
 ## Performance
-- [ ] Dichotomy in bisection (?)
 - [ ] don't rebuild the entire array all the time
 
 ## QoL
@@ -47,6 +47,7 @@
 - [ ] inverse retiling (define a container with a complex shape through retiling functions)
 - [ ] define styles based on labels
 - [ ] retiling function by concatenating two others
+- [ ] set-container, set-placed, set-content
 
 ## Parameterization
 
@@ -67,5 +68,4 @@
 
 - [ ] non-doc regular comments about the algorithm
 - [ ] Remind that meander can segment an arbitrary container, not just an entire page
-- [ ] README example that includes `placement: box` and container height.
 

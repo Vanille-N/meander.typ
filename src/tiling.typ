@@ -242,7 +242,7 @@
   } else if obj.type == box {
     (blocks-of-container(data, obj), data)
   } else {
-    panic("There is a bug in `separate`")
+    panic("There is a bug in `separate`: encountered a " + repr(obj.type))
   }
 }
 
