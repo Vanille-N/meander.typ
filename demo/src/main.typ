@@ -81,7 +81,7 @@
     ]
     colbreak()
     content[
-      but Typst can only do this for containers that have the *same width*.
+      but Typst can only do this natively for containers that all have the *same width*.
     ]
   })
 ]
@@ -111,7 +111,7 @@
       container(width: 25%, height: 45%)
       container(dx: 8cm, dy: 2cm, width: 30%, height: 50%)
       container(dx: 17cm, dy: 1cm, width: 20%, height: 50%)
-      content[#lorem(100)]
+      content(size: 14pt)[#lorem(1000)]
       colfill()
       colfill()
       colfill()
@@ -140,7 +140,7 @@
       container(dy: 11cm, width: 100%, style: (text-fill: blue))
       container(dx: 8cm, dy: 2cm, width: 30%, height: 50%)
       container(dx: 17cm, dy: 1cm, width: 20%, height: 50%)
-      content[#lorem(100)]
+      content(size: 14pt)[#lorem(1000)]
       colfill()
       colfill()
       colfill()
@@ -168,7 +168,7 @@
       container(dx: 8cm, dy: 2cm, width: 30%, height: 50%)
       container(dy: 11cm, width: 100%, style: (text-fill: blue))
       container(dx: 17cm, dy: 1cm, width: 20%, height: 50%)
-      content[#lorem(100)]
+      content(size: 14pt)[#lorem(1000)]
       colfill()
       colfill()
     })
@@ -195,7 +195,7 @@
       container(dx: 17cm, dy: 1cm, width: 20%, height: 50%)
       placed(top + left, dy: 11cm, boundary: contour.phantom(), box(fill: gray.lighten(30%), width: 100%, height: 4cm))
       container(dy: 11cm, width: 100%, style: (text-fill: blue))
-      content[#lorem(100)]
+      content(size: 14pt)[#lorem(1000)]
     })
   ]
 ]
@@ -203,6 +203,34 @@
 = Applications
 
 == Columns of unequal width
+
+#slide[
+  #set text(size: 18pt)
+  ```typ
+  #import "@preview/meander:0.2.4"
+
+  #meander.reflow({
+    import meander: *
+
+    // One container per column
+    container(width: 30%)
+    container(width: 80%)
+    container()
+
+
+  })
+  ```
+][
+  #set text(size: 5pt)
+  #set par(justify: true)
+  #meander.regions(overflow: true, {
+    import meander: *
+    container(width: 30%, height: 100% - 1pt, margin: 2mm)
+    container(width: 80%, height: 100% - 1pt, margin: 2mm)
+    container(height: 100% - 1pt, )
+    content[#lorem(1500)]
+  })
+]
 
 #slide[
   #set text(size: 18pt)
@@ -243,16 +271,50 @@
     import meander: *
 
     // Obstacles
-    placed(center + horizon)[#image(...)]
-    placed(top + left)[#image(...)]
-    placed(right + horizon)[#image(...)]
+    placed(center + horizon)[#image(..)]
+    placed(top + left)[#image(..)]
+    placed(right + horizon)[#image(..)]
+
+
+
+
+
+
+
+  })
+  ```
+][
+  #set text(size: 5pt)
+  #set par(justify: true)
+  #meander.regions({
+    import meander: *
+    placed(center + horizon)[#image("/assets/typst-logo.png", width: 5cm)]
+    placed(top + left)[#image("/assets/typst-logo.png", width: 2cm)]
+    placed(right + horizon)[#image("/assets/typst-logo.png", width: 2cm)]
+    //container(width: 50%)
+    //container(width: 50%, align: right)
+  })
+]
+
+#slide[
+  #set text(size: 18pt)
+  ```typ
+  #import "@preview/meander:0.2.4"
+
+  #meander.reflow({
+    import meander: *
+
+    // Obstacles
+    placed(center + horizon)[#image(..)]
+    placed(top + left)[#image(..)]
+    placed(right + horizon)[#image(..)]
 
     // Containers
     container(width: 50%)
     container(width: 50%, align: right)
 
-    // Content
-    content[#lorem(1500)]
+
+
   })
   ```
 ][
@@ -277,9 +339,9 @@
     import meander: *
 
     // Obstacles
-    placed(center + horizon)[#image(...)]
-    placed(top + left)[#image(...)]
-    placed(right + horizon)[#image(...)]
+    placed(center + horizon)[#image(..)]
+    placed(top + left)[#image(..)]
+    placed(right + horizon)[#image(..)]
 
     // Containers
     container(width: 50%)
@@ -315,17 +377,17 @@
     import meander: *
 
     placed(center + horizon,
-      boundary: contour.grid(
-        div: 30,
-        (x,y) => calc.pow(2 * x - 1, 2) +
-              calc.pow(2 * y - 1, 2) <= 1
-      ),
-      image("..."),
+
+
+
+
+
+      image(..),
     )
 
-    container(width: 50%)
-    container(width: 50%, align: right)
-    content[#lorem(1500)]
+
+
+
   })
   ```
 ][
@@ -335,7 +397,99 @@
     import meander: *
 
     placed(center + horizon,
-      boundary: contour.margin(10pt) + contour.grid(div: 30, (x,y) => calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) <= 1) + contour.margin(2pt),
+      block(
+        radius: 50%,
+        clip: true,
+        image("/assets/typst-logo.png", width: 5cm),
+      )
+    )
+    //container(width: 50% - 1mm, margin: 2mm)
+    //container(width: 50%, align: right)
+  })
+]
+
+
+#slide[
+  #set text(size: 18pt)
+  ```typ
+  #import "@preview/meander:0.2.4"
+
+  #meander.reflow({
+    import meander: *
+
+    placed(center + horizon,
+      boundary: contour.grid(
+        div: (x: 50, y: 30),
+        (x,y) => calc.pow(2 * x - 1, 2) +
+              calc.pow(2 * y - 1, 2) <= 1
+      ),
+      image(..),
+    )
+
+
+
+
+  })
+  ```
+  #place(top + left)[#box(width: 100%, height: 100%)[
+    #cetz.canvas({
+      import cetz.draw: *
+      rect((0,0), (13,13), stroke: none)
+      content((13,8), name: "resol", pad: 5mm)[#text(fill: red)[Resolution: $50 times 30$]]
+      line("resol.west", (to: (), rel: (-2.5,-0.3)), stroke: red, mark: (end: ">"))
+      content((12, 4), name: "eqn", pad: 5mm)[#text(fill: red)[Equation:\ $(2 x - 1)^2 + (2 y - 1)^2 <= 1$]]
+      line("eqn.north-west", (to:(), rel: (-1,1)), stroke: red, mark: (end: ">"))
+    })
+  ]]
+][
+  #set text(size: 5pt)
+  #set par(justify: true)
+  #meander.regions(overflow: true, {
+    import meander: *
+
+    placed(center + horizon,
+      boundary: contour.margin(10pt) + contour.grid(div: (x: 50, y: 30), (x,y) => calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) <= 1) + contour.margin(2pt),
+      block(
+        radius: 50%,
+        clip: true,
+        image("/assets/typst-logo.png", width: 5cm),
+      )
+    )
+    //container(width: 50% - 1mm, margin: 2mm)
+    //container(width: 50%, align: right)
+  })
+]
+
+#slide[
+  #set text(size: 18pt)
+  ```typ
+  #import "@preview/meander:0.2.4"
+
+  #meander.reflow({
+    import meander: *
+
+    placed(center + horizon,
+      boundary: contour.grid(
+        div: (x: 50, y: 30),
+        (x,y) => calc.pow(2 * x - 1, 2) +
+              calc.pow(2 * y - 1, 2) <= 1
+      ),
+      image(..),
+    )
+
+    container(width: 50%)
+    container(width: 50%, align: right)
+
+  })
+  ```
+][
+  #set text(size: 5pt)
+  #set par(justify: true)
+  #meander.regions(overflow: true, {
+    import meander: *
+
+    placed(center + horizon,
+      boundary: contour.margin(10pt) + contour.grid(div: (x: 50, y: 30), (x,y) => calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) <= 1) + contour.margin(2pt),
       block(
         radius: 50%,
         clip: true,
@@ -357,11 +511,11 @@
 
     placed(center + horizon,
       boundary: contour.grid(
-        div: 30,
+        div: (x: 50, y: 30),
         (x,y) => calc.pow(2 * x - 1, 2) +
               calc.pow(2 * y - 1, 2) <= 1
       ),
-      image("..."),
+      image(..),
     )
 
     container(width: 50%)
@@ -376,7 +530,7 @@
     import meander: *
 
     placed(center + horizon,
-      boundary: contour.margin(10pt) + contour.grid(div: 30, (x,y) => calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) <= 1) + contour.margin(2pt),
+      boundary: contour.margin(10pt) + contour.grid(div: (x: 50, y: 30), (x,y) => calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) <= 1) + contour.margin(2pt),
       block(
         radius: 50%,
         clip: true,
@@ -407,7 +561,7 @@
     placed(
       center + horizon,
       boundary: contour.grid(
-        div: 90,
+        div: (x: 150, y: 90),
         (x,y) => {
           let x = 5 * calc.abs(x - 0.5)
           let y = - 2.5 * (y - 0.6)
@@ -416,7 +570,7 @@
       ) + contour.margin(2pt),
       block(width: 100%, height: 100%),
     )
-    container()
+    container(style: (text-fill: blue.darken(30%)))
     content[#lorem(1000)]
   })
 ]

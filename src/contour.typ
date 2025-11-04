@@ -187,7 +187,7 @@
   } else if type(div) == dictionary {
     (div.x, div.y)
   } else {
-    panic("div should be an integer or an array")
+    panic("div should be an integer or a x,y dictionary")
   }
   let dw = block.width / div-x
   let dh = block.height / div-y
