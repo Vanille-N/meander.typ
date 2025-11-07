@@ -3,3 +3,7 @@ typstc cmd file fmt:
 
 build: (typstc "compile" "main" "pdf")
 watch: (typstc "watch" "main" "pdf")
+
+trunc:
+  pdftk build/main.pdf cat 2 8 18 output build/garbage.pdf
+  pdftk build/main.pdf cat 1 3-7 9-17 19-end output build/trunc.pdf

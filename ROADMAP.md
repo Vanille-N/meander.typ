@@ -29,6 +29,7 @@
 - [X] new overflow option: repeat
 - [ ] template("name") to include parts of a previously defined layout
 - [ ] validate compatibility between placement and overflow
+- [ ] use fewer `box`es, more `block`s
 
 ## Threading
 - [ ] handle paragraph breaks
@@ -36,6 +37,7 @@
 - [ ] very small text (4pt) is only ever threaded two lines at a time
 - [ ] send content to one specific container
 - [ ] priority levels to fill boxes in a different order than they were defined
+- [ ] still a small issue with par spacing
 
 ## Performance
 - [ ] don't rebuild the entire array all the time

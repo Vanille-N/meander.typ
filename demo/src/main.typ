@@ -45,7 +45,6 @@
   aspect-ratio: "16-9",
   // align: horizon,
   // config-common(handout: true),
-  config-common(frozen-counters: (theorem-counter,)),  // freeze theorem counter for animation
   config-info(
     title: [Meander],
     subtitle: [A Text Threading Engine],
@@ -59,12 +58,11 @@
   footer-c: none,
 )
 
-#set heading(numbering: numbly("{1}.", default: "1.1"))
+#set heading(numbering: none)
 
 #title-slide()
 
 = Threading
-
 
 #slide[
   #set text(lang: "en")
@@ -542,6 +540,8 @@
     content[#lorem(1500)]
   })
 ]
+
+=
 
 == And more...
 
