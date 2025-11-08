@@ -27,6 +27,8 @@
   let (wrapper, placeholder) = tiling.placement-mode(placement)
   wrapper(size => {
     let (pages,) = tiling.separate(seq)
+    let first-page-offset = tiling.get-page-offset()
+
     for (idx, elems) in pages.enumerate() {
       let maximum-height = 0pt
       if idx != 0 {
@@ -35,7 +37,13 @@
         }
         colbreak()
       }
-      let data = tiling.create-data(size: size, elems: elems)
+      let page-offset = if idx == 0 {
+        first-page-offset
+      } else {
+        (x: 0pt, y: 0pt)
+      }
+
+      let data = tiling.create-data(size: size, elems: elems, page-offset: page-offset)
       while true {
         // Compute
         let (elem, _data) = tiling.next-elem(data)
@@ -96,10 +104,10 @@
   assert(type(seq) == array, message: "Cannot interpret this object as a layout.")
   let (wrapper, placeholder) = tiling.placement-mode(placement)
 
-  let fill-page(elems, flow, size: ()) = {
+  let fill-page(elems, flow, size: (), page-offset: (x: 0pt, y: 0pt)) = {
     let output = []
     let maximum-height = 0pt
-    let data = tiling.create-data(size: size, elems: elems)
+    let data = tiling.create-data(size: size, elems: elems, page-offset: page-offset)
     while true {
       // Compute
       let (elem, _data) = tiling.next-elem(data)
@@ -152,15 +160,22 @@
 
   wrapper(size => {
     let (flow, pages) = tiling.separate(seq)
+    let first-page-offset = tiling.get-page-offset()
 
     for (idx, elems) in pages.enumerate() {
+      let page-offset = if idx == 0 {
+        first-page-offset
+      } else {
+        (x: 0pt, y: 0pt)
+      }
+      //assert(page-offset.x + page-offset.y == 0pt, message: repr(page-offset) + " at page " + str(idx))
       if idx != 0 {
         if placement == float {
           panic("Pagebreaks are only supported when the placement is 'page' or 'box'")
         }
         colbreak()
       }
-      let (content, overflow) = fill-page(elems, flow, size: size)
+      let (content, overflow) = fill-page(elems, flow, size: size, page-offset: page-offset)
       content
       flow = overflow
     }

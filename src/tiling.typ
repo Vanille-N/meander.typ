@@ -42,7 +42,12 @@
   let (width, height) = measure(obj.content, ..data.size)
   let obj = geometry.unquery(obj, regions: data.regions)
   let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: width, height: height, anchor: obj.anchor)
-  let dims = geometry.resolve(data.size, x: x, y: y, width: width, height: height)
+  let obj-dims = geometry.resolve(data.size, width: width, height: height)
+  let true-page-size = (
+    width: data.size.width,
+    height: data.size.height - data.page-offset.y,
+  )
+  let dims = geometry.resolve(true-page-size, x: x, y: y, ..obj-dims)
   let display = if obj.display {
     place[#move(dx: dims.x, dy: dims.y)[#{obj.content}]]
   } else { none }
@@ -208,6 +213,9 @@
   /// Dimensions of the page
   /// -> size
   size: none,
+  /// Optional nonzero offset on the top left corner
+  /// -> size
+  page-offset: (x: 0pt, y: 0pt),
   /// Elements to dispense in order
   /// -> (..elem,)
   elems: (),
@@ -216,6 +224,7 @@
   (
     elems: elems.rev(),
     size: size,
+    page-offset: page-offset,
     obstacles: (),
     regions: (:),
   )
@@ -319,15 +328,23 @@
   (flow: flow, pages: pages) 
 }
 
+#let current-page-anchor = state("current-page-anchor", (x: 0pt, y: 0pt))
+
 /// Determines the appropriate layout invocation based on the placement mode.
 /// See details on @cmd:meander:reflow.
 /// -> function
 #let placement-mode(placement) = {
+  let page-anchor-update = {
+    place(top + left, context {
+      current-page-anchor.update(here().position())
+    })
+  }
   if placement == page {
     (
       wrapper:
         (inner) => {
           set block(spacing: 0em)
+          page-anchor-update
           layout(size => inner(size))
         },
       placeholder: (_) => none,
@@ -338,6 +355,7 @@
         (inner) => {
           place(top + left)[
             #box(width: 100%, height: 100%)[
+              #page-anchor-update
               #layout(size => inner(size))
             ]
           ]
@@ -348,6 +366,7 @@
     (
       wrapper:
         (inner) => {
+          page-anchor-update
           layout(size => inner(size))
         },
       placeholder: (hgt) => box(width: 100%, height: hgt),
@@ -355,5 +374,23 @@
   } else {
     panic("Invalid placement option")
   }
+}
+
+// Gets the position of the current page's anchor.
+// Can be called within a `layout` to know the true available space.
+// See Issue #4 (https://github.com/Vanille-N/meander.typ/issues/4)
+// for what happens when we *don't* have this mechanism.
+// #property(requires-context: true)
+//
+// -> (x: length, y: length)
+#let get-page-offset() = {
+  let anchor = current-page-anchor.get()
+  if anchor == none {
+    anchor = (x: 0pt, y: 0pt)
+  }
+  let pos = here().position()
+  pos.x -= anchor.x
+  pos.y -= anchor.y
+  pos
 }
 
