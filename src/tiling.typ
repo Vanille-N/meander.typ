@@ -39,15 +39,11 @@
   /// -> elem
   obj,
 ) = {
-  let (width, height) = measure(obj.content, ..data.size)
+  let (width, height) = measure(obj.content, ..data.full-size)
   let obj = geometry.unquery(obj, regions: data.regions)
   let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: width, height: height, anchor: obj.anchor)
-  let obj-dims = geometry.resolve(data.size, width: width, height: height)
-  let true-page-size = (
-    width: data.size.width,
-    height: data.size.height - data.page-offset.y,
-  )
-  let dims = geometry.resolve(true-page-size, x: x, y: y, ..obj-dims)
+  let obj-dims = geometry.resolve(data.full-size, width: width, height: height)
+  let dims = geometry.resolve(data.free-size, x: x, y: y, ..obj-dims)
   let display = if obj.display {
     place[#move(dx: dims.x, dy: dims.y)[#{obj.content}]]
   } else { none }
@@ -103,7 +99,7 @@
   // Calculate the absolute dimensions of the container
   let obj = geometry.unquery(obj, regions: data.regions)
   let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: obj.width, height: obj.height)
-  let dims = geometry.resolve(data.size, x: x, y: y, width: obj.width, height: obj.height)
+  let dims = geometry.resolve(data.free-size, x: x, y: y, width: obj.width, height: obj.height)
   // Select only the obstacles that may intersect this container
   let relevant-obstacles = data.obstacles.filter(exclude => {
     geometry.intersects((dims.x, dims.x + dims.width), (exclude.x, exclude.x + exclude.width), tolerance: 1mm) and not is-ignored(obj, exclude)
@@ -120,8 +116,8 @@
   // This hack helps solve a problem when the container has the height of the whole
   // page: `measure(box(height: 100%), ..size).height` is equal to
   // `measure(box(height: 200%), ..size).height`
-  if horizontal-marks.len() == 2 and dims.height == data.size.height {
-    horizontal-marks.push(data.size.height / 2)
+  if horizontal-marks.len() == 2 and dims.height == data.free-size.height {
+    dims.height -= 0.1pt
   }
   horizontal-marks = horizontal-marks.sorted()
 
@@ -221,10 +217,14 @@
   elems: (),
 ) = {
   assert(size != none)
+  let free-size = (
+    width: size.width - page-offset.x,
+    height: size.height - page-offset.y,
+  )
   (
     elems: elems.rev(),
-    size: size,
-    page-offset: page-offset,
+    full-size: size,
+    free-size: free-size,
     obstacles: (),
     regions: (:),
   )
