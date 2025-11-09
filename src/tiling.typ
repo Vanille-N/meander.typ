@@ -25,7 +25,6 @@
   #place(line(start: (50%, 25%), end: (50%, 75%), stroke: green + 0.1pt))
 ]
 
-
 /// #property(requires-context: true)
 /// See: @cmd:tiling:next-elem to explain #arg[data].
 /// This function computes the effective obstacles from an input object,

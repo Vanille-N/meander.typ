@@ -179,8 +179,10 @@
 ///
 /// Strategy: split by ```typc " "``` and take all words that fit.
 /// Then if hyphenation is enabled, split by syllables and take all syllables
-/// that fit. End the block with a #typ.linebreak that has the justification of
-/// the paragraph.
+/// that fit.
+///
+/// End the block with a #typ.linebreak that has the justification of
+/// the paragraph, or other based on `cfg.linebreak`.
 /// -> (content?, content?)
 #let has-text(
   /// Content to split. -> content
@@ -196,9 +198,17 @@
   let inner = inner.split(" ")
   let atom = box(width: 0pt, height: 1mm)
 
-  let lbreak = [
-    #context[#linebreak(justify: par.justify)]
-  ]
+  let lbreak = if cfg.linebreak == auto {
+    context[#linebreak(justify: par.justify)]
+  } else if cfg.linebreak == true {
+    linebreak(justify: true)
+  } else if cfg.linebreak == false {
+    linebreak(justify: false)
+  } else if cfg.linebreak == none {
+    []
+  } else {
+    panic("cfg.linebreak does not support the option " + repr(cfg.linebreak))
+  }
   let lo = 0
   let hi = inner.len()
   while true {
@@ -252,7 +262,7 @@
     let right = rebuild(right-words.join(" "))
     return (left, right)
   }
-  }
+}
 
 /// Split content with a ```typc "child"``` main field.
 ///
@@ -554,6 +564,16 @@
   /// - #arg(enum-numbering: ("1.",) * 6) an array of numbering patterns for enumerations.
   ///   If you change the numbering style, put the new value in
   ///   the parameters so that enums are correctly split.
+  /// - #arg(hyphenate: auto) determines if the text can be hyphenated.
+  ///   Defaults to `text.hyphenate`.
+  /// - #arg(lang: auto) specifies the language of the text.
+  ///   Defaults to `text.lang`.
+  /// - #arg(linebreak: auto) determines the behavior of linebreaks at the end
+  ///   of boxes. Supports the following values:
+  ///   - #typ.v.true $->$ justified linebreak
+  ///   - #typ.v.false $->$ non-justified linebreak
+  ///   - #typ.v.none $->$ no linebreak
+  ///   - #typ.v.auto $->$ linebreak with the same justification as the current paragraph
   ///
   /// -> dictionary
   cfg: (:),
@@ -572,8 +592,11 @@
   if "lang" not in cfg or cfg.lang == auto {
     cfg.lang = text.lang
   }
+  if "linebreak" not in cfg {
+    cfg.linebreak = auto
+  }
   cfg.insert("enum-depth", 0)
   // TODO: include vertical and horizontal spacing here.
-  dispatch(ct, ct => fits-inside(dims, ct, size: size), cfg)
+  dispatch([#ct], ct => fits-inside(dims, ct, size: size), cfg)
 }
 

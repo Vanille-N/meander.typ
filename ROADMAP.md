@@ -25,11 +25,11 @@
 - [ ] automatically order obstacles before containers, except if there are labels
 - [ ] optimize the rectangles in ascii (need fewer of them for performance)
   - [ ] rotate + flip ascii map
-- [ ] adjust container default width + height to only take the remaining space, not 100%
 - [X] new overflow option: repeat
 - [ ] template("name") to include parts of a previously defined layout
 - [ ] validate compatibility between placement and overflow
 - [ ] use fewer `box`es, more `block`s
+- [X] breaking: container dimensions resolve relative to true size
 
 ## Threading
 - [ ] handle paragraph breaks
@@ -38,6 +38,7 @@
 - [ ] send content to one specific container
 - [ ] priority levels to fill boxes in a different order than they were defined
 - [ ] still a small issue with par spacing
+- [X] linebreak config options on fill-box
 
 ## Performance
 - [ ] don't rebuild the entire array all the time
