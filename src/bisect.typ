@@ -210,7 +210,19 @@
     panic("cfg.linebreak does not support the option " + repr(cfg.linebreak))
   }
   let lo = 0
-  let hi = inner.len()
+  let hi = 1
+  while true {
+    if hi >= inner.len() {
+      hi = inner.len()
+      break
+    }
+    if fits-inside(rebuild(inner.slice(0, hi + 1).join(" ")) + atom) {
+      lo = hi
+      hi *= 2
+    } else {
+      break
+    }
+  }
   while true {
     if lo + 1 == hi {
       break
