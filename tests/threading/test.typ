@@ -1,3 +1,4 @@
+#import "/src/lib.typ" as meander
 #import "/src/elems.typ": container, placed, content
 #import "/src/layouts.typ": regions, reflow
 #import "/src/contour.typ"
@@ -122,7 +123,7 @@
 
 #pagebreak()
 
-#reflow(debug: true, overflow: true, {
+#reflow(debug: meander.debug.post-thread, overflow: true, {
   placed(bottom + left,
     boundary: contour.horiz(div: 70, y => (0, y)) + contour.margin(2pt),
     box(width: 70%, height: 70%),

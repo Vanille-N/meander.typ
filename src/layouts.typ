@@ -1,6 +1,7 @@
 #import "tiling.typ"
 #import "threading.typ"
 #import "elems.typ"
+#import "debug.typ"
 
 /// Debug version of the toplevel `reflow`,
 /// that only displays the partitioned layout.
@@ -22,6 +23,7 @@
   /// Ignored.
   overflow: none,
 ) = {
+  panic("`regions` is deprecated. Use instead `meander.reflow.with(debug: meander.debug.pre-thread)")
   if seq == none { seq = () }
   assert(type(seq) == array, message: "Cannot interpret this object as a layout.")
   let (wrapper, placeholder) = tiling.placement-mode(placement)
@@ -74,7 +76,7 @@
   seq,
   /// Whether to show the boundaries of boxes.
   /// -> bool
-  debug: false,
+  debug: debug.release,
   /// #property(since: version(0, 2, 1))
   /// Controls the behavior in case the content overflows the provided
   /// containers.
@@ -100,6 +102,9 @@
   /// -> any
   placement: page,
 ) = {
+  if type(debug) == bool {
+    panic("debug: true was removed. Now you should use meander.debug.post-thread")
+  }
   if seq == none { seq = () }
   assert(type(seq) == array, message: "Cannot interpret this object as a layout.")
   let (wrapper, placeholder) = tiling.placement-mode(placement)
@@ -115,40 +120,53 @@
       data = _data
 
       if elem.type == place {
-        output += elem.display
-        if debug { output += elem.debug }
+        if debug.objects { output += elem.display }
+        //output += elem.display
+        //if debug { output += elem.debug }
         data = tiling.push-elem(data, elem)
-        for block in elem.blocks {
+        for block in elem.contour {
+          output += place(dx: block.x, dy: block.y, {
+            box(width: block.width, height: block.height, ..debug.obstacle-contours)
+          })
           maximum-height = calc.max(maximum-height, block.y + block.height)
         }
         continue
       }
       assert(elem.type == box)
-      let (full, overflow) = threading.smart-fill-boxes(
-        size: size,
-        avoid: data.obstacles,
-        boxes: elem.blocks,
-        flow,
-      )
-      flow = overflow
-      for (container, content) in full {
-        for (key, val) in container.style {
-          if key == "align" {
-            content = align(val, content)
-          } else if key == "text-fill" {
-            content = text(fill: val, content)
-          } else {
-            panic("Container does not support the styling option '" + key + "'")
+      if debug.content {
+        let (full, overflow) = threading.smart-fill-boxes(
+          size: size,
+          avoid: data.obstacles,
+          boxes: elem.contour,
+          flow,
+        )
+        flow = overflow
+        for (container, content) in full {
+          for (key, val) in container.style {
+            if key == "align" {
+              content = align(val, content)
+            } else if key == "text-fill" {
+              content = text(fill: val, content)
+            } else {
+              panic("Container does not support the styling option '" + key + "'")
+            }
           }
-        }
-        // TODO: this needs a new push-elem, but with the actual dimensions not the original ones.
-        output += place(dx: container.x, dy: container.y, {
-          box(width: container.width, height: container.height, stroke: if debug { green } else { none }, {
-            content
+          output += place(dx: container.x, dy: container.y, {
+            box(width: container.width, height: container.height, ..debug.container-contours, {
+              content
+            })
           })
-        })
-        data = tiling.push-elem(data, (blocks: (tiling.add-self-margin(container),)))
-        maximum-height = calc.max(maximum-height, container.y + container.height)
+          data = tiling.push-elem(data, (contour: (tiling.add-self-margin(container),)))
+          maximum-height = calc.max(maximum-height, container.y + container.height)
+        }
+      } else {
+        for container in elem.contour {
+          output += place(dx: container.x, dy: container.y, {
+            box(width: container.width, height: container.height, ..debug.container-contours, {})
+          })
+          data = tiling.push-elem(data, (contour: (tiling.add-self-margin(container),)))
+          maximum-height = calc.max(maximum-height, container.y + container.height)
+        }
       }
     }
     // This box fills the space occupied by the meander canvas,

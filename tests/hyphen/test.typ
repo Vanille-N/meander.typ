@@ -1,4 +1,5 @@
-#import "/src/lib.typ": reflow, container, content, placed
+#import "/src/lib.typ" as meander
+#import meander: reflow, container, content, placed
 
 #let fakeimg(align, dx: 0pt, dy: 0pt, fill: white, width: 1cm, height: 1cm) = {
   placed(align, dx: dx, dy: dy,
@@ -11,7 +12,7 @@
 
 #[
 #set text(hyphenate: false)
-#reflow(debug: true, {
+#reflow(debug: meander.debug.post-thread, {
   let vradius = 12.2cm
   let vcount = 50
   let hradius = 5cm
@@ -64,7 +65,7 @@
 
 #[
 #set text(hyphenate: true)
-#reflow(debug: true, {
+#reflow(debug: meander.debug.post-thread, {
   let vradius = 12.2cm
   let vcount = 50
   let hradius = 5cm
@@ -117,7 +118,7 @@
 
 #[
 #set par(justify: true)
-#reflow(debug: true, {
+#reflow(debug: meander.debug.post-thread, {
   let vradius = 12.2cm
   let vcount = 50
   let hradius = 5cm

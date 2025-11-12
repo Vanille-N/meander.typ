@@ -7,7 +7,7 @@
       #ct
     ]
   ]
-  meander.reflow(debug: true, {
+  meander.reflow(debug: meander.debug.post-thread, {
     import meander: *
     placed(
       top + left,

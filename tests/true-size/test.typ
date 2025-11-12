@@ -2,7 +2,7 @@
 
 #lorem(300)
 
-#meander.regions({
+#meander.reflow(debug: meander.debug.pre-thread, {
   import meander: *
   container()
 })

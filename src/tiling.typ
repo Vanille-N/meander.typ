@@ -1,29 +1,5 @@
 #import "geometry.typ"
 
-/// Pattern with red crosses to display forbidden zones.
-/// -> pattern
-#let pat-forbidden(
-  /// Size of the tiling.
-  /// -> length
-  sz,
-) = tiling(size: (sz, sz))[
-  #place(box(width: 100%, height: 100%, stroke: none, fill: red.transparentize(95%)))
-  #place(line(start: (25%, 25%), end: (75%, 75%), stroke: red + 0.1pt))
-  #place(line(start: (25%, 75%), end: (75%, 25%), stroke: red + 0.1pt))
-]
-
-/// Pattern with green pluses to display allowed zones.
-/// -> pattern
-#let pat-allowed(
-  /// Size of the tiling.
-  /// -> length
-  sz,
-) = tiling(size: (sz, sz))[
-  #place(box(width: 100%, height: 100%, stroke: none, fill: green.transparentize(95%)))
-  #place(line(start: (25%, 50%), end: (75%, 50%), stroke: green + 0.1pt))
-  #place(line(start: (50%, 25%), end: (50%, 75%), stroke: green + 0.1pt))
-]
-
 /// #property(requires-context: true)
 /// See: @cmd:tiling:next-elem to explain #arg[data].
 /// This function computes the effective obstacles from an input object,
@@ -42,9 +18,7 @@
   let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: width, height: height, anchor: obj.anchor)
   let obj-dims = geometry.resolve(data.full-size, width: width, height: height)
   let dims = geometry.resolve(data.free-size, x: x, y: y, ..obj-dims)
-  let display = if obj.display {
-    place[#move(dx: dims.x, dy: dims.y)[#{obj.content}]]
-  } else { none }
+  let display = place[#move(dx: dims.x, dy: dims.y)[#{obj.content}]]
 
   // Apply the boundary redrawing functions in order to know the true
   // footprint of the object in the layout.
@@ -60,9 +34,8 @@
   let debug = []
   for dims in bounds {
     forbidden.push((..dims, tags: obj.tags))
-    debug += place[#move(dx: dims.x, dy: dims.y)[#box(stroke: red, fill: pat-forbidden(30pt), width: dims.width, height: dims.height)]]
   }
-  (type: place, debug: debug, display: display, blocks: forbidden)
+  (type: place, display: display, region: dims, contour: forbidden)
 }
 
 /// Eliminates non-candidates by determining if the obstacle is ignored by the container.
@@ -156,9 +129,6 @@
     for zone in new-zones {
       assert(lo >= hi)
       assert(zone.width >= 0pt)
-      debug += place(dx: zone.x, dy: hi)[
-        #box(width: zone.width, height: lo - hi, fill: pat-allowed(30pt), stroke: green)
-      ]
       all-zones.push((
         x: zone.x, y: hi, height: lo - hi, width: zone.width,
         bounds: dims, // upper limits on how this zone can grow
@@ -169,7 +139,7 @@
       ))
     }
   }
-  (type: box, debug: debug, display: none, blocks: all-zones)
+  (type: box, display: none, region: dims, contour: all-zones)
 }
 
 /// Applies an element's margin to itself.
@@ -264,7 +234,7 @@
   elem,
 ) = {
   let data = data
-  for block in elem.blocks {
+  for block in elem.contour {
     data.obstacles.push(block)
     for tag in block.tags {
       let current = data.regions.at(str(tag), default: block)

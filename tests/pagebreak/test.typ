@@ -36,7 +36,7 @@
 
 #pagebreak()
 
-#meander.reflow(debug: true, {
+#meander.reflow(debug: meander.debug.post-thread, {
   import meander: *
   container()
   content[#lorem(1000)]
@@ -45,7 +45,7 @@
 #pagebreak()
 
 #meander.reflow(
-  debug: true,
+  debug: meander.debug.post-thread,
   overflow: tt => [
     #colbreak()
     *The following content overflows:* #text(fill: red)[_#{tt.styled}_]
@@ -57,7 +57,7 @@
 
 #pagebreak()
 
-#meander.reflow(debug: true, overflow: panic, placement: box, {
+#meander.reflow(debug: meander.debug.post-thread, overflow: panic, placement: box, {
   import meander: *
   container()
   pagebreak()
@@ -69,7 +69,7 @@
 #pagebreak()
 
 #let overflow = state("overflow")
-#meander.reflow(debug: true, overflow: overflow, placement: box, {
+#meander.reflow(debug: meander.debug.post-thread, overflow: overflow, placement: box, {
   import meander: *
   container(width: 50% - 3mm, margin: 6mm)
   container()

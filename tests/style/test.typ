@@ -6,7 +6,7 @@
   )
 }
 
-#meander.reflow(overflow: true, debug: true, {
+#meander.reflow(overflow: true, debug: meander.debug.post-thread, {
   import meander: *
   placed(
     top + left,
@@ -41,7 +41,7 @@
 
 #pagebreak()
 
-#meander.reflow(overflow: true,  debug: true, {
+#meander.reflow(overflow: true,  debug: meander.debug.post-thread, {
   import meander: *
   placed(
     top + left,

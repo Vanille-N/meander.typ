@@ -42,7 +42,7 @@
 
 #pagebreak()
 
-#meander.reflow(debug: true, {
+#meander.reflow(debug: meander.debug.post-thread, {
   import meander: *
 
   container(width: 50%, style: (text-fill: red))

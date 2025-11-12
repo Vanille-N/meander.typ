@@ -1,5 +1,6 @@
+#import "/src/lib.typ" as meander
 #import "/src/elems.typ": container, placed, content
-#import "/src/layouts.typ": regions
+#import "/src/layouts.typ": reflow
 #import "/src/contour.typ"
 
 #let fakeimg(align, dx: 0pt, dy: 0pt, fill: white, width: 1cm, height: 1cm) = {
@@ -8,7 +9,9 @@
   )
 }
 
-#regions(display: true, {
+#let regions = reflow.with(debug: meander.debug.pre-thread)
+
+#regions({
   fakeimg(top + left, width: 5cm, height: 5cm, fill: red)
   fakeimg(horizon + left, dx: -1cm, width: 5cm, height: 5cm, fill: blue)
   fakeimg(top + right, dy: -1cm, width: 5cm, height: 5cm, fill: green)
@@ -105,7 +108,7 @@
 #pagebreak()
 
 // TODO: make this a contour test
-#regions(display: true, {
+#regions({
   fakeimg(center + horizon, width: 5cm, height: 5cm, fill: yellow)
   fakeimg(top + right, width: 5cm, height: 5cm, fill: yellow)
   container()
