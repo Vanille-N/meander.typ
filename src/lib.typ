@@ -6,7 +6,6 @@
 
 #import "contour.typ"
 
-#import "std.typ"
 
 #import "internals.typ"
 

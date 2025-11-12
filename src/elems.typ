@@ -1,4 +1,3 @@
-#import "std.typ"
 #import "utils.typ"
 
 /// Core function to create an obstacle.

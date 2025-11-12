@@ -1,4 +1,3 @@
-#import "std.typ"
 #import "geometry.typ"
 
 /// Pattern with red crosses to display forbidden zones.

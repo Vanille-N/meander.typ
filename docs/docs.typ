@@ -1076,13 +1076,6 @@ See how to use them in @interactive.
 
 #show-module("query", module: true)
 
-== Std
-
-Some builtin functions or types are shadowed by MEANDER's definitions.
-This module allows you to still access them.
-
-#show-module("std", module: true)
-
 #new[== Public internals]
 
 If MEANDER is too high-level for you, you may use the public internals
