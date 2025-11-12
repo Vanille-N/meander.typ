@@ -6,7 +6,7 @@
 
 #import "contour.typ"
 
-#import "debug.typ"
+#import "opt.typ"
 
 #import "internals.typ"
 

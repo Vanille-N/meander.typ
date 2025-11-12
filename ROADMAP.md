@@ -67,6 +67,9 @@
 
 ## Refactoring
 
+- [ ] debug options rework
+- [ ] regions deprecated
+
 ## Documentation
 
 - [ ] non-doc regular comments about the algorithm

@@ -7,8 +7,9 @@
       #ct
     ]
   ]
-  meander.reflow(debug: meander.debug.post-thread, {
+  meander.reflow({
     import meander: *
+    opt.debug.post-thread()
     placed(
       top + left,
       boundary: contour.horiz(div: 25, y => (0,0)),

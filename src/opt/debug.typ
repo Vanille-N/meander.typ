@@ -1,5 +1,7 @@
 // *** Schema ***
 
+#import "/src/types.typ"
+
 /// Pattern with red crosses to display forbidden zones.
 /// -> pattern
 #let pat-forbidden(
@@ -25,11 +27,11 @@
 ]
 
 #let new-config(..opts) = {
-  //((debug: opts.named()),)
-  opts.named()
+  ((type: types.opt.pre, field: "debug", payload: opts.named()),)
+  //opts.named()
 }
 
-#let release = new-config(
+#let release() = new-config(
   objects: true,
   content: true,
   layout-boundary: (:),
@@ -39,7 +41,7 @@
   container-contours: (:),
 )
 
-#let minimal = new-config(
+#let minimal() = new-config(
   objects: false,
   content: false,
   layout-boundary: (stroke: orange),
@@ -49,7 +51,7 @@
   container-regions: (stroke: green, fill: pat-allowed(30pt)),
 )
 
-#let pre-thread = new-config(
+#let pre-thread() = new-config(
   objects: true,
   content: false,
   layout-boundary: (stroke: orange),
@@ -59,7 +61,7 @@
   container-contours: (stroke: green, fill: pat-allowed(30pt)),
 )
 
-#let post-thread = new-config(
+#let post-thread() = new-config(
   objects: true,
   content: true,
   layout-boundary: (stroke: orange),

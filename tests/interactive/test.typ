@@ -12,8 +12,9 @@
   ]
 }
 
-#meander.reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
   import meander: *
+  opt.debug.post-thread()
   placed(top + left, img(5cm, 5cm, blue, 1), tags: <A>)
   container(invisible: <A>)
   container()
@@ -25,8 +26,9 @@
 
 #pagebreak()
 
-#meander.reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
   import meander: *
+  opt.debug.post-thread()
   container(tags: <A>, margin: (y: 2cm, rest: 5mm))
   content(lorem(100))
   colbreak()

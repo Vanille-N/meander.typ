@@ -1,7 +1,7 @@
 #import "tiling.typ"
 #import "threading.typ"
 #import "elems.typ"
-#import "debug.typ"
+#import "opt.typ"
 
 /// Debug version of the toplevel `reflow`,
 /// that only displays the partitioned layout.
@@ -23,48 +23,7 @@
   /// Ignored.
   overflow: none,
 ) = {
-  panic("`regions` is deprecated. Use instead `meander.reflow.with(debug: meander.debug.pre-thread)")
-  if seq == none { seq = () }
-  assert(type(seq) == array, message: "Cannot interpret this object as a layout.")
-  let (wrapper, placeholder) = tiling.placement-mode(placement)
-  wrapper(size => {
-    let (pages,) = tiling.separate(seq)
-    let first-page-offset = tiling.get-page-offset()
-
-    for (idx, elems) in pages.enumerate() {
-      let maximum-height = 0pt
-      if idx != 0 {
-        if placement == float {
-          panic("Pagebreaks are only supported when the placement is 'page' or 'box'")
-        }
-        colbreak()
-      }
-      let page-offset = if idx == 0 {
-        first-page-offset
-      } else {
-        (x: 0pt, y: 0pt)
-      }
-
-      let data = tiling.create-data(size: size, elems: elems, page-offset: page-offset)
-      while true {
-        // Compute
-        let (elem, _data) = tiling.next-elem(data)
-        if elem == none { break }
-        data = _data
-
-        // Show
-        if display { elem.display }
-        elem.debug
-
-        // Record
-        data = tiling.push-elem(data, elem)
-        for block in elem.blocks {
-          maximum-height = calc.max(maximum-height, block.y + block.height)
-        }
-      }
-      placeholder(maximum-height)
-    }
-  })
+  panic("`regions` is deprecated. Use instead `meander.reflow` and set `opt.debug.pre-thread()`")
 }
 
 /// Segment the input sequence according to the tiling algorithm,
@@ -74,9 +33,10 @@
   /// See @elem-doc for how to format this content.
   /// -> array(elem)
   seq,
-  /// Whether to show the boundaries of boxes.
+  /// #property(until: version(0, 2, 4))
+  /// Deprecated in favor of `opt.debug.post-thread()`.
   /// -> bool
-  debug: debug.release,
+  debug: none,
   /// #property(since: version(0, 2, 1))
   /// Controls the behavior in case the content overflows the provided
   /// containers.
@@ -102,14 +62,14 @@
   /// -> any
   placement: page,
 ) = {
-  if type(debug) == bool {
-    panic("debug: true was removed. Now you should use meander.debug.post-thread")
+  if debug != none {
+    panic("debug: true was removed. Use instead `opt.debug.post-thread()`")
   }
   if seq == none { seq = () }
   assert(type(seq) == array, message: "Cannot interpret this object as a layout.")
   let (wrapper, placeholder) = tiling.placement-mode(placement)
 
-  let fill-page(elems, flow, size: (), page-offset: (x: 0pt, y: 0pt)) = {
+  let fill-page(elems, flow, size: (), page-offset: (x: 0pt, y: 0pt), opts: (:)) = {
     let output = []
     let maximum-height = 0pt
     let data = tiling.create-data(size: size, elems: elems, page-offset: page-offset)
@@ -120,20 +80,20 @@
       data = _data
 
       if elem.type == place {
-        if debug.objects { output += elem.display }
+        if opts.debug.objects { output += elem.display }
         //output += elem.display
         //if debug { output += elem.debug }
         data = tiling.push-elem(data, elem)
         for block in elem.contour {
           output += place(dx: block.x, dy: block.y, {
-            box(width: block.width, height: block.height, ..debug.obstacle-contours)
+            box(width: block.width, height: block.height, ..opts.debug.obstacle-contours)
           })
           maximum-height = calc.max(maximum-height, block.y + block.height)
         }
         continue
       }
       assert(elem.type == box)
-      if debug.content {
+      if opts.debug.content {
         let (full, overflow) = threading.smart-fill-boxes(
           size: size,
           avoid: data.obstacles,
@@ -152,7 +112,7 @@
             }
           }
           output += place(dx: container.x, dy: container.y, {
-            box(width: container.width, height: container.height, ..debug.container-contours, {
+            box(width: container.width, height: container.height, ..opts.debug.container-contours, {
               content
             })
           })
@@ -162,7 +122,7 @@
       } else {
         for container in elem.contour {
           output += place(dx: container.x, dy: container.y, {
-            box(width: container.width, height: container.height, ..debug.container-contours, {})
+            box(width: container.width, height: container.height, ..opts.debug.container-contours, {})
           })
           data = tiling.push-elem(data, (contour: (tiling.add-self-margin(container),)))
           maximum-height = calc.max(maximum-height, container.y + container.height)
@@ -177,7 +137,7 @@
   }
 
   wrapper(size => {
-    let (flow, pages) = tiling.separate(seq)
+    let (flow, pages, opts) = tiling.separate(seq)
     let first-page-offset = tiling.get-page-offset()
 
     for (idx, elems) in pages.enumerate() {
@@ -193,7 +153,7 @@
         }
         colbreak()
       }
-      let (content, overflow) = fill-page(elems, flow, size: size, page-offset: page-offset)
+      let (content, overflow) = fill-page(elems, flow, size: size, page-offset: page-offset, opts: opts)
       content
       flow = overflow
     }
@@ -232,7 +192,7 @@
         let last-page-elems = pages.last()
         while flow != () {
           colbreak()
-          let (content, overflow) = fill-page(last-page-elems, flow, size: size)
+          let (content, overflow) = fill-page(last-page-elems, flow, size: size, opts: opts)
           content
           flow = overflow
         }

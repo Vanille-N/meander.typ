@@ -1,3 +1,5 @@
+#import "opt.typ"
+#import "types.typ"
 #import "geometry.typ"
 
 /// #property(requires-context: true)
@@ -276,24 +278,49 @@
   let pages = ()
   let flow = ()
   let elems = ()
+  let opts = (:)
+  let phase = 0
+  let check-phase(cur, require) = {
+    if cur <= require {
+      require
+    } else {
+      panic("Incorrect sequence ordering. Options must come before or after every other element.")
+    }
+  }
   for obj in seq {
     if obj.type == place or obj.type == box {
+      phase = check-phase(phase, 1)
       elems.push(obj)
     } else if obj.type == text {
+      phase = check-phase(phase, 1)
       flow.push(obj)
     } else if obj.type == std.pagebreak {
+      phase = check-phase(phase, 1)
       pages.push(elems)
       elems = ()
     } else if obj.type == std.colbreak {
+      phase = check-phase(phase, 1)
       flow.push(obj)
     } else if obj.type == pad {
+      phase = check-phase(phase, 1)
       flow.push(obj)
+    } else if obj.type == types.opt.pre {
+      phase = check-phase(phase, 0)
+      assert(obj.field not in opts, message: "Cannot override option '" + obj.field + "'")
+      opts.insert(obj.field, obj.payload)
+    } else if obj.type == types.opt.post {
+      phase = check-phase(phase, 2)
+      assert(obj.field not in opts, message: "Cannot override option '" + obj.field + "'")
+      opts.insert(obj.field, obj.payload)
     } else {
       panic("Unknown element of type " + repr(obj.type))
     }
   }
+  if "debug" not in opts {
+    opts.debug = opt.debug.release().at(0).payload
+  }
   pages.push(elems)
-  (flow: flow, pages: pages) 
+  (flow: flow, pages: pages, opts: opts) 
 }
 
 #let current-page-anchor = state("current-page-anchor", (x: 0pt, y: 0pt))

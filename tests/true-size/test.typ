@@ -2,7 +2,8 @@
 
 #lorem(300)
 
-#meander.reflow(debug: meander.debug.pre-thread, {
+#meander.reflow({
   import meander: *
+  opt.debug.pre-thread()
   container()
 })

@@ -1,7 +1,8 @@
 #import "/src/lib.typ" as meander
-#import meander: reflow, placed, container, content, contour
 
-#reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
+  import meander: *
+  opt.debug.post-thread()
   placed(
     center,
     boundary: contour.grid(div: 20, (x,y) => true),
@@ -11,7 +12,9 @@
 
 #pagebreak()
 
-#reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
+  import meander: *
+  opt.debug.post-thread()
   placed(
     center + horizon,
     boundary: contour.margin(1cm) + contour.grid(div: 20, (x, y) => {
@@ -23,7 +26,9 @@
 
 #pagebreak()
 
-#reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
+  import meander: *
+  opt.debug.post-thread()
   placed(
     center,
     boundary: contour.grid(div: 20, (x, y) => {
@@ -35,7 +40,9 @@
 
 #pagebreak()
 
-#reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
+  import meander: *
+  opt.debug.post-thread()
   placed(
     center + top,
     boundary: contour.margin(5pt) + contour.grid(div: 20, (x, y) => {
@@ -46,7 +53,9 @@
 })
 
 
-#reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
+  import meander: *
+  opt.debug.post-thread()
   placed(
     center + horizon,
     boundary: contour.margin(5pt) + contour.horiz(div: 20, y => (y - 0.07, y + 0.07)),
@@ -54,7 +63,9 @@
   )
 })
 
-#reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
+  import meander: *
+  opt.debug.post-thread()
   placed(
     center + bottom,
     boundary: contour.margin(5pt) + contour.vert(div: 20, x => (x - 0.07, x + 0.07)),
@@ -64,7 +75,9 @@
 
 #pagebreak()
 
-#reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
+  import meander: *
+  opt.debug.post-thread()
   placed(
     center + top,
     boundary: contour.margin(5pt) + contour.width(
@@ -76,7 +89,9 @@
   )
 })
 
-#reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
+  import meander: *
+  opt.debug.post-thread()
   placed(
     center + horizon,
     boundary: contour.margin(5pt) + contour.width(
@@ -87,7 +102,9 @@
   )
 })
 
-#reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
+  import meander: *
+  opt.debug.post-thread()
   placed(
     center + bottom,
     boundary: contour.margin(5pt) + contour.width(
@@ -100,7 +117,9 @@
 
 #pagebreak()
 
-#reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
+  import meander: *
+  opt.debug.post-thread()
   placed(
     center + top,
     boundary: contour.margin(5pt) + contour.height(
@@ -111,7 +130,9 @@
   )
 })
 
-#reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
+  import meander: *
+  opt.debug.post-thread()
   placed(
     center + horizon,
     boundary: contour.margin(5pt) + contour.height(
@@ -122,7 +143,9 @@
   )
 })
 
-#reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
+  import meander: *
+  opt.debug.post-thread()
   placed(
     center + bottom,
     boundary: contour.margin(5pt) + contour.height(
@@ -135,7 +158,9 @@
 
 #pagebreak()
 
-#reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
+  import meander: *
+  opt.debug.post-thread()
   placed(
     center + horizon,
     dx: -5cm,
@@ -168,7 +193,9 @@
 
 #pagebreak()
 
-#reflow(debug: meander.debug.post-thread, {
+#meander.reflow({
+  import meander: *
+  opt.debug.post-thread()
   placed(
     center + horizon,
     boundary: contour.phantom(),
