@@ -128,8 +128,9 @@
         // @scrybe(jump releases; grep {{version}})
         *Versions*
         - #link(repo)[`dev`]
-        - #link(repo + "releases/tag/v0.2.4")[`0.2.4`]
+        - #link(repo + "releases/tag/v0.2.5")[`0.2.5`]
           (#link("https://typst.app/universe/package/meander")[`latest`])
+        - #link(repo + "releases/tag/v0.2.4")[`0.2.4`]
         - #link(repo + "releases/tag/v0.2.3")[`0.2.3`]
         - #link(repo + "releases/tag/v0.2.2")[`0.2.2`]
         - #link(repo + "releases/tag/v0.2.1")[`0.2.1`]
@@ -165,11 +166,11 @@
 Import the latest version of MEANDER with:
 // @scrybe(jump import; grep preview; grep {{version}})
 #codesnippet[```typ
-#import "@preview/meander:0.2.4"
+#import "@preview/meander:0.2.5"
 ```]
 #warning-alert[
   // @scrybe(jump import; grep preview; grep {{version}})
-  Do not ```typ #import "@preview/meander:0.2.4": *``` globally,
+  Do not ```typ #import "@preview/meander:0.2.5": *``` globally,
   it would shadow important functions.
 ]
 
@@ -1181,7 +1182,7 @@ made available as lower-level primitives.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.2.4": internals.fill-box
+#import "@preview/meander:0.2.5": internals.fill-box
 ```
 ]
 #property(since: version(0, 2, 4))
@@ -1192,7 +1193,7 @@ content as fits in a specific box. See @cmd:bisect:fill-box for details.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.2.4": internals.geometry
+#import "@preview/meander:0.2.5": internals.geometry
 ```
 ]
 #property(since: version(0, 2, 4))

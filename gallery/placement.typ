@@ -1,6 +1,6 @@
 // @scrybe(jump import; grep preview; grep {{version}})
 // @scrybe(until eof; diff docs/figs/overflow-text/doc.typ)
-#import "@preview/meander:0.2.4"
+#import "@preview/meander:0.2.5"
 #set par(justify: true)
 
 #text(fill: green)[

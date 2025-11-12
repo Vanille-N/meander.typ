@@ -1,6 +1,6 @@
 // @scrybe(jump import; grep preview; grep {{version}})
 // @scrybe(until eof; diff docs/figs/two-columns.typ)
-#import "@preview/meander:0.2.4"
+#import "@preview/meander:0.2.5"
 
 #meander.reflow({
   import meander: *
