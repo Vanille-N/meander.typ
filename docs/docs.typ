@@ -3,6 +3,7 @@
 #import "@preview/tidy:0.4.3"
 
 #show regex("Introduced in "): "Since "
+#show regex("Available until "): "Until "
 
 #let repo = "https://github.com/Vanille-N/meander.typ/"
 #let typst-repo = "https://github.com/typst/typst/"
@@ -150,7 +151,7 @@
           Chapters that are
           #highlight[highlighted]#text(fill: red, super[*(!)*])
           have received major
-          updates in the latest version `0.2.4`
+          updates in the latest version `0.2.5`
           // TODO: add major/minor distinction
         ]
       ]
@@ -158,11 +159,6 @@
     #colbreak()
   ],
 )
-
-
-// TODO: array type constructor
-
-// TODO: show the import
 
 = Quick start
 
@@ -260,6 +256,43 @@ in columns, including columns of uneven width
   #show-page("two-columns")
 ]
 
+#new[== Anatomy of an invocation <anatomy>]
+
+As you can extrapolate from these examples,
+every MEANDER invocation looks like this:
+```typ
+#meander.reflow(/* global options */, {
+  import meander: *
+  // pre-layout options
+  
+  // layout and dynamic options
+  
+  // post-layout options
+})
+```
+
+The most important part is the layout, composed of
++ `pagebreak`-separated pages, each made of
+  - `container`s that can hold content,
+  - `placed` obstacles delimiting regions that cannot hold content.
++ flowing `content`, which may also be interspersed with
+  - `colbreak`s and `colfill`s to have finer control over how containers are filled.
+
+Pre-layout options --- for now this concerns only ```typc opt.debug``` ---
+are configuration settings that come before any layout specification.
+They apply to the entire layout that follows.
+
+Dynamic options and post-layout options are not instanciated yet,
+but they will be respectively settings that can be updated during the layout
+affecting all following elements, and after the layout concerning
+particularly how to close the layout and handle overflows.
+
+Global options are being phased out and will progressively
+be transformed into pre-layout, dynamic, and post-layout options
+in a manner than is compatible with semantic versioning.
+The first migration is only debug options because this can be done
+with no breakage of backwards compatibility.
+
 == Going further
 
 If you want to learn more advanced features or if there's a glitch in your
@@ -267,6 +300,7 @@ layout, here are my suggestions.
 
 In any case, I recommend briefly reading @explain-algo, as having a basic
 understanding of what happens behind the scenes can't hurt.
+This includes turning on some debugging options in @debug.
 
 To learn how to handle non-rectangular obstacles, see @contouring.
 
@@ -295,12 +329,38 @@ Even if you don't plan to contribute to the implementation of MEANDER,
 I suggest you nevertheless briefly read this section to have an intuition
 of what happens behind the scenes.
 
+#new[== Debugging <debug>]
+
+The examples below use some options that are available for debugging.
+
+Debug configuration is a pre-layout option, which means it should be specified
+before any other elements.
+```typ
+#meander.reflow({
+  import meander: *
+  opt.debug.pre-thread() // <- sets the debug mode to "pre-thread"
+  // ...
+})
+```
+The debug modes available are as follows:
+- `release`: this is the default, having no visible debug markers.
+- `pre-thread`: includes obstacles (in red) and containers (in green) but not content.
+  Helps visualize the usable regions.
+- `post-thread`: includes obstacles (in red), containers, and content.
+  Containers have a green border to show the real boundaries after adjustments
+  (during threading, container boundaries are tweaked to produce consistent
+  line spacing).
+- `minimal`: does not render the obstacles and is thus an even more
+  streamlined version of `pre-thread`.
+
+//See @opt-debug for more details.
+
 == Page tiling
 
 When you write some layout such as the one below,
 MEANDER receives a sequence of elements that it splits into obstacles,
 containers, and content.
-#show-code("debug-reflow-code", resize: -1pt)
+#show-code("debug-reflow-code", resize: -3pt)
 First the #typ.measure of each obstacle is computed, their positioning
 is inferred from the alignment parameter of @cmd:placed, and they are
 placed on the page. The regions they cover as marked as forbidden.
@@ -309,16 +369,13 @@ Then the same job is done for the containers, marking those regions as allowed.
 The two sets of computed regions are combined by subtracting the forbidden regions
 from the allowed ones, giving a rectangular subdivision of the usable areas.
 
-You can have a visual representation of these regions by replacing
-@cmd:meander:reflow with @cmd:meander:regions, with the same inputs.
-
 #figure(
   [
     #show-page("debug-regions-obstacles", width: 4.5cm)
     #show-page("debug-regions-containers", width: 4.5cm)
     #show-page("debug-regions-full", width: 4.5cm)
   ],
-  caption: [Left to right: the forbidden, allowed, and combined regions],
+  caption: [Left to right: the forbidden, allowed, and combined regions.],
 )
 
 == Content bisection
@@ -372,7 +429,7 @@ The exact boundaries of containers may be altered in the process for better spac
 
 #figure(
   show-page("debug-reflow", width: 4.5cm),
-  caption: [Debug view of the final output of ```typ #meander.reflow.with(debug: true)```],
+  caption: [Debug view of the final output via ```typc opt.debug.post-thread()```],
 )
 
 #info-alert[
@@ -380,6 +437,7 @@ The exact boundaries of containers may be altered in the process for better spac
   and therefore does not affect layout outside of @cmd:meander:reflow.
   See @placement for solutions.
 ]
+
 
 = Contouring <contouring>
 
@@ -492,7 +550,7 @@ The contouring function @cmd:contour:ascii-art takes as input
 a string or raw code and uses it to draw the shape of the image.
 The characters that can occur are:
 #twocols(frac: 52%,
-  show-code("ascii-sheet", resize: -1pt),
+  show-code("ascii-sheet", resize: -2pt),
   show-page("ascii-sheet"),
 )
 
@@ -859,7 +917,7 @@ and is outright incompatible with #arg(placement: float)
   The overflow is in black, and is naturally followed by native text in red.
 ]
 
-As for #arg(overflow: text), it is similarly best suited in conjunction
+Similarly #arg(overflow: text) is similarly best suited in conjunction
 with #arg(placement: box), and simply writes the text after the end of the layout.
 #twocols[
   #show-code("overflow-text/doc", resize: -2pt)
@@ -871,6 +929,16 @@ with #arg(placement: box), and simply writes the text after the end of the layou
 In both cases, any content that follows the @cmd:meander:reflow invocation
 will more or less gracefully follow after the overflowing text,
 possibly with the need to slightly adjust paragraph breaks if needed.
+
+Finally, #arg(overflow: repeat) will duplicate the last page of the layout
+until all the content fits.
+#twocols[
+  #show-code("overflow-repeat/doc")
+][
+  #show-page("overflow-repeat/doc.1", width: 2.3cm)
+  #show-page("overflow-repeat/doc.2", width: 2.3cm)
+  #show-page("overflow-repeat/doc.3", width: 2.3cm)
+]
 
 === Custom layouts
 
@@ -1076,7 +1144,31 @@ See how to use them in @interactive.
 
 #show-module("query", module: true)
 
-#new[== Public internals]
+#new[== Options]
+
+Configuring the behavior of @cmd:meander:reflow.
+
+=== Pre-layout options
+
+These come before all elements.
+
+==== Debug settings
+Visualizing containers and obstacle boundaries.
+#show-module("opt/debug", module: "opt.debug")
+
+=== Dynamic options
+
+These modify parameters on the fly.
+
+#warning-alert[None yet]
+
+=== Post-layout options
+
+These come after all elements.
+
+#warning-alert[None yet]
+
+== Public internals
 
 If MEANDER is too high-level for you, you may use the public internals
 made available as lower-level primitives.
@@ -1116,6 +1208,10 @@ which implement interesting 1D and 2D primitives. See @geometry for details.
 
 #show-module("utils", module: true)
 
+== Types
+
+#show-module("types", module: true)
+
 == Geometry <geometry>
 
 #show-module("geometry", module: true)
@@ -1131,15 +1227,6 @@ which implement interesting 1D and 2D primitives. See @geometry for details.
 == Threading
 
 #show-module("threading", module: true)
-
-= Modularity (WIP)
-
-Because meander is cleanly split into three algorithms
-(content bisection, page tiling, text threading),
-there are plans to provide
-- additional configuration options for each of those steps
-- the ability to replace entirely an algorithm by either a variant,
-  or a user-provided alternative that follows the same signature.
 
 = About
 

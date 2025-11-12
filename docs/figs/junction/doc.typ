@@ -3,15 +3,17 @@
 
 //#set block(spacing: 0em)
 // First half-page
-#meander.regions({
+#meander.reflow({
   import meander: *
+  opt.debug.pre-thread()
   placed(top + left, my-img-1)
   container(height: 45%)
 })
 
 // Overflows on the second page
-#meander.regions({
+#meander.reflow({
   import meander: *
+  opt.debug.pre-thread()
   placed(bottom + center, my-img-2)
   container(align: bottom, height: 50%, width: 48%)
   container(align: bottom + right,
@@ -26,8 +28,9 @@
 })
 
 // Takes over for the last half-page
-#meander.regions({
+#meander.reflow({
   import meander: *
+  opt.debug.pre-thread()
   // This obstacle is already placed by the previous
   // invocation. We just restate it without displaying
   // it so that it appears only once yet still gets

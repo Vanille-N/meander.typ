@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.2.4 -> v0.2.5
+
+### Configuration
+- changed specification of debug mode
+- paved the way for the migration of other options
+- `meander.regions` is deprecated
+
+### Tiling
+- new overflow option: repeat the last page
+
+### Internals
+- `fill-box` linebreaks are configurable
+
+### Bugfixes
+- container dimensions resolve relative to the remaining size of the page
+
 ## v0.2.3 -> v0.2.4
 
 ### Performance

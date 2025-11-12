@@ -114,7 +114,7 @@
 
 /// #property(since: version(0, 2, 1))
 /// Continue layout to next page.
-/// -> obstacle
+/// -> elem
 #let pagebreak() = {
   ((
     type: types.elt.pagebreak,
@@ -125,7 +125,7 @@
 /// Continue content to next container.
 /// Has the same internal fields as the output of @cmd:content so that we don't
 /// have to check for ```typc key in elem``` all the time.
-/// -> elem
+/// -> flowing
 #let colbreak() = {
   ((
     type: types.flow.colbreak,
@@ -137,7 +137,7 @@
 /// #property(since: version(0, 2, 3))
 /// Continue content to next container after filling the current container
 /// with whitespace.
-/// -> elem
+/// -> flowing
 #let colfill() = {
   ((
     type: types.flow.colfill,

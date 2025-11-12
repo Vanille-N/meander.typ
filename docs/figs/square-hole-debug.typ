@@ -1,6 +1,7 @@
 #import "_preamble.typ": *
-#meander.regions({
+#meander.reflow({
   import meander: *
+  opt.debug.pre-thread()
   placed(center + horizon)[#circle(radius: 3cm, fill: yellow)]
 
   container(width: 50% - 3mm, margin: 6mm)

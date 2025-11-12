@@ -5,29 +5,19 @@
             <g>
                 <g class="typst-group" transform="matrix(1 0 0 1 70.86614173228347 70.86614173228347)">
                     <g>
-                        <path class="typst-shape" fill="url(#pB48D8092B150033E07940FFEEBA3FB88)" fill-rule="nonzero" stroke="#2ecc40" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" d="M 0 0v 350.07874 h 272.12598 v -350.07874 Z "/>
-                    </g>
-                </g>
-                <g class="typst-group" transform="matrix(1 0 0 1 70.86614173228347 420.9448818897638)">
-                    <g>
-                        <path class="typst-shape" fill="url(#pB48D8092B150033E07940FFEEBA3FB88)" fill-rule="nonzero" stroke="#2ecc40" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" d="M 0 0v 350.07874 h 272.12598 v -350.07874 Z "/>
+                        <path class="typst-shape" fill="url(#pA8D6C439FBEB07006266BCDDEE6BB50C)" fill-rule="nonzero" stroke="#2ecc40" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" d="M 0 0v 700.1575 h 272.12598 v -700.1575 Z "/>
                     </g>
                 </g>
                 <g class="typst-group" transform="matrix(1 0 0 1 365.6692913385827 70.86614173228347)">
                     <g>
-                        <path class="typst-shape" fill="url(#pB48D8092B150033E07940FFEEBA3FB88)" fill-rule="nonzero" stroke="#2ecc40" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" d="M 0 0v 350.07874 h 158.74016 v -350.07874 Z "/>
-                    </g>
-                </g>
-                <g class="typst-group" transform="matrix(1 0 0 1 365.6692913385827 420.9448818897638)">
-                    <g>
-                        <path class="typst-shape" fill="url(#pB48D8092B150033E07940FFEEBA3FB88)" fill-rule="nonzero" stroke="#2ecc40" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" d="M 0 0v 350.07874 h 158.74016 v -350.07874 Z "/>
+                        <path class="typst-shape" fill="url(#pA8D6C439FBEB07006266BCDDEE6BB50C)" fill-rule="nonzero" stroke="#2ecc40" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" d="M 0 0v 700.1575 h 158.74016 v -700.1575 Z "/>
                     </g>
                 </g>
             </g>
         </g>
     </g>
     <defs id="tilings">
-        <pattern id="tDA811888C1BD8ACABB544694C08C9DDB" width="30" height="30" patternUnits="userSpaceOnUse" viewBox="0 0 30.000 30.000">
+        <pattern id="t4514E962AAC163CE8277707E26C826B9" width="30" height="30" patternUnits="userSpaceOnUse" viewBox="0 0 30.000 30.000">
             <g>
                 <g class="typst-group">
                     <g>
@@ -40,6 +30,6 @@
         </pattern>
     </defs>
     <defs id="tilings-refs">
-        <pattern patternTransform="matrix(1 0 0 1 0 0)" id="pB48D8092B150033E07940FFEEBA3FB88" href="#tDA811888C1BD8ACABB544694C08C9DDB" xlink:href="#tDA811888C1BD8ACABB544694C08C9DDB"/>
+        <pattern patternTransform="matrix(1 0 0 1 0 0)" id="pA8D6C439FBEB07006266BCDDEE6BB50C" href="#t4514E962AAC163CE8277707E26C826B9" xlink:href="#t4514E962AAC163CE8277707E26C826B9"/>
     </defs>
 </svg>

@@ -15,8 +15,9 @@
 ]
 
 //@ <doc>
-#meander.reflow(debug: true, {
+#meander.reflow({
   import meander: *
+  opt.debug.pre-thread()
   placed(top + left,
     boundary: contour.margin(6mm) +
       contour.ascii-art(
@@ -32,4 +33,3 @@
       )
   )[#image]
 })
-

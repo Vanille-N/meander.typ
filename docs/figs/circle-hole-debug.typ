@@ -1,6 +1,7 @@
 #import "_preamble.typ": *
-#meander.regions({
+#meander.reflow({
   import meander: *
+  opt.debug.pre-thread()
   placed(center + horizon,
     boundary: contour.margin(1cm) + contour.grid(div: 25, (x, y) => {
       calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) <= 1

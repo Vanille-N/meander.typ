@@ -3,8 +3,8 @@
 #import "elems.typ"
 #import "opt.typ"
 
-/// Debug version of the toplevel `reflow`,
-/// that only displays the partitioned layout.
+/// Deprecated in favor of @cmd:meander:reflow with ```typc opt.debug.pre-thread()```.
+/// #property(until: version(0, 2, 4))
 /// -> content
 #let regions(
   /// Input sequence to segment.
@@ -34,7 +34,8 @@
   /// -> array(elem)
   seq,
   /// #property(until: version(0, 2, 4))
-  /// Deprecated in favor of `opt.debug.post-thread()`.
+  /// Deprecated in favor of ```typc opt.debug.post-thread()```.
+  /// See @anatomy and @debug for more information.
   /// -> bool
   debug: none,
   /// #property(since: version(0, 2, 1))
@@ -158,7 +159,7 @@
       flow = overflow
     }
     // Prepare data for the overflow handle4d369917f)
-    if flow != () {
+    if opts.debug.content and flow != () {
       let styled-overflow() = {
         for ct in flow {
           ct.data

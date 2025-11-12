@@ -25,11 +25,10 @@
 - [ ] automatically order obstacles before containers, except if there are labels
 - [ ] optimize the rectangles in ascii (need fewer of them for performance)
   - [ ] rotate + flip ascii map
-- [X] new overflow option: repeat
 - [ ] template("name") to include parts of a previously defined layout
 - [ ] validate compatibility between placement and overflow
 - [ ] use fewer `box`es, more `block`s
-- [X] breaking: container dimensions resolve relative to true size
+- [ ] provide full-size and free-size to query
 
 ## Threading
 - [ ] handle paragraph breaks
@@ -38,7 +37,6 @@
 - [ ] send content to one specific container
 - [ ] priority levels to fill boxes in a different order than they were defined
 - [ ] still a small issue with par spacing
-- [X] linebreak config options on fill-box
 
 ## Performance
 - [ ] don't rebuild the entire array all the time
@@ -66,9 +64,6 @@
 - [ ] `exact` is now useless thanks to tiling improvements
 
 ## Refactoring
-
-- [ ] debug options rework
-- [ ] regions deprecated
 
 ## Documentation
 

@@ -1,9 +1,7 @@
-// *** Schema ***
-
 #import "/src/types.typ"
 
-/// Pattern with red crosses to display forbidden zones.
-/// -> pattern
+// Pattern with red crosses to display forbidden zones.
+// -> pattern
 #let pat-forbidden(
   /// Size of the tiling.
   /// -> length
@@ -14,8 +12,8 @@
   #place(line(start: (25%, 75%), end: (75%, 25%), stroke: red + 0.1pt))
 ]
 
-/// Pattern with green pluses to display allowed zones.
-/// -> pattern
+// Pattern with green pluses to display allowed zones.
+// -> pattern
 #let pat-allowed(
   /// Size of the tiling.
   /// -> length
@@ -31,6 +29,8 @@
   //opts.named()
 }
 
+/// No visible effect.
+/// -> option
 #let release() = new-config(
   objects: true,
   content: true,
@@ -41,16 +41,22 @@
   container-contours: (:),
 )
 
+/// Does not show obstacles or content.
+/// Displays forbidden regions in red and allowed regions in green.
+/// -> option
 #let minimal() = new-config(
   objects: false,
   content: false,
   layout-boundary: (stroke: orange),
   obstacle-regions: (stroke: yellow, fill: none),
   obstacle-contours: (stroke: red, fill: pat-forbidden(30pt)),
-  container-contours: (stroke: blue, fill: none),
-  container-regions: (stroke: green, fill: pat-allowed(30pt)),
+  container-regions: (stroke: blue, fill: none),
+  container-contours: (stroke: green, fill: pat-allowed(30pt)),
 )
 
+/// Shows obstacles but not content.
+/// Displays forbidden regions in red and allowed regions in green.
+/// -> option
 #let pre-thread() = new-config(
   objects: true,
   content: false,
@@ -61,6 +67,9 @@
   container-contours: (stroke: green, fill: pat-allowed(30pt)),
 )
 
+/// Shows obstacles and content.
+/// Displays forbidden regions in red and allowed regions in green (non-invasive).
+/// -> option
 #let post-thread() = new-config(
   objects: true,
   content: true,

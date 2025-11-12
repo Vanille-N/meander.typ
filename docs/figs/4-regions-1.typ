@@ -1,7 +1,8 @@
 #import "_preamble.typ": *
 //@ <doc>
-#meander.regions({
+#meander.reflow({
   import meander: *
+  opt.debug.pre-thread()
   placed(center + horizon,
     line(end: (100%, 0%)))
   placed(center + horizon,

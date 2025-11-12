@@ -1,7 +1,8 @@
 #import "_preamble.typ": *
 //@ <doc>
-#meander.regions({
+#meander.reflow({
   import meander: *
+  opt.debug.pre-thread()
   placed(
     top + left,
     boundary:

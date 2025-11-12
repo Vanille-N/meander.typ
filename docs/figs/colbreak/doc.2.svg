@@ -2104,11 +2104,7 @@
                     <use xlink:href="#g449D9CD13F9AE2A03ABA516958D3E396" x="432.4869999999999" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                     <use xlink:href="#g4422C1F2E0ACC8DD21526054254B39D7" x="438.4489999999999" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                 </g>
-            </g>
-        </g>
-        <g class="typst-group" transform="matrix(1 0 0 1 70.86614173228347 430.56614173228365)">
-            <g>
-                <g class="typst-text" transform="matrix(1 0 0 -1 0 7.238)">
+                <g class="typst-text" transform="matrix(1 0 0 -1 0 366.9380000000002)">
                     <use xlink:href="#g5DA228A126E803957217613ED961B78F" x="0" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                     <use xlink:href="#g122C3AE127B9CB3BFF878162285AE41F" x="2.904" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                     <use xlink:href="#g4422C1F2E0ACC8DD21526054254B39D7" x="7.931" y="0" fill="#2ecc40" fill-rule="nonzero"/>
@@ -2196,7 +2192,7 @@
                     <use xlink:href="#g7DDD4FAC8716F04327DCCCE126CA521A" x="436.01799999999986" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                     <use xlink:href="#g3DF774285CB2D87D03492C2A3857AFFF" x="440.3079999999999" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                 </g>
-                <g class="typst-text" transform="matrix(1 0 0 -1 0 21.626)">
+                <g class="typst-text" transform="matrix(1 0 0 -1 0 381.32600000000025)">
                     <use xlink:href="#g4F6152A59E46DAD360853A6D80A49588" x="0" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                     <use xlink:href="#g449D9CD13F9AE2A03ABA516958D3E396" x="2.9810000000000003" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                     <use xlink:href="#gFF6D188F5696C3F898D38430E89EC1E7" x="11.693000000000001" y="0" fill="#2ecc40" fill-rule="nonzero"/>
@@ -2282,7 +2278,7 @@
                     <use xlink:href="#g905D6B45629BEB406C5CEC4311CD638A" x="440.29699999999974" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                     <use xlink:href="#g7DDD4FAC8716F04327DCCCE126CA521A" x="446.13799999999975" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                 </g>
-                <g class="typst-text" transform="matrix(1 0 0 -1 0 36.014)">
+                <g class="typst-text" transform="matrix(1 0 0 -1 0 395.7140000000003)">
                     <use xlink:href="#g3DF774285CB2D87D03492C2A3857AFFF" x="0" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                     <use xlink:href="#g4422C1F2E0ACC8DD21526054254B39D7" x="3.476" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                     <use xlink:href="#g260F97BBF56833AC4148BC083C82FEF" x="11.143" y="0" fill="#2ecc40" fill-rule="nonzero"/>
@@ -2368,7 +2364,7 @@
                     <use xlink:href="#g905D6B45629BEB406C5CEC4311CD638A" x="438.9879999999999" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                     <use xlink:href="#g7DDD4FAC8716F04327DCCCE126CA521A" x="444.8289999999999" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                 </g>
-                <g class="typst-text" transform="matrix(1 0 0 -1 0 50.402)">
+                <g class="typst-text" transform="matrix(1 0 0 -1 0 410.1020000000003)">
                     <use xlink:href="#g449D9CD13F9AE2A03ABA516958D3E396" x="0" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                     <use xlink:href="#g9A74D8AB4DB5B00C16EEA571525E31B0" x="5.962000000000001" y="0" fill="#2ecc40" fill-rule="nonzero"/>
                     <use xlink:href="#g449D9CD13F9AE2A03ABA516958D3E396" x="11.506" y="0" fill="#2ecc40" fill-rule="nonzero"/>
@@ -2403,7 +2399,7 @@
                 </g>
             </g>
         </g>
-        <g class="typst-group" transform="matrix(1 0 0 1 70.86614173228347 495.14137007874035)">
+        <g class="typst-group" transform="matrix(1 0 0 1 70.86614173228347 495.14137007874047)">
             <g>
                 <g class="typst-text" transform="matrix(1 0 0 -1 0 7.238)">
                     <use xlink:href="#gDA31BD3B898B28B55351B3D8B653810D" x="0" y="0" fill="#ff851b" fill-rule="nonzero"/>
