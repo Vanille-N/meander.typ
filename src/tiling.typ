@@ -216,9 +216,9 @@
   let data = data
   if data.elems.len() == 0 { return (none, data) }
   let obj = data.elems.pop()
-  if obj.type == place {
+  if obj.type == types.elt.placed {
     (blocks-of-placed(data, obj), data)
-  } else if obj.type == box {
+  } else if obj.type == types.elt.container {
     (blocks-of-container(data, obj), data)
   } else {
     panic("There is a bug in `separate`: encountered a " + repr(obj.type))
@@ -288,22 +288,16 @@
     }
   }
   for obj in seq {
-    if obj.type == place or obj.type == box {
+    if obj.type in (types.elt.placed, types.elt.container) {
       phase = check-phase(phase, 1)
       elems.push(obj)
-    } else if obj.type == text {
+    } else if obj.type in (types.flow.content, types.flow.colbreak, types.flow.colfill) {
       phase = check-phase(phase, 1)
       flow.push(obj)
-    } else if obj.type == std.pagebreak {
+    } else if obj.type in (types.elt.pagebreak,) {
       phase = check-phase(phase, 1)
       pages.push(elems)
       elems = ()
-    } else if obj.type == std.colbreak {
-      phase = check-phase(phase, 1)
-      flow.push(obj)
-    } else if obj.type == pad {
-      phase = check-phase(phase, 1)
-      flow.push(obj)
     } else if obj.type == types.opt.pre {
       phase = check-phase(phase, 0)
       assert(obj.field not in opts, message: "Cannot override option '" + obj.field + "'")

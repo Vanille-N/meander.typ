@@ -1,6 +1,7 @@
 #import "geometry.typ"
 #import "elems.typ"
 #import "tiling.typ"
+#import "types.typ"
 
 /// #property(requires-context: true)
 /// Thread text through a list of boxes in order,
@@ -48,14 +49,14 @@
       body = body-queue.pop()
     }
 
-    if body.type == pad {
+    if body.type == types.flow.colfill {
       full.push((cont, current-fill))
       while cont-queue.len() > 0 {
         full.push((cont-queue.pop(), none))
       }
       break
     }
-    if body.type == std.colbreak {
+    if body.type == types.flow.colbreak {
       force-break = true
     }
 

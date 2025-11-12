@@ -1,3 +1,4 @@
+#import "types.typ"
 #import "utils.typ"
 
 /// Core function to create an obstacle.
@@ -42,7 +43,7 @@
   anchor: auto,
 ) = {
   ((
-    type: place,
+    type: types.elt.placed,
     align: align,
     dx: dx,
     dy: dy,
@@ -98,7 +99,7 @@
   tags: (),
 ) = {
   ((
-    type: box,
+    type: types.elt.container,
     align: align,
     dx: dx,
     dy: dy,
@@ -116,7 +117,7 @@
 /// -> obstacle
 #let pagebreak() = {
   ((
-    type: std.pagebreak,
+    type: types.elt.pagebreak,
   ),)
 }
 
@@ -127,7 +128,7 @@
 /// -> elem
 #let colbreak() = {
   ((
-    type: std.colbreak,
+    type: types.flow.colbreak,
     data: none,
     style: (:),
   ),)
@@ -139,7 +140,7 @@
 /// -> elem
 #let colfill() = {
   ((
-    type: pad,
+    type: types.flow.colfill,
     data: none,
     style: (:),
   ),)
@@ -180,7 +181,7 @@
     }
   }
   ((
-    type: text,
+    type: types.flow.content,
     data: utils.apply-styles(data, ..style),
     style: style,
   ),)
