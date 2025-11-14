@@ -188,7 +188,7 @@
 ) = {
   assert(size != none)
   let free-size = (
-    width: size.width - page-offset.x,
+    width: size.width,
     height: size.height - page-offset.y,
   )
   (
