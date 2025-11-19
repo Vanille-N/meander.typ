@@ -68,7 +68,7 @@ specified `\parshape` by saying `\parshape=0`.
         import meander: *
         placed(
           center + horizon,
-          boundary: contour.grid(div: 50, (x, y) => calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) >= 1),
+          boundary: contour.grid(div: 53, (x, y) => calc.pow(2 * x - 1, 2) + calc.pow(2 * y - 1, 2) >= 1),
           box(width: 100%, height: 100%)
         )
         container()

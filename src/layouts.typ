@@ -5,24 +5,7 @@
 
 /// Deprecated in favor of @cmd:meander:reflow with ```typc opt.debug.pre-thread()```.
 /// #property(until: version(0, 2, 4))
-/// -> content
-#let regions(
-  /// Input sequence to segment.
-  /// -> array(elem)
-  seq,
-  /// Whether to show the placed objects (#typ.v.true),
-  /// or only their hitbox (#typ.v.false).
-  /// -> bool
-  display: true,
-  /// #property(since: version(0, 2, 2))
-  /// Controls relation to other content on the page.
-  /// See analoguous #arg[placement] option on @cmd:meander:reflow.
-  /// -> any
-  placement: page,
-  /// #property(since: version(0, 2, 1))
-  /// Ignored.
-  overflow: none,
-) = {
+#let regions(..args) = {
   panic("`regions` is deprecated. Use instead `meander.reflow` and set `opt.debug.pre-thread()`")
 }
 
@@ -35,10 +18,13 @@
   seq,
   /// #property(until: version(0, 2, 4))
   /// Deprecated in favor of ```typc opt.debug.post-thread()```.
+  ///
   /// See @anatomy and @debug for more information.
-  /// -> bool
   debug: none,
   /// #property(since: version(0, 2, 1))
+  /// #property(until: version(0, 2, 5))
+  /// Deprecated in favor of ```typc opt.overflow``` options.
+  ///
   /// Controls the behavior in case the content overflows the provided
   /// containers.
   /// - #typ.v.false $->$ adds a warning box to the document
@@ -50,9 +36,11 @@
   /// - a @type:state $->$ stores the overflow in the state.
   ///   You can then ```typc _.get()``` it later.
   /// - any function #lambda("overflow", ret:content) $->$ uses that for formatting
-  /// -> any
   overflow: false,
   /// #property(since: version(0, 2, 2))
+  /// #property(until: version(0, 2, 5))
+  /// Deprecated in favor of ```typc opt.placement``` options.
+  ///
   /// Relationship with the rest of the content on the page.
   /// - #typ.page: content is not visible to the rest of the layout, and will be placed
   ///   at the current location. Supports pagebreaks.
@@ -60,17 +48,17 @@
   ///   so that normal text can go before and after. Supports pagebreaks.
   /// - #typ.float: similar to `page` in that it is invisible to the rest of the content,
   ///   but always placed at the top left of the page. Does not support pagebreaks.
-  /// -> any
-  placement: page,
+  placement: none,
 ) = {
   if debug != none {
     panic("debug: true was removed. Use instead `opt.debug.post-thread()`")
   }
   if seq == none { seq = () }
   assert(type(seq) == array, message: "Cannot interpret this object as a layout.")
-  let (wrapper, placeholder) = tiling.placement-mode(placement)
+  let (flow, pages, opts) = tiling.separate(seq)
+  let wrapper = tiling.placement-mode(opts)
 
-  let fill-page(elems, flow, size: (), page-offset: (x: 0pt, y: 0pt), opts: (:)) = {
+  let fill-page(elems, flow, size: (), page-offset: (x: 0pt, y: 0pt)) = {
     let output = []
     let maximum-height = 0pt
     let data = tiling.create-data(size: size, elems: elems, page-offset: page-offset)
@@ -89,6 +77,7 @@
           output += place(dx: block.x, dy: block.y, {
             box(width: block.width, height: block.height, ..opts.debug.obstacle-contours)
           })
+          //maximum-height = calc.max(maximum-height, block.y + block.height)
           maximum-height = calc.max(maximum-height, block.y + block.height)
         }
         continue
@@ -133,13 +122,16 @@
     // This box fills the space occupied by the meander canvas,
     // and thus fills the same vertical space, allowing surrounding text
     // to fit before and after.
-    output += placeholder(maximum-height)
-    (content: output, overflow: flow)
+    let virtual-space = if opts.virtual-spacing {
+      let height = calc.min(maximum-height, size.height - page-offset.y)
+      block(width: 100%, height: height)
+    }
+    (content: output, overflow: flow, vspace: virtual-space)
   }
 
   wrapper(size => {
-    let (flow, pages, opts) = tiling.separate(seq)
     let first-page-offset = tiling.get-page-offset()
+    let flow = flow
 
     for (idx, elems) in pages.enumerate() {
       let page-offset = if idx == 0 {
@@ -154,8 +146,9 @@
         }
         colbreak()
       }
-      let (content, overflow) = fill-page(elems, flow, size: size, page-offset: page-offset, opts: opts)
+      let (content, overflow, vspace) = fill-page(elems, flow, size: size, page-offset: page-offset)
       content
+      vspace
       flow = overflow
     }
     // Prepare data for the overflow handle4d369917f)
@@ -193,8 +186,10 @@
         let last-page-elems = pages.last()
         while flow != () {
           colbreak()
-          let (content, overflow) = fill-page(last-page-elems, flow, size: size, opts: opts)
+          // TODO: make sure this is synchronized with above
+          let (content, overflow, vspace) = fill-page(last-page-elems, flow, size: size)
           content
+          vspace
           flow = overflow
         }
       } else if type(overflow) == state {

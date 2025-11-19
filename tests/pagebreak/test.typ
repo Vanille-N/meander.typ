@@ -27,6 +27,7 @@
 
 #meander.reflow(overflow: pagebreak, {
   import meander: *
+  opt.placement.no-outset()
   placed(top + left, {})
   container()
   content[#lorem(1000)]

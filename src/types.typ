@@ -4,7 +4,8 @@
 #let opt = {
   let pre() = {}
   let post() = {}
-  (pre: pre, post: post)
+  let dyn() = {}
+  (pre: pre, dyn: dyn, post: post)
 }
 
 /// Flowing content

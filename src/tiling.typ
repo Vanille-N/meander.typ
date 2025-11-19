@@ -310,24 +310,59 @@
       panic("Unknown element of type " + repr(obj.type))
     }
   }
-  if "debug" not in opts {
-    opts.debug = opt.debug.release().at(0).payload
+  for (mod, field) in (
+    (opt.debug, "debug"),
+    (opt.placement, "virtual-spacing"),
+    (opt.placement, "no-outset"),
+    //(opt.placement, "full-page"),
+  ) {
+    if field not in opts {
+      opts.insert(field, mod.default.at(field))
+    }
   }
   pages.push(elems)
   (flow: flow, pages: pages, opts: opts) 
 }
 
-#let current-page-anchor = state("current-page-anchor", (x: 0pt, y: 0pt))
+#let current-page-anchor = state("current-page-anchor", (page: 1, x: 0pt, y: 0pt))
 
-/// Determines the appropriate layout invocation based on the placement mode.
+/// Gets the position of the current page's anchor.
+/// Can be called within a `layout` to know the true available space.
+/// See Issue #4 (https://github.com/Vanille-N/meander.typ/issues/4)
+/// for what happens when we *don't* have this mechanism.
+/// #property(requires-context: true)
+///
+/// -> (x: length, y: length)
+#let get-page-offset() = {
+  let anchor = current-page-anchor.get()
+  let pos = here().position()
+  pos.x -= anchor.x
+  pos.y -= anchor.y
+  pos
+}
+
+/// Determines the appropriate layout invocation based on the placement options.
 /// See details on @cmd:meander:reflow.
 /// -> function
-#let placement-mode(placement) = {
+#let placement-mode(opts) = {
   let page-anchor-update = {
     place(top + left, context {
       current-page-anchor.update(here().position())
     })
   }
+  let block-spacing(doc) = if opts.no-outset {
+    set block(spacing: 0em)
+    doc
+  } else {
+    doc
+  }
+  (inner) => {
+    page-anchor-update
+    block-spacing({
+      layout(size => inner(size))
+    })
+  }
+  /*
   if placement == page {
     (
       wrapper:
@@ -363,23 +398,7 @@
   } else {
     panic("Invalid placement option")
   }
+  */
 }
 
-// Gets the position of the current page's anchor.
-// Can be called within a `layout` to know the true available space.
-// See Issue #4 (https://github.com/Vanille-N/meander.typ/issues/4)
-// for what happens when we *don't* have this mechanism.
-// #property(requires-context: true)
-//
-// -> (x: length, y: length)
-#let get-page-offset() = {
-  let anchor = current-page-anchor.get()
-  if anchor == none {
-    anchor = (x: 0pt, y: 0pt)
-  }
-  let pos = here().position()
-  pos.x -= anchor.x
-  pos.y -= anchor.y
-  pos
-}
 

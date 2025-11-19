@@ -80,3 +80,7 @@
   container-contours: (stroke: green),
 )
 
+#let default = (
+  debug: release().at(0).payload,
+)
+
