@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.5 -> v0.3.0
+
+### Configuration
+- `opt.placement._()` replaces `placement: _`
+
+### Testing
+- improved the test harness organization
+
 ## v0.2.4 -> v0.2.5
 
 ### Configuration
