@@ -1,3 +1,4 @@
 release
 x.pdf
 tests/**/test.pdf
+tests/**/out/
