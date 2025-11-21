@@ -8,12 +8,12 @@
 
 #set par(justify: true)
 
-#meander.reflow(debug: true, {
+#meander.reflow({
   import meander: *
+  //opt.debug.post-thread()
   placed(
     bottom + left,
-    boundary: contour.ascii-art(read("image.png.contour")),
-    /*
+    //boundary: contour.ascii-art(read("image.png.contour")),
     boundary: contour.ascii-art(```
     ##L        
     ###L,      
@@ -24,7 +24,6 @@
     ########   
     ########   
     ```)
-    */
   )[#image("image.png")]
   container()
   content[#lorem(468)]

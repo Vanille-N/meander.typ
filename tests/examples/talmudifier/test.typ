@@ -24,8 +24,9 @@
 #let title-box = box(width: 100%, inset: 5mm,  align(center, title-text))
 #let center-box = box(width: 5cm, center-text)
 
-#meander.reflow(debug: true, overflow: panic, {
+#meander.reflow({
   import meander: *
+  //opt.debug.post-thread()
   placed(top, title-box)
   placed(
     center,

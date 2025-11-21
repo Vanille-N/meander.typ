@@ -19,7 +19,7 @@ has the greater number of sides is the larger.
 
 #let wrapper-text = [
   #set par(justify: true)
-  #let angled(ct) = $angle.l#text[#ct]angle.r$
+  #let angled(ct) = $chevron.l#text[#ct]chevron.r$
   It's possible to control the length of lines in a much more general
 way, if simple changes to `\leftskip` and `\rightskip` aren't
 flexible enough for your purposes. For example, a semicircular
