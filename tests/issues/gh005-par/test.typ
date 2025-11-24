@@ -1,7 +1,7 @@
 #import "/src/lib.typ" as meander
 
 #let pg(height) = {
-  meander.reflow(placement: box, {
+  meander.reflow({
     import meander: *
     opt.debug.post-thread()
 

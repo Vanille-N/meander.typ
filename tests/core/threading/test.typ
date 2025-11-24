@@ -11,7 +11,7 @@
 
 #set par(justify: false)
 
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
   fakeimg(top + left, width: 5cm, height: 3cm, fill: green)
   fakeimg(bottom + left, width: 3cm, height: 6cm, fill: red)
@@ -19,11 +19,12 @@
   fakeimg(top + right, width: 5cm, height: 8cm, fill: orange)
   container()
   content(filler)
+  opt.overflow.ignore()
 })
 
 #pagebreak()
 
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
   fakeimg(top + right, width: 8cm, height: 2cm, fill: orange)
   fakeimg(top + left, dy: 5cm, height: 3cm, width: 3cm, fill: blue)
@@ -31,11 +32,12 @@
   fakeimg(bottom + right, height: 6cm, width: 5cm, fill: red)
   container()
   content(filler)
+  opt.overflow.ignore()
 })
 
 #pagebreak()
 
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
   fakeimg(center + horizon, dx: 5%, dy: 10%, width: 7cm, height: 5cm, fill: green)
   fakeimg(top + left, fill: blue, width: 6cm, height: 6cm)
@@ -43,22 +45,24 @@
   container(width: 47%)
   container(align: top + right, width: 47%)
   content(filler)
+  opt.overflow.ignore()
 })
 
 #pagebreak()
 
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
   fakeimg(top + left, width: 7cm, height: 7cm, fill: green)
   fakeimg(top + left, dx: 5cm, dy: 5cm, width: 6cm, height: 6cm, fill: orange)
   container(width: 40%)
   container(align: top + right, width: 55%)
   content(filler)
+  opt.overflow.ignore()
 })
 
 #pagebreak()
 
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
   fakeimg(top + center, width: 8cm, height: 2cm, fill: orange)
   fakeimg(top + center, dy: 5cm, height: 3cm, width: 3cm, fill: blue)
@@ -67,11 +71,12 @@
   container(width: 47%)
   container(align: top + right, width: 47%)
   content(filler)
+  opt.overflow.ignore()
 })
 
 #pagebreak()
 
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
   for i in range(11) {
     fakeimg(top + left, dy: i * 2.2cm, width: i * 1cm, height: 2cm, fill: orange)
@@ -81,6 +86,7 @@
   }
   container()
   content(filler)
+  opt.overflow.ignore()
 })
 
 #pagebreak()
@@ -89,7 +95,7 @@
   #set text(hyphenate: false)
   #set par(justify: true)
   #set linebreak(justify: true)
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
   let vradius = 12.2cm
   let vcount = 50
@@ -101,12 +107,13 @@
   }
   container()
   content(filler)
+  opt.overflow.ignore()
 })
 ]
 
 #pagebreak()
 
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
   for i in range(30) {
     fakeimg(top + left, dy: -i * 4mm + 14cm, width: i * 3mm, height: 3mm, fill: blue)
@@ -116,20 +123,22 @@
   }
   container()
   content(filler)
+  opt.overflow.ignore()
 })
 
 #pagebreak()
 
 #place(center + horizon)[#box(width: 5cm, height: 5cm, fill: blue)]
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
   container(align: center + horizon, width: 5cm, height: 5cm)
   content(filler)
+  opt.overflow.ignore()
 })
 
 #pagebreak()
 
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
   opt.debug.post-thread()
   placed(bottom + left,
@@ -142,5 +151,6 @@
   )
   container()
   content[#lorem(600)]
+  opt.overflow.ignore()
 })
 

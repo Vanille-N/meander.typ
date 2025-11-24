@@ -6,7 +6,7 @@
   )
 }
 
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
   opt.debug.post-thread()
   placed(
@@ -19,30 +19,33 @@
   content(hyphenate: true, lang: "la")[#set par(justify: true); #lorem(100)]
   content(hyphenate: true, lang: "en")[#set par(justify: true); #lorem(100)]
   content(size: 20pt)[#lorem(100)]
+  opt.overflow.ignore()
 })
 
 #pagebreak()
 
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
   container(align: left, width: 25%, style: (align: left))
   container(align: center, width: 45%, style: (align: center))
   container(align: right, width: 25%, style: (align: right))
   content(lang: "la")[#lorem(590)]
+  opt.overflow.ignore()
 })
 
 #pagebreak()
 
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
   container(width: 48%, style: (align: center, text-fill: blue))
   container(align: right, width: 48%, style: (align: right, text-fill: red))
   content[#lorem(600)]
+  opt.overflow.ignore()
 })
 
 #pagebreak()
 
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
   opt.debug.post-thread()
   placed(
@@ -54,5 +57,6 @@
   content(leading: 1em, size: 8pt)[#lorem(100)]
   content(leading: 0.5em, size: 14pt)[#lorem(100)]
   content(leading: 0.5em + 10pt, size: 12pt)[#lorem(100)]
+  opt.overflow.ignore()
 })
 

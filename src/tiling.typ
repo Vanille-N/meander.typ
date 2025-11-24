@@ -269,7 +269,7 @@
 /// })
 /// ```
 ///
-/// -> (pages: array(elem), flow: array(elem))
+/// -> (pages: array(elem), flow: array(elem), opts: dictionary)
 #let separate(
   /// A sequence of elements made from @cmd:placed, @cmd:content, @cmd:container, etc.
   /// -> array(elem)
@@ -314,6 +314,7 @@
     (opt.debug, "debug"),
     (opt.placement, "virtual-spacing"),
     (opt.placement, "no-outset"),
+    (opt.overflow, "overflow"),
     //(opt.placement, "full-page"),
   ) {
     if field not in opts {

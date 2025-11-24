@@ -64,7 +64,7 @@ specified `\parshape` by saying `\parshape=0`.
       width: 2 * cutout-radius,
       height: 2 * cutout-radius,
     )[
-      #meander.reflow(overflow: true, {
+      #meander.reflow({
         import meander: *
         placed(
           center + horizon,

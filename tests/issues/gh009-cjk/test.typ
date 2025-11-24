@@ -37,7 +37,7 @@
   }
 }
 
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
 
   placed(top + left, my-img-1)
@@ -55,7 +55,7 @@
 
 #pagebreak()
 
-#meander.reflow(overflow: true, {
+#meander.reflow({
   import meander: *
 
   placed(top + left, my-img-1)

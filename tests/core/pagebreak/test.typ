@@ -25,7 +25,7 @@
 
 #pagebreak()
 
-#meander.reflow(overflow: pagebreak, {
+#meander.reflow({
   import meander: *
   opt.placement.no-outset()
   placed(top + left, {})
@@ -42,26 +42,26 @@
   opt.debug.post-thread()
   container()
   content[#lorem(1000)]
+  opt.overflow.alert()
 })
 
 #pagebreak()
 
 #meander.reflow(
-  overflow: tt => [
-    #colbreak()
-    *The following content overflows:* #text(fill: red)[_#{tt.styled}_]
-  ], {
+  {
   import meander: *
   opt.debug.post-thread()
   container()
   content[#lorem(1000)]
+  opt.overflow.custom(tt => [
+    #std.colbreak()
+    *The following content overflows:* #text(fill: red)[_#{tt.styled}_]
+  ])
 })
 
 #pagebreak()
 
-#meander.reflow(
-  overflow: panic, placement: box,
-  {
+#meander.reflow({
   import meander: *
   opt.debug.post-thread()
   container()
@@ -74,12 +74,13 @@
 #pagebreak()
 
 #let overflow = state("overflow")
-#meander.reflow(overflow: overflow, placement: box, {
+#meander.reflow({
   import meander: *
   opt.debug.post-thread()
   container(width: 50% - 3mm, margin: 6mm)
   container()
   content[#lorem(1000)]
+  opt.overflow.state(overflow)
 })
 #set page(columns: 2)
 #context overflow.get().styled

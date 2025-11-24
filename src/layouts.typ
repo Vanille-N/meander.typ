@@ -18,40 +18,25 @@
   seq,
   /// #property(until: version(0, 2, 4))
   /// Deprecated in favor of ```typc opt.debug.post-thread()```.
-  ///
   /// See @anatomy and @debug for more information.
   debug: none,
   /// #property(since: version(0, 2, 1))
   /// #property(until: version(0, 2, 5))
   /// Deprecated in favor of ```typc opt.overflow``` options.
-  ///
-  /// Controls the behavior in case the content overflows the provided
-  /// containers.
-  /// - #typ.v.false $->$ adds a warning box to the document
-  /// - #typ.v.true $->$ ignores any overflow
-  /// - #typ.pagebreak $->$ the text that overflows is placed on the next page
-  /// - #typ.text $->$ the text that overflows is placed on the same page
-  /// - #typ.panic $->$ refuses to compile the document
-  /// - #typ.repeat $->$ duplicates the last page as many times as necessary
-  /// - a @type:state $->$ stores the overflow in the state.
-  ///   You can then ```typc _.get()``` it later.
-  /// - any function #lambda("overflow", ret:content) $->$ uses that for formatting
-  overflow: false,
+  overflow: none,
   /// #property(since: version(0, 2, 2))
   /// #property(until: version(0, 2, 5))
   /// Deprecated in favor of ```typc opt.placement``` options.
-  ///
-  /// Relationship with the rest of the content on the page.
-  /// - #typ.page: content is not visible to the rest of the layout, and will be placed
-  ///   at the current location. Supports pagebreaks.
-  /// - #typ.box: meander will simulate a box of the same dimensions as its contents
-  ///   so that normal text can go before and after. Supports pagebreaks.
-  /// - #typ.float: similar to `page` in that it is invisible to the rest of the content,
-  ///   but always placed at the top left of the page. Does not support pagebreaks.
   placement: none,
 ) = {
   if debug != none {
-    panic("debug: true was removed. Use instead `opt.debug.post-thread()`")
+    panic("Option `debug` was removed. Use instead `opt.debug.post-thread()`")
+  }
+  if placement != none {
+    panic("Option `placement` was removed. Use instead `opt.placement.{cfg}()`")
+  }
+  if overflow != none {
+    panic("Option `overflow` was removed. Use instead `opt.overflow.{cfg}()`")
   }
   if seq == none { seq = () }
   assert(type(seq) == array, message: "Cannot interpret this object as a layout.")
@@ -151,7 +136,7 @@
       vspace
       flow = overflow
     }
-    // Prepare data for the overflow handle4d369917f)
+    // Prepare data for the overflow handler
     if opts.debug.content and flow != () {
       let styled-overflow() = {
         for ct in flow {
@@ -163,7 +148,26 @@
           elems.content(..ct.style, ct.data)
         }
       }
-      if overflow == false {
+      if "fun" in opts.overflow {
+        (opts.overflow.fun)((
+          raw: flow,
+          structured: structured-overflow(),
+          styled: styled-overflow(),
+        ))
+      } else if "repeat" in opts.overflow {
+        let (count,) = opts.overflow.repeat
+        let last-pages-elems = pages.slice(-count)
+        let num = 1
+        while flow != () {
+          colbreak()
+          // TODO: make sure this is synchronized with above
+          let (content, overflow, vspace) = fill-page(last-pages-elems.at(calc.rem(num - 1, count)), flow, size: size)
+          content
+          vspace
+          flow = overflow
+          num += 1
+        }
+      } else if "alert" in opts.overflow {
         place(top + left)[
           #box(fill: red, stroke: black, inset: 2mm)[
             #align(center)[
@@ -173,39 +177,14 @@
             ]
           ]
         ]
-      } else if overflow == true {
-        // Ignore
-      } else if overflow == text {
-        styled-overflow()
-      } else if overflow == std.pagebreak or overflow == elems.pagebreak {
-        colbreak()
-        styled-overflow()
-      } else if overflow == panic {
-        panic("The containers provided cannot hold the remaining text: " + repr(flow))
-      } else if overflow == repeat {
-        let last-page-elems = pages.last()
-        while flow != () {
-          colbreak()
-          // TODO: make sure this is synchronized with above
-          let (content, overflow, vspace) = fill-page(last-page-elems, flow, size: size)
-          content
-          vspace
-          flow = overflow
-        }
-      } else if type(overflow) == state {
-        overflow.update(_ => (
-          raw: flow,
-          structured: structured-overflow(),
-          styled: styled-overflow(),
-        ))
-      } else if type(overflow) == function {
-        overflow((
+      } else if "state" in opts.overflow {
+        opts.overflow.state.update(_ => (
           raw: flow,
           structured: structured-overflow(),
           styled: styled-overflow(),
         ))
       } else {
-        panic("Not a valid value for overflow")
+        panic(opts.overflow)
       }
     }
   })

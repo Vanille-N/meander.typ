@@ -51,6 +51,7 @@
   content[#lorem(200)]
   colfill()
   content[#lorem(500)]
+  opt.overflow.alert()
 })
 
 
