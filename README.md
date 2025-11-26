@@ -45,7 +45,7 @@ The function `meander.reflow` takes a sequence of
   ]
 })
 ```
-![a page where text flows between 5 rectangular obstacles](gallery/multi-obstacles.png)
+![a page where text flows between 5 rectangular obstacles](tests/gallery/multi-obstacles/ref/1.png)
 
 -----
 
@@ -81,7 +81,7 @@ Use multiple `container`s to produce layouts in columns.
   content[#lorem(470)]
 })
 ```
-![a two-column page with 3 obstacles](gallery/two-columns.png)
+![a two-column page with 3 obstacles](tests/gallery/two-columns/ref/1.png)
 
 ------
 
@@ -136,8 +136,8 @@ You can see this in effect in the example below:
 
 #text(fill: red)[#lorem(200)]
 ```
-![Content that overflows the environment (page 1/2)](gallery/placement-1.png)
-![Content that overflows the environment (page 2/2)](gallery/placement-2.png)
+![Content that overflows the environment (page 1/2)](tests/gallery/placement/ref/1.png)
+![Content that overflows the environment (page 2/2)](tests/gallery/placement/ref/2.png)
 
 ------
 
@@ -179,7 +179,7 @@ Meander allows precise control over the boundaries of obstacles, to draw complex
   ]
 })
 ```
-![text with a circular cutout](gallery/circle-hole.png)
+![text with a circular cutout](tests/gallery/circle-hole/ref/1.png)
 
 ------
 

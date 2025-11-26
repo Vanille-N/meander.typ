@@ -20,6 +20,4 @@ publish:
   rm -rf release/*
   cp -r src release/
   cp README.md LICENSE typst.toml release/
-  mkdir release/gallery
-  cp gallery/*.png release/gallery/
 
