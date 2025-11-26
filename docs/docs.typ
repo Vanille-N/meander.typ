@@ -8,9 +8,9 @@
 #let repo = "https://github.com/Vanille-N/meander.typ/"
 #let typst-repo = "https://github.com/typst/typst/"
 
-#let show-page(tag, width: auto) = {
+#let show-page(tag, page: 1, width: auto) = {
   box(stroke: black)[
-    #image("figs/" + tag + ".svg", width: width)
+    #image("/tests/figs/" + tag + "/ref/" + str(page) + ".png", width: width)
   ]
 }
 
@@ -18,7 +18,7 @@
   let relevant-lines = ()
   let take = false
   let compress = none
-  for line in read("figs/" + tag + ".typ").split("\n") {
+  for line in read("/tests/figs/" + tag + "/test.typ").split("\n") {
     if line.contains("<doc>") {
       take = true
     } else if line.contains("</doc>") {
@@ -43,6 +43,9 @@
     }
   }
   set text(size: text.size + resize)
+  if relevant-lines == () {
+    relevant-lines = ("",)
+  }
   codesnippet(
     raw(lang: "typ", block: true, relevant-lines.join("\n"))
   )
@@ -128,14 +131,12 @@
         // @scrybe(jump releases; grep {{version}})
         *Versions*
         - #link(repo)[`dev`]
-        - #link(repo + "releases/tag/v0.2.5")[`0.2.5`]
+        - #link(repo + "releases/tag/v0.2.5")[`0.3.0`]
           (#link("https://typst.app/universe/package/meander")[`latest`])
+        - #link(repo + "releases/tag/v0.2.5")[`0.2.5`]
         - #link(repo + "releases/tag/v0.2.4")[`0.2.4`]
         - #link(repo + "releases/tag/v0.2.3")[`0.2.3`]
-        - #link(repo + "releases/tag/v0.2.2")[`0.2.2`]
-        - #link(repo + "releases/tag/v0.2.1")[`0.2.1`]
-        - #link(repo + "releases/tag/v0.2.0")[`0.2.0`]
-        - #link(repo + "releases/tag/v0.1.0")[`0.1.0`]
+        - #link(repo + "releases/")[...]
       ][
         #show-page("cover")
       ]
@@ -152,11 +153,14 @@
           Chapters that are
           #highlight[highlighted]#text(fill: red, super[*(!)*])
           have received major
-          updates in the latest version `0.2.5`
+          updates in the latest version `0.3.0`
           // TODO: add major/minor distinction
         ]
       ]
     ])
+    #warning-alert[
+      To migrate existing code, please consult @migration-0-3-0
+    ]
     #colbreak()
   ],
 )
@@ -166,13 +170,8 @@
 Import the latest version of MEANDER with:
 // @scrybe(jump import; grep preview; grep {{version}})
 #codesnippet[```typ
-#import "@preview/meander:0.2.5"
+#import "@preview/meander:0.3.0"
 ```]
-#warning-alert[
-  // @scrybe(jump import; grep preview; grep {{version}})
-  Do not ```typ #import "@preview/meander:0.2.5": *``` globally,
-  it would shadow important functions.
-]
 
 The main function provided by MEANDER is @cmd:meander:reflow,
 which takes as input
@@ -193,9 +192,9 @@ The general pattern of @cmd:placed + @cmd:container + @cmd:content is
 almost universal.
 
 #twocols(frac: 51.5%)[
-  #show-code("simple-example", resize: -1pt)
+  #show-code("simple", resize: -1pt)
 ][
-  #show-page("simple-example")
+  #show-page("simple")
 ]
 
 Within a @cmd:meander:reflow block, use @cmd:placed
@@ -257,12 +256,12 @@ in columns, including columns of uneven width
   #show-page("two-columns")
 ]
 
-#new[== Anatomy of an invocation <anatomy>]
+== Anatomy of an invocation <anatomy>
 
 As you can extrapolate from these examples,
 every MEANDER invocation looks like this:
 ```typ
-#meander.reflow(/* global options */, {
+#meander.reflow({
   import meander: *
   // pre-layout options
   
@@ -279,20 +278,16 @@ The most important part is the layout, composed of
 + flowing `content`, which may also be interspersed with
   - `colbreak`s and `colfill`s to have finer control over how containers are filled.
 
-Pre-layout options --- for now this concerns only ```typc opt.debug``` ---
+Pre-layout options --- currently ```typc opt.debug``` and ```typc opt.placement``` ---
 are configuration settings that come before any layout specification.
 They apply to the entire layout that follows.
 
-Dynamic options and post-layout options are not instanciated yet,
-but they will be respectively settings that can be updated during the layout
-affecting all following elements, and after the layout concerning
-particularly how to close the layout and handle overflows.
+Post-layout options --- currently ```typc opt.overflow``` --- determine
+how to close the layout and chain naturally with the text that follows.
 
-Global options are being phased out and will progressively
-be transformed into pre-layout, dynamic, and post-layout options
-in a manner than is compatible with semantic versioning.
-The first migration is only debug options because this can be done
-with no breakage of backwards compatibility.
+Dynamic options are not instanciated yet,
+but they will be settings that can be updated during the layout
+affecting all following elements.
 
 == Going further
 
@@ -318,6 +313,61 @@ this is covered in @overflow.
 For more obscure applications, you can read @interactive,
 or dive directly into the module documentation in @api.
 
+#new[== 0.2.x Migration Guide <migration-0-3-0>]
+
+From 0.2.5 to 0.3.0, configuration options have been reworked,
+phasing out global settings in favor of pre- and post-layout settings.
+Here is a comparison between old and new to help guide your migration.
+
+#let hfill = h(1fr)
+#table(columns: 2,
+  [pre-*0.2.5*], [post-*0.3.0*],
+  
+  table.cell(colspan: 2)[#align(center)[*Debugging*]],
+
+  [```typ #meander.regions({..})```  #hfill (command)],
+  [```typc opt.debug.pre-thread()```  #hfill (pre)],
+
+  [```typc debug: true```  #hfill (parameter)],
+  [```typc opt.debug.post-thread()```  #hfill (pre)],
+
+  table.cell(colspan: 2)[#align(center)[*Overflow*]],
+
+  [```typc overflow: false``` #hfill (parameter)],
+  [```typc opt.overflow.alert()``` #hfill (post)],
+
+  [```typc overflow: true``` #hfill (parameter)],
+  [```typc opt.overflow.ignore()``` #hfill (post)],
+
+  [```typc overflow: pagebreak``` #hfill (parameter)],
+  [```typc opt.overflow.pagebreak()``` #hfill (post)],
+
+  [```typc overflow: text``` #hfill (parameter)],
+  [new default],
+
+  [```typc overflow: panic``` #hfill (parameter)],
+  [discontinued due to convergence issues],
+
+  [```typc overflow: repeat``` #hfill (parameter)],
+  [```typc opt.overflow.repeat()``` #hfill (post)],
+
+  [```typc overflow: state("_")``` #hfill (parameter)],
+  [```typc opt.overflow.state("_")``` #hfill (post)],
+
+  [```typc overflow: (_ => {})``` #hfill (parameter)],
+  [```typc opt.overflow.custom(_ => {})``` #hfill (post)],
+
+  table.cell(colspan: 2)[#align(center)[*Placement*]],
+  [```typc placement: page``` #hfill (parameter)],
+  [```typc opt.placement.phantom()``` #hfill (pre)],
+
+  [```typc placement: box``` #hfill (parameter)],
+  [new default],
+
+  [```typc placement: float``` #hfill (parameter)],
+  [discontinued],
+)
+
 = Understanding the algorithm <explain-algo>
 
 Although it can produce the same results as `parshape` in practice,
@@ -330,7 +380,7 @@ Even if you don't plan to contribute to the implementation of MEANDER,
 I suggest you nevertheless briefly read this section to have an intuition
 of what happens behind the scenes.
 
-#new[== Debugging <debug>]
+== Debugging <debug>
 
 The examples below use some options that are available for debugging.
 
@@ -361,7 +411,7 @@ The debug modes available are as follows:
 When you write some layout such as the one below,
 MEANDER receives a sequence of elements that it splits into obstacles,
 containers, and content.
-#show-code("debug-reflow-code", resize: -3pt)
+#show-code("debug-post", resize: -3pt)
 First the #typ.measure of each obstacle is computed, their positioning
 is inferred from the alignment parameter of @cmd:placed, and they are
 placed on the page. The regions they cover as marked as forbidden.
@@ -372,9 +422,9 @@ from the allowed ones, giving a rectangular subdivision of the usable areas.
 
 #figure(
   [
-    #show-page("debug-regions-obstacles", width: 4.5cm)
-    #show-page("debug-regions-containers", width: 4.5cm)
-    #show-page("debug-regions-full", width: 4.5cm)
+    #show-page("debug-obstacles", width: 4.5cm)
+    #show-page("debug-containers", width: 4.5cm)
+    #show-page("debug-pre", width: 4.5cm)
   ],
   caption: [Left to right: the forbidden, allowed, and combined regions.],
 )
@@ -429,7 +479,7 @@ establishing the following dialogue:
 The exact boundaries of containers may be altered in the process for better spacing.
 
 #figure(
-  show-page("debug-reflow", width: 4.5cm),
+  show-page("debug-post", width: 4.5cm),
   caption: [Debug view of the final output via ```typc opt.debug.post-thread()```],
 )
 
@@ -669,18 +719,18 @@ Instead prefer ```typ #[#set par(justify: true); ...]```, or put the ```typ #set
 rule outside of the invocation of @cmd:meander:reflow altogether.
 
 #wrong-way(
-  show-code("par-justify", resize: -2pt),
-  show-page("par-justify", width: 3.2cm),
+  show-code("justify-par", resize: -2pt),
+  show-page("justify-par", width: 3.2cm),
 )
 
 #right-way(
-  show-code("set-par-justify", resize: -2pt),
-  show-page("set-par-justify", width: 3.2cm),
+  show-code("justify-inside", resize: -2pt),
+  show-page("justify-inside", width: 3.2cm),
 )
 
 #right-way(
-  show-code("set-par-justify-1", resize: -2pt),
-  show-page("set-par-justify-1", width: 3.2cm),
+  show-code("justify-outside", resize: -2pt),
+  show-page("justify-outside", width: 3.2cm),
 )
 
 == Font size and leading
@@ -766,10 +816,10 @@ The layout below spans two pages:
 - @cmd:content is page-agnostic and will naturally overflow to the second
   page when all containers from the first page are full.
 #twocols[
-  #show-code("two-pages/doc", resize: -2pt)
+  #show-code("two-pages", resize: -2pt)
 ][
-  #show-page("two-pages/doc.1", width: 3.5cm)
-  #show-page("two-pages/doc.2", width: 3.5cm)
+  #show-page("two-pages", page: 1, width: 3.5cm)
+  #show-page("two-pages", page: 2, width: 3.5cm)
   *Notice:* text from a 1-column layout overflows into a 2-column layout.
 ]
 
@@ -782,11 +832,11 @@ on the next page, so the right way to create an entirely new page for both
 containers and content is a @cmd:pagebreak *and* a @cmd:colbreak...
 or you could just end the @cmd:meander:reflow and start a new one.
 
-#show-code("colbreak/doc", resize: -2pt)
+#show-code("colbreak", resize: -2pt)
 #table(columns: (1fr, 1fr, 1fr), stroke: none,
-  show-page("colbreak/doc.1"),
-  show-page("colbreak/doc.2"),
-  show-page("colbreak/doc.3"),
+  show-page("colbreak", page: 1),
+  show-page("colbreak", page: 2),
+  show-page("colbreak", page: 3),
 )
 
 == Colfill
@@ -816,129 +866,97 @@ Choose whichever is appropriate based on your use-case.
 == Placement <placement>
 
 Placement options control how a @cmd:meander:reflow invocation is visible
-by and sees other content. This is important because MEANDER
-places all its contents, so it is by default invisible to the native layout.
+by and sees other content.
+By default, MEANDER will automatically insert invisible boxes of the correct
+height to emulate the text's placement. If this does not behave exactly
+as you want, this section details the alternatives available.
 
-=== Default
+Placement options are pre-layout, meaning they come in the shape
+of ```typc opt.placement.___``` before any containers or obstacles.
 
-The default, and least opinionated, mode is #arg(placement: page).
-- suitable for: one or more pages that MEANDER has full control over.
-- advantages: supports @cmd:pagebreak, several invocations can be superimposed,
-  flexible.
-- drawbacks: superimposed with content that follows.
+If the space computed by MEANDER is wrong, you can disable it entirely
+by adding ```typc opt.placement.phantom()``` (see below: right),
+or adjust the margins such as with ```typc opt.placement.spacing(below: 0.65em)```
+(see below: left).
 
-=== Inline
-
-The option #arg(placement: box) will emit non-`place`d boxes to simulate the
-actual space taken by the MEANDER-controlled layout.
-- suitable for: an invocation that is part of a larger page.
-- advantages: supports @cmd:pagebreak, content that follows is automatically placed after.
-- drawbacks: cannot superimpose multiple invocations.
-
-=== Full page
-
-Finally, #arg(placement: float) produces a layout that spans at most a page,
-but in exchange it can take the whole page even if some content has already
-been placed.
-- suitable for: single page layouts.
-- advantages: gets the whole page even if some content has already been written.
-- drawbacks: does not support @cmd:pagebreak, does not consider other content.
-
-=== Use-case
-
-Below is a layout that is not (as easily) achievable in #typ.page as it is in #typ.box.
-Only text in red is actually controlled by MEANDER, the rest is naturally
-placed before and after. This makes it possible to hand over to MEANDER only
-a few paragraphs where a complex layout is required, then fall back to the native
-Typst layout engine.
-#table(columns: (1fr, 1fr), stroke: none)[
-  #show-code("placement-box")
-
-  For reference, to the right is the same page if we omit #arg(placement: box),
-  where we can see a glitchy superimposition of text.
-][
-  #show-page("placement-box", width: 7cm)
-  #align(right)[
-    #v(-3cm)
-    #show-page("placement-box-bad", width: 3cm)
-  ]
-]
+#figure(
+  grid(columns: 3, gutter: 5mm,
+    show-page("placement-spacing", width: 4cm),
+    show-page("placement-box", width: 4cm),
+    show-page("placement-box-bad", width: 4cm),
+    [Manually adjusted spaces above and below to correct for paragraph breaks.],
+    [Default heuristic, with artificial spacing.],
+    [No artificial spacing.],
+  )
+)
 
 == Overflow <overflow>
 
 By default, if the content provided overflows the available containers,
-it will show a warning. This behavior is configurable.
+it will spill over after the MEANDER invocation. This default behavior means
+that you don't have to worry about losing text if the containers are too
+small, and should work for most use-cases.
+
+See below: the text in green / red is respectively before / after the MEANDER
+invocation. The actual layout is only the two blue columns, but the text in
+black overflows and is thus placed afterwards normally.
+#figure({
+  show-page("overflow-default", page: 1, width: 4.5cm)
+  h(1em)
+  show-page("overflow-default", page: 2, width: 4.5cm)
+})
+#show-code("overflow-default", resize: -2pt)
+
+Nevertheless if you need more control over what happens with the overflow,
+the following options are available.
 
 === No overflow
 
-The default behavior is #arg(overflow: false) because it avoids panics while
-still alerting that something is wrong. The red warning box suggests adding
-more containers or a @cmd:pagebreak to fit the remaining text.
-Setting #arg(overflow: true) will silently ignore the overflow, while
-#arg(overflow: panic) will immediately abort compilation.
-
+With ```typc opt.overflow.alert()```, a warning message will be added to the
+document if there is any overflow. The overflow itself will disappear, so
+the layout is guaranteed to take no more than the allocated space.
+As for ```typc opt.overflow.ignore()```, it will silently drop any content
+that doesn't fit.
 #twocols(
-  [#arg(overflow: false) \
-    #show-code("overflow-false", resize: -2pt)
+  [```typc opt.overflow.alert()``` \
+    #show-code("overflow-alert", resize: -2pt)
   ],
-  show-page("overflow-false", width: 3.5cm),
+  show-page("overflow-alert", width: 3.5cm),
 )
 
 #twocols(
-  [#arg(overflow: true) \
-    #show-code("overflow-true", resize: -2pt)
+  [```typc opt.overflow.ignore()``` \
+    #show-code("overflow-ignore", resize: -2pt)
   ],
-  show-page("overflow-true", width: 3.5cm),
-)
-
-#twocols(
-  [#arg(overflow: panic) \
-    #show-code("overflow-panic", resize: -2pt)
-  ],
-  show-page("overflow-panic", width: 3.5cm),
+  show-page("overflow-ignore", width: 3.5cm),
 )
 
 === Predefined layouts
 
-The above options are more useful if you absolutely want the content to fit
-in the defined layout. A commonly desired behavior is for the overflow
-to simply integrate with the layout as gracefully as possible.
-That is the purpose of the two options that follow.
+With ```typc opt.overflow.pagebreak()```,
+any content that overflows is placed on the next page.
+This can be particularly interesting if you are also using
+```typc opt.placement.phantom()``` because that one will not behave well
+with the default overflow settings.
 
-With #arg(overflow: pagebreak), any content that overflows is placed on the next page.
-This is typically most useful in conjunction with #arg(placement: page),
-and is outright incompatible with #arg(placement: float)
-(because it does not support @cmd:pagebreak; see @placement).
 #twocols[
-  #show-code("overflow-pagebreak/doc", resize: -2pt)
+  #show-code("overflow-pagebreak", resize: -2pt)
 ][
-  #show-page("overflow-pagebreak/doc.1", width: 3.5cm)
-  #show-page("overflow-pagebreak/doc.2", width: 3.5cm)
+  #show-page("overflow-pagebreak", page: 1, width: 3.5cm)
+  #show-page("overflow-pagebreak", page: 2, width: 3.5cm)
   Blue text is part of the base layout.
-  The overflow is in black, and is naturally followed by native text in red.
+  The overflow is in black on the next page even though the layout does not
+  occupy the entire page.
 ]
 
-Similarly #arg(overflow: text) is similarly best suited in conjunction
-with #arg(placement: box), and simply writes the text after the end of the layout.
+Secondly, ```typc opt.overflow.repeat(count: 1)``` will duplicate the `count`
+last pages (default: 1) of the layout until all the content fits.
 #twocols[
-  #show-code("overflow-text/doc", resize: -2pt)
+  #show-code("overflow-repeat")
 ][
-  #show-page("overflow-text/doc.1", width: 3.5cm)
-  #show-page("overflow-text/doc.2", width: 3.5cm)
-]
-
-In both cases, any content that follows the @cmd:meander:reflow invocation
-will more or less gracefully follow after the overflowing text,
-possibly with the need to slightly adjust paragraph breaks if needed.
-
-Finally, #arg(overflow: repeat) will duplicate the last page of the layout
-until all the content fits.
-#twocols[
-  #show-code("overflow-repeat/doc")
-][
-  #show-page("overflow-repeat/doc.1", width: 2.3cm)
-  #show-page("overflow-repeat/doc.2", width: 2.3cm)
-  #show-page("overflow-repeat/doc.3", width: 2.3cm)
+  #show-page("overflow-repeat", page: 1, width: 2.3cm)
+  #show-page("overflow-repeat", page: 2, width: 2.3cm)
+  #show-page("overflow-repeat", page: 3, width: 2.3cm)
 ]
 
 === Custom layouts
@@ -954,7 +972,8 @@ until all the content fits.
 
 If your desired output does not fit in the above predefined behaviors,
 you can fall back to storing it to a state or writing a custom overflow handler.
-Any function #lambda("overflow", ret:content) can serve as handler,
+Any function #lambda("overflow", ret:content) passed to
+```typc opt.overflow.custom(_ => {})``` can serve as handler,
 including another invocation of @cmd:meander:reflow.
 This function will be given as input an object of type @type:overflow,
 which is concretely a dictionary with fields:
@@ -965,15 +984,16 @@ which is concretely a dictionary with fields:
 - #arg[raw] uses an internal representation that you can iterate over, but
   that is not guaranteed to be stable. Use as last resort only.
 
-Similarly if you pass as overflow a `state`, it will receive any content that overflows
+Similarly if you pass to ```typc opt.overflow.state(label)```
+a #typ.state or a #typ.t.str, it will receive any content that overflows
 in the same 3 formats, and you can use ```typc state.get()``` on it afterwards.
 
 For example here is a handler that adds a header and some styling options
 to the text that overflows:
 #twocols(frac: 63%)[
-  #show-code("overflow-handler", resize: -1pt)
+  #show-code("overflow-custom", resize: -1pt)
 ][
-  #show-page("overflow-handler")
+  #show-page("overflow-custom")
 ]
 
 And here is one that stores to a state to be retrieved later:
@@ -1067,36 +1087,36 @@ The queries reduce the amount of lengths we have to compute by hand.
 
 A selection of nontrivial examples of what is feasible,
 inspired mostly by requests on #link(typst-repo + "issues/5181")[issue \#5181].
-You can find the source code for these on the #link(repo + "tree/master/examples")[repository].
+You can find the source code for these on the #link(repo + "tree/master/tests/examples")[repository].
 
 #sourcecode[
-  #image("/examples/5181-a/main.svg", width: 7.5cm)
+  #image("/tests/examples/typst-5181-a/ref/1.png", width: 7cm)
   #show: align.with(bottom)
-  #link(repo + "tree/master/examples/5181-a/main.typ")[`examples/5181-a/main.typ`] \
+  #link(repo + "tree/master/tests/examples/typst-5181-a/test.typ")[`tests/examples/typst-5181-a/test.typ`] \
   Motivated by #link(typst-repo + "issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (a)]
 ]
 
 #sourcecode[
-  #image("/examples/5181-b/main.svg", width: 7.5cm)
+  #image("/tests/examples/cow/ref/1.png", width: 7cm)
   #show: align.with(bottom)
-  #link(repo + "tree/master/examples/5181-b/main.typ")[`examples/5181-b/main.typ`] \
+  #link(repo + "tree/master/tests/examples/cow/test.typ")[`tests/examples/cow/test.typ`] \
+  Motivated by #link("https://forum.typst.app/t/is-there-an-equivalent-to-latex-s-parshape/1006/3")["Is there an equivalent to LaTeX's \\parshape?" (Typst forum)]
+]
+
+#sourcecode[
+  #image("/tests/examples/typst-5181-b/ref/1.png", width: 7.5cm)
+  #show: align.with(bottom)
+  #link(repo + "tree/master/tests/examples/typst-5181-b/test.typ")[`tests/examples/typst-5181-b/test.typ`] \
   Motivated by #link(typst-repo + "issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (b)]
 ]
 
 #sourcecode[
-  #image("/examples/talmudifier/main.svg", width: 7.5cm)
+  #image("/tests/examples/talmudifier/ref/1.png", width: 7cm)
   #show: align.with(bottom)
-  #link(repo + "tree/master/examples/talmudifier/main.typ")[`examples/talmudifier/main.typ`] \
+  #link(repo + "tree/master/tests/examples/talmudifier/test.typ")[`tests/examples/talmudifier/test.typ`] \
   From #link("https://github.com/subalterngames/talmudifier")[`github:subalterngames/talmudifier`] \
   Motivated by #link(typst-repo + "issues/5181#issuecomment-2661180292")[`github:typst/typst` \#5181 (c)]
   ]
-
-#sourcecode[
-  #image("/examples/cow/main.svg", width: 7.5cm)
-  #show: align.with(bottom)
-  #link(repo + "tree/master/examples/cow/main.typ")[`examples/cow/main.typ`] \
-  Motivated by #link("https://forum.typst.app/t/is-there-an-equivalent-to-latex-s-parshape/1006/3")["Is there an equivalent to LaTeX's \\parshape?" (Typst forum)]
-]
 
 = Public API <api>
 
@@ -1157,6 +1177,11 @@ These come before all elements.
 Visualizing containers and obstacle boundaries.
 #show-module("opt/debug", module: "opt.debug")
 
+==== Placement settings
+Controlling the interactions between content
+inside and outside of the MEANDER invocation.
+#show-module("opt/placement", module: "opt.placement")
+
 === Dynamic options
 
 These modify parameters on the fly.
@@ -1167,7 +1192,9 @@ These modify parameters on the fly.
 
 These come after all elements.
 
-#warning-alert[None yet]
+==== Overflow settings
+What happens to content that doesn't fit.
+#show-module("opt/overflow", module: "opt.overflow")
 
 == Public internals
 
@@ -1182,7 +1209,7 @@ made available as lower-level primitives.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.2.5": internals.fill-box
+#import "@preview/meander:0.3.0": internals.fill-box
 ```
 ]
 #property(since: version(0, 2, 4))
@@ -1193,7 +1220,7 @@ content as fits in a specific box. See @cmd:bisect:fill-box for details.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.2.5": internals.geometry
+#import "@preview/meander:0.3.0": internals.geometry
 ```
 ]
 #property(since: version(0, 2, 4))

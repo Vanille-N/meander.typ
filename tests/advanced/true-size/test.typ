@@ -4,7 +4,7 @@
 
 #meander.reflow({
   import meander: *
-  opt.placement.no-outset()
+  opt.placement.spacing(both: 0em)
   opt.debug.pre-thread()
   container()
 })

@@ -43,6 +43,7 @@
 #meander.reflow({
   import meander: *
   opt.debug.post-thread()
+  opt.placement.phantom()
   placed(
     center + top,
     boundary: contour.margin(5pt) + contour.grid(div: 20, (x, y) => {
@@ -50,25 +51,24 @@
     }),
     line(end: (5cm, 5cm))
   )
-  opt.placement.no-spacing()
 })
 
 #meander.reflow({
   import meander: *
   opt.debug.post-thread()
-  opt.placement.no-outset()
+  opt.placement.spacing(both: 0em)
+  opt.placement.phantom()
   placed(
     center + horizon,
     boundary: contour.margin(5pt) + contour.horiz(div: 20, y => (y - 0.07, y + 0.07)),
     line(end: (5cm, 5cm)),
   )
-  opt.placement.no-spacing()
 })
 
 #meander.reflow({
   import meander: *
   opt.debug.post-thread()
-  opt.placement.no-outset()
+  opt.placement.spacing(both: 0em)
   placed(
     center + bottom,
     boundary: contour.margin(5pt) + contour.vert(div: 20, x => (x - 0.07, x + 0.07)),
@@ -81,6 +81,7 @@
 #meander.reflow({
   import meander: *
   opt.debug.post-thread()
+  opt.placement.phantom()
   placed(
     center + top,
     boundary: contour.margin(5pt) + contour.width(
@@ -90,13 +91,13 @@
     ),
     line(end: (5cm, 5cm))
   )
-  opt.placement.no-spacing()
 })
 
 #meander.reflow({
   import meander: *
   opt.debug.post-thread()
-  opt.placement.no-outset()
+  opt.placement.spacing(both: 0em)
+  opt.placement.phantom()
   placed(
     center + horizon,
     boundary: contour.margin(5pt) + contour.width(
@@ -105,13 +106,13 @@
     ),
     line(end: (5cm, 5cm))
   )
-  opt.placement.no-spacing()
 })
 
 #meander.reflow({
   import meander: *
   opt.debug.post-thread()
-  opt.placement.no-outset()
+  opt.placement.spacing(both: 0em)
+  opt.placement.phantom()
   placed(
     center + bottom,
     boundary: contour.margin(5pt) + contour.width(
@@ -120,7 +121,6 @@
     ),
     line(end: (5cm, 5cm))
   )
-  opt.placement.no-spacing()
 })
 
 #pagebreak()
@@ -128,6 +128,7 @@
 #meander.reflow({
   import meander: *
   opt.debug.post-thread()
+  opt.placement.phantom()
   placed(
     center + top,
     boundary: contour.margin(5pt) + contour.height(
@@ -136,13 +137,13 @@
     ),
     line(end: (5cm, 5cm))
   )
-  opt.placement.no-spacing()
 })
 
 #meander.reflow({
   import meander: *
   opt.debug.post-thread()
-  opt.placement.no-outset()
+  opt.placement.spacing(both: 0em)
+  opt.placement.phantom()
   placed(
     center + horizon,
     boundary: contour.margin(5pt) + contour.height(
@@ -151,13 +152,13 @@
     ),
     line(end: (5cm, 5cm))
   )
-  opt.placement.no-spacing()
 })
 
 #meander.reflow({
   import meander: *
   opt.debug.post-thread()
-  opt.placement.no-outset()
+  opt.placement.spacing(both: 0em)
+  opt.placement.phantom()
   placed(
     center + bottom,
     boundary: contour.margin(5pt) + contour.height(
@@ -166,7 +167,6 @@
     ),
     line(end: (5cm, 5cm))
   )
-  opt.placement.no-spacing()
 })
 
 #pagebreak()

@@ -3,10 +3,10 @@
 #lorem(100)
 #meander.reflow({
   import meander: *
-  opt.placement.no-outset()
+  opt.placement.spacing(both: 0em)
+  opt.placement.phantom()
   container()
   content[#set text(fill: red); #lorem(100)]
-  opt.placement.no-spacing()
 })
 #lorem(100)
 
@@ -38,9 +38,9 @@
 #lorem(200)
 #meander.reflow({
   import meander: *
-  opt.placement.no-outset()
+  opt.placement.spacing(both: 0em)
+  opt.placement.phantom()
   placed(top, box(width: 100%, height: 50%, fill: red.transparentize(70%)))
-  opt.placement.no-spacing()
 })
 #lorem(100)
 

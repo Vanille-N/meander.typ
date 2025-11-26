@@ -27,7 +27,7 @@
 
 #meander.reflow({
   import meander: *
-  opt.placement.no-outset()
+  opt.placement.spacing(both: 0em)
   placed(top + left, {})
   container()
   content[#lorem(1000)]
