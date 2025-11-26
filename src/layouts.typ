@@ -16,17 +16,17 @@
   /// See @elem-doc for how to format this content.
   /// -> array(elem)
   seq,
-  /// #property(until: version(0, 2, 4))
   /// Deprecated in favor of ```typc opt.debug.post-thread()```.
   /// See @anatomy and @debug for more information.
+  /// #property(until: version(0, 2, 4))
   debug: none,
   /// #property(since: version(0, 2, 1))
-  /// #property(until: version(0, 2, 5))
   /// Deprecated in favor of ```typc opt.overflow``` options.
+  /// #property(until: version(0, 2, 5))
   overflow: none,
   /// #property(since: version(0, 2, 2))
-  /// #property(until: version(0, 2, 5))
   /// Deprecated in favor of ```typc opt.placement``` options.
+  /// #property(until: version(0, 2, 5))
   placement: none,
 ) = {
   if debug != none {

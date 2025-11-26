@@ -313,7 +313,7 @@
   for (mod, field) in (
     (opt.debug, "debug"),
     (opt.placement, "virtual-spacing"),
-    (opt.placement, "no-outset"),
+    (opt.placement, "spacing"),
     (opt.overflow, "overflow"),
     //(opt.placement, "full-page"),
   ) {
@@ -351,10 +351,10 @@
       current-page-anchor.update(here().position())
     })
   }
-  let block-spacing(doc) = if opts.no-outset {
-    set block(spacing: 0em)
+  let block-spacing(doc) = if opts.spacing == (:) {
     doc
   } else {
+    set block(..opts.spacing)
     doc
   }
   (inner) => {
