@@ -17,7 +17,7 @@ The function `meander.reflow` takes a sequence of
 
 <!-- @scrybe(not publish; jump import; grep local; grep {{version}}) -->
 <!-- @scrybe(if publish; jump import; grep preview; grep {{version}}) -->
-<!-- @scrybe(jump import; until ```; diff gallery/multi-obstacles.typ) -->
+<!-- @scrybe(jump let; until ```; diff tests/gallery/multi-obstacles/test.typ) -->
 ```typ
 #let my-img-1 = box(width: 7cm, height: 7cm, fill: orange)
 #let my-img-2 = box(width: 5cm, height: 3cm, fill: blue)
@@ -25,7 +25,7 @@ The function `meander.reflow` takes a sequence of
 #let my-img-4 = box(width: 5cm, height: 5cm, fill: red)
 #let my-img-5 = box(width: 4cm, height: 3cm, fill: yellow)
 
-#import "@local/meander:0.2.5"
+#import "@local/meander:0.3.0"
 
 #meander.reflow({
   import meander: *
@@ -35,8 +35,7 @@ The function `meander.reflow` takes a sequence of
   placed(top + right, my-img-2)
   placed(horizon + right, my-img-3)
   placed(bottom + left, my-img-4)
-  placed(bottom + left, dx: 32%,
-         my-img-5)
+  placed(bottom + left, dx: 32%, my-img-5)
 
   // The container wraps around all
   container()
@@ -54,13 +53,13 @@ Use multiple `container`s to produce layouts in columns.
 
 <!-- @scrybe(not publish; jump import; grep local; grep {{version}}) -->
 <!-- @scrybe(if publish; jump import; grep preview; grep {{version}}) -->
-<!-- @scrybe(jump import; until ```; diff gallery/two-columns.typ) -->
+<!-- @scrybe(jump let; until ```; diff tests/gallery/two-columns/test.typ) -->
 ```typ
 #let my-img-1 = box(width: 7cm, height: 7cm, fill: orange)
 #let my-img-2 = box(width: 5cm, height: 3cm, fill: blue)
 #let my-img-3 = box(width: 8cm, height: 4cm, fill: green)
 
-#import "@local/meander:0.2.5"
+#import "@local/meander:0.3.0"
 
 #meander.reflow({
   import meander: *
@@ -98,38 +97,44 @@ You can see this in effect in the example below:
 - the text in red is after the meander environment
 <!-- @scrybe(not publish; jump import; grep local; grep {{version}}) -->
 <!-- @scrybe(not publish; jump import; grep local; grep {{version}}) -->
-<!-- @scrybe(jump import; until ```; diff gallery/placement.typ) -->
+<!-- @scrybe(jump import; until ```; diff tests/gallery/placement/test.typ) -->
 ```typ
-#import "@local/meander:0.2.5"
+#import "@local/meander:0.3.0"
 #set par(justify: true)
 
-#text(fill: green)[
-  #lorem(200)
-]
+#text(fill: red)[#lorem(200)]
 
-#meander.reflow(
-  placement: box,
-  overflow: text,
-{
+#meander.reflow({
   import meander: *
+  // Gets rid of the paragraph break between
+  // the columns and the overflow.
+  opt.placement.spacing(below: 0.65em)
+
+  // This turns on some debugging information,
+  // specifically showing the boundaries
+  // of the boxes in green.
+  opt.debug.post-thread()
+
   container(
-    width: 48%,
-    height: 50%,
+    width: 48%,height: 50%,
     style: (text-fill: blue),
   )
   container(
-    width: 48%,
-    height: 50%,
-    align: right,
+    width: 48%, height: 50%, align: right,
     style: (text-fill: blue),
   )
 
   content[#lorem(700)]
+
+  // This applies a style to the text
+  // that overflows the layout.
+  opt.overflow.custom(data => {
+    set text(fill: orange)
+    data.styled
+  })
 })
 
-#text(fill: red)[
-  #lorem(200)
-]
+#text(fill: red)[#lorem(200)]
 ```
 ![Content that overflows the environment (page 1/2)](gallery/placement-1.png)
 ![Content that overflows the environment (page 2/2)](gallery/placement-2.png)
@@ -140,9 +145,9 @@ Meander allows precise control over the boundaries of obstacles, to draw complex
 
 <!-- @scrybe(not publish; jump import; grep local; grep {{version}}) -->
 <!-- @scrybe(if publish; jump import; grep preview; grep {{version}}) -->
-<!-- @scrybe(jump import; until ```; diff gallery/circle-hole.typ) -->
+<!-- @scrybe(jump import; until ```; diff tests/gallery/circle-hole/test.typ) -->
 ```typ
-#import "@local/meander:0.2.5"
+#import "@local/meander:0.3.0"
 
 #meander.reflow({
   import meander: *
