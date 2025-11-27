@@ -26,7 +26,6 @@
 - [ ] optimize the rectangles in ascii (need fewer of them for performance)
   - [ ] rotate + flip ascii map
 - [ ] template("name") to include parts of a previously defined layout
-- [ ] validate compatibility between placement and overflow
 - [ ] use fewer `box`es, more `block`s
 - [ ] provide full-size and free-size to query
 
@@ -60,7 +59,6 @@
 
 ## Testing
 
-- [ ] continuous testing setup for regressions on fixed issues
 - [ ] `exact` is now useless thanks to tiling improvements
 
 ## Refactoring

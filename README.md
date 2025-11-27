@@ -91,10 +91,9 @@ The `overflow` parameter determines what happens to text that doesn't
 fit inside the provided containers.
 
 You can see this in effect in the example below:
-- the text in green is before the Meander environment
+- the text in red is outside of the Meander environment
 - the text in blue is the Meander environment itself
 - the text in black is the overflow handled by Meander
-- the text in red is after the meander environment
 <!-- @scrybe(not publish; jump import; grep local; grep {{version}}) -->
 <!-- @scrybe(not publish; jump import; grep local; grep {{version}}) -->
 <!-- @scrybe(jump import; until ```; diff tests/gallery/placement/test.typ) -->
@@ -184,10 +183,10 @@ Meander allows precise control over the boundaries of obstacles, to draw complex
 ------
 
 For a more in-depth introduction, including
-- debug mode,
 - alternative recontouring techniques,
 - styling options,
-- multi-page handling and page overflow options,
+- advanced multi-page layouts,
+- control over content that overflows,
 - tips to get better segmentation,
 <!-- @scrybe(if publish; grep https; grep {{version}}) -->
 please consult the [documentation](docs/docs.pdf).

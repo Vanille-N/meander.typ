@@ -17,6 +17,8 @@
 
 #meander.reflow({
   import meander: *
+  opt.placement.phantom()
+
   placed(top + left, dy: 1cm,
           my-img-1)
   container()
@@ -26,8 +28,6 @@
 
     #lorem(100)
   ]
-
-  opt.placement.phantom()
 })
 
 #lorem(100)

@@ -4,6 +4,7 @@
 
 ### Configuration
 - `opt.placement._()` replaces `placement: _`
+- `opt.overflow._()` replaces `overflow: _`
 
 ### Testing
 - improved the test harness organization
