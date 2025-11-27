@@ -5,15 +5,14 @@ doc: (typstc "watch" "docs/docs.typ")
 
 test T: (typstc "watch" "tests/"+T+"/test.typ")
 
-example T fmt="pdf": (typstc "watch" "examples/"+T+"/main.typ" fmt)
-
-issue N mode="watch" fmt="pdf": (typstc mode "issues/"+N+".typ" fmt)
-
 scrybe:
-  scrybe -R README.md typst.toml docs/docs.typ --version=0.3.0
+  scrybe -R README.md typst.toml docs/docs.typ --version="$(cat .version)"
 
 scrybe-publish:
-  scrybe -R release --publish --version=0.3.0
+  scrybe -R release --publish --version="$(cat .version)"
+
+bump ver:
+  echo {{ ver }} > .version
 
 publish:
   mkdir -p release
@@ -21,3 +20,16 @@ publish:
   cp -r src release/
   cp README.md LICENSE typst.toml release/
   rsync -rhP tests --include='*/' --include='gallery/*/ref/*.png' --exclude='*' release/
+
+upstream:
+  cd $(cat .packages) && \
+    git checkout meander && \
+    git fetch upstream && \
+    git reset --hard upstream/main
+  cp -r release $(cat .packages)/packages/preview/meander/$(cat .version)
+  cd $(cat .packages) && \
+    git add . && \
+    git commit -m "meander:$(cat .version)" \
+    git push --force
+
+
