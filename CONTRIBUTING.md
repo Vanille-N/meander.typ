@@ -41,7 +41,7 @@ Files:
 
 Hidden:
 - `.packages` is a reference to my local copy of [typst/packages](typst_packages),
-- `.version` contains the latest version number to be accessed for validation by scrybe,
+- `.version` contains the latest version number to be accessed for validation by Scrybe.
 
 ### Testing Framework
 
@@ -114,8 +114,6 @@ Among the things that scrybe is capable of checking, are:
 - whether relative links have been updated to absolute `https://` paths,
 - if examples in the README are up to date,
 - if the documentation has been updated with correct version numbers.
-Scrybe has been essential in allowing me to submit a current streak of 8 consecutive
-package updates without inconsistencies in links or version numbers.
 
 `just publish` runs a convoluted `rsync` command to copy the necessary
 files to the folder `release/`. Some adjustments are then necessary:

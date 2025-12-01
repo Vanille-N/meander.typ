@@ -154,7 +154,7 @@
 ) = {
   assert(cfg.hyphenate != false)
   import "@preview/hy-dro-gen:0.1.1" as hy
-  let syllables = hy.syllables(ww, lang: cfg.lang, fallback: none)
+  let syllables = hy.syllables(ww, lang: cfg.lang, fallback: auto)
   for i in range(syllables.len()) {
     if fits-inside(syllables.slice(0, i + 1).join("") + "-") {
       continue

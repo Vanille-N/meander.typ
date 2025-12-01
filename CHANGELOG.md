@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.0 -> dev
+
+### i18n
+- Problematic `hy-dro-gen` invocation without appropriate fallback fixed
+
+
 ## v0.2.5 -> v0.3.0
 
 ### Configuration
