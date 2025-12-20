@@ -131,11 +131,11 @@
         // @scrybe(jump releases; grep {{version}})
         *Versions*
         - #link(repo)[`dev`]
-        - #link(repo + "releases/tag/v0.2.5")[`0.3.0`]
+        - #link(repo + "releases/tag/v0.3.1")[`0.3.1`]
           (#link("https://typst.app/universe/package/meander")[`latest`])
+        - #link(repo + "releases/tag/v0.3.0")[`0.3.0`]
         - #link(repo + "releases/tag/v0.2.5")[`0.2.5`]
         - #link(repo + "releases/tag/v0.2.4")[`0.2.4`]
-        - #link(repo + "releases/tag/v0.2.3")[`0.2.3`]
         - #link(repo + "releases/")[...]
       ][
         #show-page("cover")
@@ -153,7 +153,7 @@
           Chapters that are
           #highlight[highlighted]#text(fill: red, super[*(!)*])
           have received major
-          updates in the latest version `0.3.0`
+          updates in the latest version `0.3.1`
           // TODO: add major/minor distinction
         ]
       ]
@@ -170,7 +170,7 @@
 Import the latest version of MEANDER with:
 // @scrybe(jump import; grep preview; grep {{version}})
 #codesnippet[```typ
-#import "@preview/meander:0.3.0"
+#import "@preview/meander:0.3.1"
 ```]
 
 The main function provided by MEANDER is @cmd:meander:reflow,
@@ -313,7 +313,7 @@ this is covered in @overflow.
 For more obscure applications, you can read @interactive,
 or dive directly into the module documentation in @api.
 
-#new[== 0.2.x Migration Guide <migration-0-3-0>]
+== 0.2.x Migration Guide <migration-0-3-0>
 
 From 0.2.5 to 0.3.0, configuration options have been reworked,
 phasing out global settings in favor of pre- and post-layout settings.
@@ -1165,7 +1165,7 @@ See how to use them in @interactive.
 
 #show-module("query", module: true)
 
-#new[== Options]
+== Options
 
 Configuring the behavior of @cmd:meander:reflow.
 
@@ -1209,7 +1209,7 @@ made available as lower-level primitives.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.3.0": internals.fill-box
+#import "@preview/meander:0.3.1": internals.fill-box
 ```
 ]
 #property(since: version(0, 2, 4))
@@ -1220,7 +1220,7 @@ content as fits in a specific box. See @cmd:bisect:fill-box for details.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.3.0": internals.geometry
+#import "@preview/meander:0.3.1": internals.geometry
 ```
 ]
 #property(since: version(0, 2, 4))
