@@ -66,7 +66,7 @@
     }
     // Leave it a little room
     // 0.5em margin at the bottom to let it potentially add an extra line
-    let old-lo = cont.y + cont.height
+    let old-lo = calc.min(cont.y + cont.height, cont.bounds.y + cont.bounds.height)
     let new-lo = old-lo + geometry.resolve(size, y: 0.5 * text-size).y
     new-lo = calc.min(new-lo, cont.bounds.y + cont.bounds.height)
     for no-box in avoid {
