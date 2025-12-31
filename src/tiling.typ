@@ -73,6 +73,12 @@
   let obj = geometry.unquery(obj, regions: data.regions)
   let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: obj.width, height: obj.height)
   let dims = geometry.resolve(data.free-size, x: x, y: y, width: obj.width, height: obj.height)
+  // This container actually doesn't have any room.
+  // Setting it to just be 0 is a bit of a hack, but it'll simply
+  // cause it to be silently skipped.
+  if dims.height < 0pt {
+    dims.height = 0pt
+  }
   // Select only the obstacles that may intersect this container
   let relevant-obstacles = data.obstacles.filter(exclude => {
     geometry.intersects((dims.x, dims.x + dims.width), (exclude.x, exclude.x + exclude.width), tolerance: 1mm) and not is-ignored(obj, exclude)

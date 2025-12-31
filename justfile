@@ -22,14 +22,15 @@ publish:
   rsync -rhP tests --include='*/' --include='gallery/*/ref/*.png' --exclude='*' release/
 
 upstream:
+  cat .version > /tmp/meander-version
   cd $(cat .packages) && \
     git checkout meander && \
     git fetch upstream && \
     git reset --hard upstream/main
-  cp -r release $(cat .packages)/packages/preview/meander/$(cat .version)
+  cp -r release/* $(cat .packages)/packages/preview/meander/$(cat .version)
   cd $(cat .packages) && \
     git add . && \
-    git commit -m "meander:$(cat .version)" \
+    git commit -m "meander:$(cat /tmp/meander-version)" && \
     git push --force
 
 
