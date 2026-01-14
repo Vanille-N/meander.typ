@@ -87,7 +87,7 @@
       if tiling.is-ignored(cont, no-box) { continue }
       if new-hi > lo { continue }
       if geometry.intersects((cont.x, cont.x + cont.width), (no-box.x, no-box.x + no-box.width), tolerance: 1mm) {
-        if geometry.intersects((new-hi, lo), (no-box.y, no-box.y + no-box.height), tolerance: 1mm) {
+        if geometry.intersects((new-hi, lo), (no-box.y, no-box.y + no-box.height), tolerance: 0.1pt) {
           new-hi = calc.max(new-hi, no-box.y + no-box.height)
         }
       }
@@ -95,7 +95,7 @@
     for (full-box,_) in full {
       if new-hi > lo { continue }
       if geometry.intersects((cont.x, cont.x + cont.width), (full-box.x, full-box.x + full-box.width), tolerance: 1mm) {
-        if geometry.intersects((new-hi, lo), (full-box.y, full-box.y + full-box.height + lineskip), tolerance: 1pt) {
+        if geometry.intersects((new-hi, lo), (full-box.y, full-box.y + full-box.height + lineskip), tolerance: 0.1pt) {
           new-hi = calc.max(new-hi, full-box.y + full-box.height + lineskip)
         }
       }
