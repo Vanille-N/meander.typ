@@ -8,10 +8,10 @@ and anyone interested in contributing code or ideas.
 
 Having the following installed is necessary or helpful while developing Meander:
 - Typst (duh!),
-- [just](just) to run some commands,
-- [tytanic](tytanic) for testing,
-- [scrybe](scrybe) to validate files before publishing.
-- the commands [rsync](rsync) and [git](git) for synchronization during updates,
+- [just][just] to run some commands,
+- [tytanic][tytanic] for testing,
+- [scrybe][scrybe] to validate files before publishing.
+- the commands [rsync][rsync] and [git][git] for synchronization during updates,
 
 ## Project organization
 
@@ -40,12 +40,12 @@ Files:
   planned changes respectively.
 
 Hidden:
-- `.packages` is a reference to my local copy of [typst/packages](typst_packages),
+- `.packages` is a reference to my local copy of [typst/packages][typst_packages],
 - `.version` contains the latest version number to be accessed for validation by Scrybe.
 
 ### Testing Framework
 
-Meander uses [tytanic](tytanic) as a test runner,
+Meander uses [tytanic][tytanic] as a test runner,
 invoked via
 ```sh
 # Run all
@@ -61,8 +61,8 @@ $ tt run -e 'r:core'
 The test directory is `tests/`, and it includes the suites:
 - `core` for basic features
 - `advanced` for more complex layouts
-- `issues` to track regressions to fixed or ongoing [GitHub issues](this_repo_issues)
-- `examples` for applications featured e.g. on [the Typst Forum Showcase](forum_showcase)
+- `issues` to track regressions to fixed or ongoing [GitHub issues][this_repo_issues]
+- `examples` for applications featured e.g. on [the Typst Forum Showcase][forum_showcase]
 - `gallery` for layouts featured on the [README](README.md)
 - `figs` for examples that are used in the [documentation](docs/docs.pdf)
 
@@ -74,7 +74,7 @@ $ just doc
 ```
 to watch and compile changes to the documentation in `docs/docs.pdf`.
 The source code is in `docs/docs.typ`.
-The manual uses [mantys](mantys) as a template.
+The manual uses [mantys][mantys] as a template.
 
 (Almost) all code snippets used in the documentation are tested for regressions,
 and are thus stored and built in `tests/figs/`.
@@ -108,7 +108,7 @@ just upstream
 ```
 
 In more detail, `just bump x.x.x` will update the version number stored in `.version`,
-then `just scrybe` invokes a personal tool, [scrybe](scrybe), that is a readonly
+then `just scrybe` invokes a personal tool, [scrybe][scrybe], that is a readonly
 evaluator for inline commands to check that a document is self-consistent.
 Among the things that scrybe is capable of checking, are:
 - whether relative links have been updated to absolute `https://` paths,
@@ -124,12 +124,13 @@ If you forget one of these, it will be caught by `just scrybe-publish`,
 after which `just upstream` will do the rest of the job and a PR can be opened right away.
 
 
-[this_repo_issues]: (https://github.com/Vanille-N/meander.typ)
-[forum_showcase]: (https://forum.typst.app/t/meander-0-2-2-wrapping-text-around-images/6096)
-[tytanic]: (https://github.com/typst-community/tytanic)
-[just]: (https://github.com/casey/just)
-[mantys]: (https://typst.app/universe/package/mantys/)
-[scrybe]: ()
-[rsync]: (https://linux.die.net/man/1/rsync)
-[git]: (https://git-scm.com/)
-[typst_packages]: (https://github.com/typst/packages)
+[this_repo_issues]: https://github.com/Vanille-N/meander.typ/issues
+[forum_showcase]: https://forum.typst.app/t/meander-0-2-2-wrapping-text-around-images/6096
+[tytanic]: https://github.com/typst-community/tytanic
+[just]: https://github.com/casey/just
+[mantys]: https://typst.app/universe/package/mantys
+[scrybe]: https://github.com/Vanille-N/scrybe
+[rsync]: https://linux.die.net/man/1/rsync
+[git]: https://git-scm.com
+[typst_packages]: https://github.com/typst/packages
+
