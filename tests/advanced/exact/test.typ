@@ -12,7 +12,7 @@
     opt.debug.post-thread()
     placed(
       top + left,
-      boundary: contour.horiz(div: 25, y => (0,0)),
+      boundary: contour.horiz(div: 25, y => (0,0.01)),
       box(width: 1cm, height: 100%),
     )
     container(width: 5cm)
