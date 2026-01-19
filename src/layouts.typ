@@ -50,8 +50,12 @@
     while true {
       // Compute
       let (elem, _data) = tiling.next-elem(data)
-      if elem == none { break }
       data = _data
+      // `next-elem` uses a `none` to indicate that it's done, and a
+      // `()` to indicate that it has no element available right now but
+      // will have more in the future.
+      if elem == none { break }
+      if elem == () { continue }
 
       if elem.type == place {
         if opts.debug.objects { output += elem.display }

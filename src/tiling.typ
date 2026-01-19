@@ -16,7 +16,9 @@
   obj,
 ) = {
   let (width, height) = measure(obj.content, ..data.full-size)
-  let obj = geometry.unquery(obj, regions: data.regions)
+  // Disabled in 0.4.0, now uses callback instead of unquery
+  // We still run this function for diagnostics.
+  let _ = geometry.unquery(obj, regions: data.regions)
   let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: width, height: height, anchor: obj.anchor)
   let obj-dims = geometry.resolve(data.full-size, width: width, height: height)
   let dims = geometry.resolve(data.free-size, x: x, y: y, ..obj-dims)
@@ -69,8 +71,10 @@
   /// -> elem
   obj,
 ) = {
+  // Disabled in 0.4.0, now uses callback instead of unquery
+  // We still run this function for diagnostics.
+  let _ = geometry.unquery(obj, regions: data.regions)
   // Calculate the absolute dimensions of the container
-  let obj = geometry.unquery(obj, regions: data.regions)
   let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: obj.width, height: obj.height)
   let dims = geometry.resolve(data.free-size, x: x, y: y, width: obj.width, height: obj.height)
   // This container actually doesn't have any room.
@@ -180,6 +184,8 @@
 
 /// Initializes the initial value of the internal data for the reentering
 /// `next-elem`.
+/// - `none` means no more elements
+/// - `()` means no element right now, but keep trying
 /// -> opaque
 #let create-data(
   /// Dimensions of the page
@@ -206,6 +212,21 @@
   )
 }
 
+/// Evaluates an environment passed to a callback.
+/// Most of the computations are done by the values, defined in the `query`
+/// module.
+#let eval-callback-env(env, data) = {
+  let evaled = (:)
+  for (key, val) in env {
+    if "type" in val and val.type == types.query {
+      evaled.insert(key, (val.fun)(data))
+    } else {
+      evaled.insert(key, val)
+    }
+  }
+  evaled
+}
+
 /// This function is reentering, allowing interactive computation of the layout.
 /// Given its internal state #arg[data], @cmd:tiling:next-elem uses the helper functions
 /// @cmd:tiling:blocks-of-placed and @cmd:tiling:blocks-of-container to compute
@@ -226,6 +247,14 @@
     (blocks-of-placed(data, obj), data)
   } else if obj.type == types.elt.container {
     (blocks-of-container(data, obj), data)
+  } else if obj.type == types.elt.callback {
+    let env = eval-callback-env(obj.env, data)
+    let elts = (obj.fun)(env)
+    for elt in elts.rev() {
+      // TODO: validate that the element is valid in a callback
+      data.elems.push(elt)
+    }
+    ((), data)
   } else {
     panic("There is a bug in `separate`: encountered a " + repr(obj.type))
   }
@@ -295,6 +324,9 @@
   }
   for obj in seq {
     if obj.type in (types.elt.placed, types.elt.container) {
+      phase = check-phase(phase, 1)
+      elems.push(obj)
+    } else if obj.type == types.elt.callback {
       phase = check-phase(phase, 1)
       elems.push(obj)
     } else if obj.type in (types.flow.content, types.flow.colbreak, types.flow.colfill) {

@@ -1,4 +1,4 @@
-#import "elems.typ": placed, container, content, pagebreak, colbreak, colfill
+#import "elems.typ": placed, container, content, pagebreak, colbreak, colfill, callback
 
 #import "query.typ"
 

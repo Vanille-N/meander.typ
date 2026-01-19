@@ -153,13 +153,13 @@
           Chapters that are
           #highlight[highlighted]#text(fill: red, super[*(!)*])
           have received major
-          updates in the latest version `0.3.1`
+          updates in the latest version `0.4.0`
           // TODO: add major/minor distinction
         ]
       ]
     ])
     #warning-alert[
-      To migrate existing code, please consult @migration-0-3-0
+      To migrate existing code, please consult @migration-0-3-0 and @migration-0-4-0
     ]
     #colbreak()
   ],
@@ -367,6 +367,57 @@ Here is a comparison between old and new to help guide your migration.
   [```typc placement: float``` #hfill (parameter)],
   [discontinued],
 )
+
+#new[== 0.3.x Migration Guide <migration-0-4-0>]
+
+From 0.3.1 to 0.4.0, the `query` module received major reworks.
+Instead of using `query` functions directly in the layout elements,
+you should instead use a `callback` in conjunction with `query`
+as below:
+#table(columns: 2, [old], [new],
+  codesnippet[```typc
+  
+
+
+
+
+
+  placed(
+    query.position(..),
+    ..
+  )
+  container(
+    align: query.position(..),
+    width: query.width(..),
+    height: query.height(..),
+  )
+
+
+
+  ```],
+  codesnippet[```typc
+  callback(
+    pos1: query.position(..),
+    align2: query.position(..),
+    width2: query.width(..),
+    heigth2: query.height(..),
+    env => {
+      placed(
+        env.pos1,
+        ..
+      )
+      container(
+        align: env.align2,
+        width: env.width2,
+        height: env.height2,
+      )
+    },
+  )
+  ```]
+)
+Although slightly more verbose, this new approach is much more flexible
+and will reduce the amount of repeated computations.
+For more details, consult @querying.
 
 = Understanding the algorithm <explain-algo>
 
@@ -1048,18 +1099,22 @@ you can make it unaffected by the obstacles in question.
   The innovation of #arg[invisible] is that this can be done on a per-container basis.
 ]
 
-== Position and length queries <querying>
+== Callbacks and queries <querying>
 
 The module ```typ #query``` contains functions that allow referencing properties
-of other elements. For example:
-- whenever an @type:align is required, such as for @cmd:placed or @cmd:container,
-  you can instead pass a location dynamically computed via @cmd:query:position.
-- whenever a #typ.t.length is required, such as for #arg[dx] or #arg[height]
-  or a similar parameter, you can instead pass a length dynamically computed via
-  @cmd:query:height or @cmd:query:width.
+of other elements, as well as other properties that may be dynamically updated
+in the process of computing the layout. They are used in conjunction with a
+`callback` invocation that determines the point of evaluation.
+See @queries for a list of properties that can be queried, and @cmd:callback
+for other technical details.
 
-#twocols[
-  #show-code("query")
+A @cmd:callback takes a list of named parameters and a function,
+evaluates the parameters at the call site while the layout is ongoing,
+and then call the function with the appropriate environment.
+Below is a possible usage:
+
+#twocols(frac: 60%)[
+  #show-code("query", resize: -1.5pt)
 ][
   #show-page("query")
   In this example, after giving an absolute position to one image,
@@ -1078,7 +1133,7 @@ The first container is immediately filled with empty content and counts as
 an obstacle to the second container.
 The queries reduce the amount of lengths we have to compute by hand.
 #twocols(frac: 62%)[
-  #show-code("interactive", resize: -3pt)
+  #show-code("interactive", resize: -2pt)
 ][
   #show-page("interactive")
 ]

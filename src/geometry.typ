@@ -1,4 +1,5 @@
 // Generalist functions for 1D and 2D geometry
+#import "types.typ"
 
 /// Bound a value between #arg[min] and #arg[max].
 /// No constraints on types as long as they support inequality testing.
@@ -168,29 +169,11 @@
   /// -> dictionary(block)
   regions: (:),
 ) = {
-  let resolved = (:)
   for (key, val) in obj {
-    if type(val) == dictionary and "type" in val and val.type == query {
-      if str(val.tag) not in regions {
-        panic("No objects with tag <" + str(val.tag) + "> declared yet.")
-      }
-      if val.mode == "pos" {
-        let pos = in-region(regions.at(str(val.tag)), val.at)
-        resolved.insert(key, pos)
-      } else if val.mode == "width" {
-        let width = regions.at(str(val.tag)).width
-        resolved.insert(key, apply-transform(width, transform: val.transform))
-      } else if val.mode == "height" {
-        let height = regions.at(str(val.tag)).height
-        resolved.insert(key, apply-transform(height, transform: val.transform))
-      } else {
-        panic("Unknown query mode: " + mode)
-      }
-    } else {
-      resolved.insert(key, val)
+    if type(val) == dictionary and "type" in val and val.type == types.query {
+      panic("You are using 'query' incorrectly. The interface was changed in 0.4.0, please refer to migration instructions in the documentation in the chapter about callbacks.")
     }
   }
-  resolved
 }
 
 

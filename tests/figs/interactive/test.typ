@@ -24,13 +24,17 @@
   let placed-below(
     tag, img, tags: (),
   ) = {
-    placed(
-      // fetch position
-      // of previous elem.
-      query.position(tag, at: bottom + left),
-      img, tags: tags,
-      // correct for margins
-      dx: 5pt, dy: -5pt,
+    callback(
+      // fetch position of previous element.
+      pos: query.position(tag, at: bottom + left),
+      env => {
+        placed(
+          env.pos,
+          img, tags: tags,
+          // correct for margins
+          dx: 5pt, dy: -5pt,
+        )
+      }
     )
   }
   // Obstacles

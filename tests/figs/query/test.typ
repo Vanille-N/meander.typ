@@ -24,21 +24,26 @@
     my-img-3,
     tags: <a>,
   )
-  container(
-    align: query.position(
-      <a>, at: center),
-    width: query.width(
-      <a>, transform: 150%),
-    height: query.height(
-      <a>, transform: 150%),
-    tags: <b>,
+  callback(
+    align: query.position(<a>, at: center),
+    width: query.width(<a>, transform: 150%),
+    height: query.height(<a>, transform: 150%),
+    env => {
+      container(
+        align: env.align,
+        width: env.width, height: env.height,
+        tags: <b>,
+      )
+    },
   )
-  placed(
-    query.position(
-      <b>, at: bottom + left),
-    anchor: top + left,
-    dx: 5mm,
-    my-img-2,
+  callback(
+    pos: query.position(<b>, at: bottom + left),
+    env => {
+      placed(
+        env.pos, anchor: top + left, dx: 5mm,
+        my-img-2,
+      )
+    },
   )
   content[#lorem(100)]
 })

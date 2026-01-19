@@ -79,7 +79,7 @@
   /// the #arg[style] parameter of @cmd:content instead.
   /// - `align`: flush text `left`/`center`/`right`
   /// - `text-fill`: color of text
-  /// -> dictionnary
+  /// -> dictionary
   style: (:),
   /// #property(since: version(0, 2, 2))
   /// Margin around the eventually filled container so that text from
@@ -187,3 +187,26 @@
   ),)
 }
 
+/// Callback to generate elements that depend on prior
+/// layout information. 
+/// #property(since: version(0, 4, 0))
+#let callback(
+  /// Elements from the `query` module assigned to names.
+  /// See @queries for a list of usable values.
+  /// -> dictionary
+  ..env,
+  /// A function that takes as input a dictionary of environment values
+  /// and outputs elements for the layout.
+  ///
+  /// The function may only generate layout elements, not flow elements.
+  /// That is, it can call @cmd:placed, @cmd:container, @cmd:pagebreak,
+  /// but *not* @cmd:content, @cmd:colbreak, @cmd:colfill.
+  /// -> function(dictionary => list(elem))
+  fun,
+) = {
+  ((
+    type: types.elt.callback,
+    env: env.named(),
+    fun: fun,
+  ),)
+}

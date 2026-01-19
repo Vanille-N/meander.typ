@@ -33,16 +33,26 @@
   content(lorem(100))
   colbreak()
 
-  placed(
-    query.position(<A>, at: bottom + left),
-    anchor: top + left, dx: 5mm, dy: 1cm,
-    box(width: 5cm, height: 5cm, fill: red),
-    tags: <B>,
-  )
-  container(
-    align: query.position(<B>),
-    width: query.width(<B>, transform: 200%),
-    height: query.height(<B>, transform: x => 3 * x),
-  )
+  callback(
+    a: query.position(<A>, at: bottom + left),
+    env => {
+    placed(
+      env.a,
+      anchor: top + left, dx: 5mm, dy: 1cm,
+      box(width: 5cm, height: 5cm, fill: red),
+      tags: <B>,
+    )
+  })
+  callback(
+    b: query.position(<B>),
+    bw: query.width(<B>, transform: 200%),
+    bh: query.height(<B>, transform: x => 3 * x),
+    env => {
+    container(
+      align: env.b,
+      width: env.bw,
+      height: env.bh,
+    )
+  })
   content(lorem(250))
 })

@@ -1,10 +1,22 @@
 # Changelog
 
-## v0.3.0 -> dev
+## v0.3.1 -> dev
+
+### Layout
+- new construct: `callback`
+- `query` module reworked to be compatible with `callback`-style definitions
+
+### Bugfixes
+- #5 appeared again
+
+
+## v0.3.0 -> v0.3.1
 
 ### i18n
-- Problematic `hy-dro-gen` invocation without appropriate fallback fixed
+- problematic `hy-dro-gen` invocation without appropriate fallback fixed
 
+### Geometry
+- panics caused by obstacles and containers that overflow the page
 
 ## v0.2.5 -> v0.3.0
 

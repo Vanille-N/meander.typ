@@ -27,5 +27,9 @@
   let placed() = {}
   let container() = {}
   let pagebreak() = {}
-  (placed: placed, container: container, pagebreak: pagebreak)
+  let callback() = {}
+  (placed: placed, container: container, pagebreak: pagebreak, callback: callback)
 }
+
+/// Standalone type of queries
+#let query() = {}
