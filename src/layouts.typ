@@ -58,7 +58,7 @@
       if elem == () { continue }
 
       if elem.type == place {
-        if opts.debug.objects { output += elem.display }
+        if opts.debug.objects and elem.display { output += elem.content }
         //output += elem.display
         //if debug { output += elem.debug }
         data = tiling.push-elem(data, elem)

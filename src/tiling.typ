@@ -22,7 +22,7 @@
   let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: width, height: height, anchor: obj.anchor)
   let obj-dims = geometry.resolve(data.full-size, width: width, height: height)
   let dims = geometry.resolve(data.free-size, x: x, y: y, ..obj-dims)
-  let display = place[#move(dx: dims.x, dy: dims.y)[#{obj.content}]]
+  let content = place[#move(dx: dims.x, dy: dims.y)[#{obj.content}]]
 
   // Apply the boundary redrawing functions in order to know the true
   // footprint of the object in the layout.
@@ -39,7 +39,7 @@
   for dims in bounds {
     forbidden.push((..dims, tags: obj.tags))
   }
-  (type: place, display: display, region: dims, contour: forbidden)
+  (type: place, content: content, display: obj.display, region: dims, contour: forbidden)
 }
 
 /// Eliminates non-candidates by determining if the obstacle is ignored by the container.
