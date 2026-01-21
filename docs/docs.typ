@@ -1172,6 +1172,17 @@ You can find the source code for these on the #link(repo + "tree/master/tests/ex
   From #link("https://github.com/subalterngames/talmudifier")[`github:subalterngames/talmudifier`] \
   Motivated by #link(typst-repo + "issues/5181#issuecomment-2661180292")[`github:typst/typst` \#5181 (c)]
   ]
+#revised.new[== Drop caps]
+
+#box(width: 49%)[
+#sourcecode[
+  #image("../tests/examples/drop-caps/ref/1.png", width: 7cm)
+  #show: align.with(bottom)
+  #link(repo + "tree/master/tests/examples/drop-caps/test.typ")[`tests/examples/drop-caps/test.typ`] \
+  Courtesy of #github-user("wade-cheng")
+  on #link(repo + "issues/18")[#{"#"}18]
+]
+]
 
 = Public API <api>
 
