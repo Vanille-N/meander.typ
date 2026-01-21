@@ -8,6 +8,7 @@
 
 ### Bugfixes
 - #5 appeared again
+- `display: false` parameter or `placed` was ignored
 
 
 ## v0.3.0 -> v0.3.1

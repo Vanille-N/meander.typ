@@ -2,7 +2,7 @@
 
 #import "query.typ"
 
-#import "layouts.typ": reflow, regions
+#import "layouts.typ": reflow
 
 #import "contour.typ"
 

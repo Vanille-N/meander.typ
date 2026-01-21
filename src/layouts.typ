@@ -3,12 +3,6 @@
 #import "elems.typ"
 #import "opt.typ"
 
-/// Deprecated in favor of @cmd:meander:reflow with ```typc opt.debug.pre-thread()```.
-/// #property(until: version(0, 2, 4))
-#let regions(..args) = {
-  panic("`regions` is deprecated. Use instead `meander.reflow` and set `opt.debug.pre-thread()`")
-}
-
 /// Segment the input sequence according to the tiling algorithm,
 /// then thread the flowing text through it.
 /// -> content
@@ -16,28 +10,7 @@
   /// See @elem-doc for how to format this content.
   /// -> array(elem)
   seq,
-  /// Deprecated in favor of ```typc opt.debug.post-thread()```.
-  /// See @anatomy and @debug for more information.
-  /// #property(until: version(0, 2, 4))
-  debug: none,
-  /// #property(since: version(0, 2, 1))
-  /// Deprecated in favor of ```typc opt.overflow``` options.
-  /// #property(until: version(0, 2, 5))
-  overflow: none,
-  /// #property(since: version(0, 2, 2))
-  /// Deprecated in favor of ```typc opt.placement``` options.
-  /// #property(until: version(0, 2, 5))
-  placement: none,
 ) = {
-  if debug != none {
-    panic("Option `debug` was removed. Use instead `opt.debug.post-thread()`")
-  }
-  if placement != none {
-    panic("Option `placement` was removed. Use instead `opt.placement.{cfg}()`")
-  }
-  if overflow != none {
-    panic("Option `overflow` was removed. Use instead `opt.overflow.{cfg}()`")
-  }
   if seq == none { seq = () }
   assert(type(seq) == array, message: "Cannot interpret this object as a layout.")
   let (flow, pages, opts) = tiling.separate(seq)
@@ -130,9 +103,6 @@
       }
       //assert(page-offset.x + page-offset.y == 0pt, message: repr(page-offset) + " at page " + str(idx))
       if idx != 0 {
-        if placement == float {
-          panic("Pagebreaks are only supported when the placement is 'page' or 'box'")
-        }
         colbreak()
       }
       let (content, overflow, vspace) = fill-page(elems, flow, size: size, page-offset: page-offset)

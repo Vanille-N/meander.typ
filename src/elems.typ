@@ -29,12 +29,10 @@
   /// Inner content.
   /// -> content
   content,
-  /// #property(since: version(0, 2, 3))
   /// Optional set of tags so that future element can refer to this one
   /// and others with the same tag.
   /// -> label | array(label)
   tags: (),
-  /// #property(since: version(0, 2, 3))
   /// Anchor point to the alignment.
   /// If #typ.v.auto, the anchor is automatically determined from #arg[align].
   /// If an alignment, the corresponding point of the object will be at the specified
@@ -73,7 +71,6 @@
   /// Height of the container.
   /// -> relative
   height: 100%,
-  /// #property(since: version(0, 2, 2))
   /// Styling options for the content that ends up inside this container.
   /// If you don't find the option you want here, check if it might be in
   /// the #arg[style] parameter of @cmd:content instead.
@@ -81,18 +78,15 @@
   /// - `text-fill`: color of text
   /// -> dictionary
   style: (:),
-  /// #property(since: version(0, 2, 2))
   /// Margin around the eventually filled container so that text from
   /// other paragraphs doesn't come too close.
   /// Follows the same convention as #typ.pad if given a dictionary
   /// (`x`, `y`, `left`, `right`, `rest`, etc.)
   /// -> length | dictionary
   margin: 5mm,
-  /// #property(since: version(0, 2, 3))
   /// One or more labels that will not affect this element's positioning.
   /// -> label | array(label)
   invisible: (),
-  /// #property(since: version(0, 2, 3))
   /// Optional set of tags so that future element can refer to this one
   /// and others with the same tag.
   /// -> label | array(label)
@@ -112,7 +106,6 @@
   ),)
 }
 
-/// #property(since: version(0, 2, 1))
 /// Continue layout to next page.
 /// -> elem
 #let pagebreak() = {
@@ -121,7 +114,6 @@
   ),)
 }
 
-/// #property(since: version(0, 2, 2))
 /// Continue content to next container.
 /// Has the same internal fields as the output of @cmd:content so that we don't
 /// have to check for ```typc key in elem``` all the time.
@@ -134,7 +126,6 @@
   ),)
 }
 
-/// #property(since: version(0, 2, 3))
 /// Continue content to next container after filling the current container
 /// with whitespace.
 /// -> flowing
@@ -152,19 +143,15 @@
   /// Inner content.
   /// -> content
   data,
-  /// #property(since: version(0, 2, 2))
   /// Applies ```typ #set text(size: ..)```.
   /// -> length
   size: auto,
-  /// #property(since: version(0, 2, 2))
   /// Applies ```typ #set text(lang: ..)```.
   /// -> string
   lang: auto,
-  /// #property(since: version(0, 2, 2))
   /// Applies ```typ #set text(hyphenate: ..)```.
   /// -> bool
   hyphenate: auto,
-  /// #property(since: version(0, 2, 2))
   /// Applies ```typ #set par(leading: ..)```.
   /// -> length
   leading: auto,

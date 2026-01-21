@@ -216,7 +216,6 @@
   ()
 },)
 
-/// #property(since: version(0, 2, 1))
 /// Allows drawing the shape of the image as ascii art.
 ///
 /// Blocks

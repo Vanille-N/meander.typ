@@ -1278,7 +1278,6 @@ made available as lower-level primitives.
 #import "@preview/meander:0.3.1": internals.fill-box
 ```
 ]
-#property(since: version(0, 2, 4))
 This grants you access to the primitive `fill-box`, which is the entry
 point of the content bisection algorithm. It allows you to take as much
 content as fits in a specific box. See @cmd:bisect:fill-box for details.
@@ -1289,7 +1288,6 @@ content as fits in a specific box. See @cmd:bisect:fill-box for details.
 #import "@preview/meander:0.3.1": internals.geometry
 ```
 ]
-#property(since: version(0, 2, 4))
 This grants you access to all the functions in the `geometry` module,
 which implement interesting 1D and 2D primitives. See @geometry for details.
 
@@ -1363,10 +1361,14 @@ This manual is built using #universe("mantys") and #universe("tidy").
 
 == Acknowledgements
 
-MEANDER would have taken much more effort had I not had access to
+MEANDER would have taken much more effort to bootstrap had I not had access to
 #universe("wrap-it")'s source code to understand the internal representation
 of content, so thanks to #github-user("ntjess").
 
 MEANDER started out as an idea in the Typst Discord server;
 thanks to everyone who gave input and encouragements.
+
+Thanks also to the people who use MEANDER and submit bug reports and feature requests,
+many regressions would not have been discovered as quickly were it not for their
+vigilance.
 
