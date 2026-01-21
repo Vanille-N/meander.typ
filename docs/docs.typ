@@ -577,11 +577,17 @@ so the next sections propose other methods.
   Too many obstacles too close together can impact performance.
 ]
 
-== Boundaries as layers
+#revised.minor[== Boundaries as layers]
 
 If your shape is not convenient to express through a grid function, but
 has some horizontal or vertical regularity, here are some other suggestions.
 As before, they are all normalized between $0$ and $1$.
+
+#info-alert[
+  Recall that when using all of these you have access to
+  the various settings of `opt.debug` (@debug) that can help
+  understand how a given contour segments the obstacle.
+]
 
 === Horizontal rectangles
 

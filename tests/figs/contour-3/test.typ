@@ -4,6 +4,7 @@
 //@ <doc>
 #meander.reflow({
   import meander: *
+  opt.debug.post-thread()
   placed(left + horizon,
     boundary:
       contour.height(

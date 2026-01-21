@@ -4,6 +4,7 @@
 //@ <doc>
 #meander.reflow({
   import meander: *
+  opt.debug.post-thread()
   placed(top,
     boundary:
       contour.vert(

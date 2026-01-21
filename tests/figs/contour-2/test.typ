@@ -4,6 +4,7 @@
 //@ <doc>
 #meander.reflow({
   import meander: *
+  opt.debug.post-thread()
   placed(center + bottom,
     boundary:
       // This time the vertical symetry

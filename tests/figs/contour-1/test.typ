@@ -5,6 +5,7 @@
 //@ <doc>
 #meander.reflow({
   import meander: *
+  opt.debug.post-thread()
   placed(right + bottom,
     boundary:
       // The right aligned edge makes
