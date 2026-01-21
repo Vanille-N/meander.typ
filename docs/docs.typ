@@ -105,11 +105,11 @@
         // @scrybe(jump releases; grep {{version}})
         *Versions*
         - #link(repo)[`dev`]
-        - #link(repo + "releases/tag/v0.3.1")[`0.3.1`]
+        - #link(repo + "releases/tag/v0.4.0")[`0.4.0`]
           (#link("https://typst.app/universe/package/meander")[`latest`])
+        - #link(repo + "releases/tag/v0.3.1")[`0.3.1`]
         - #link(repo + "releases/tag/v0.3.0")[`0.3.0`]
         - #link(repo + "releases/tag/v0.2.5")[`0.2.5`]
-        - #link(repo + "releases/tag/v0.2.4")[`0.2.4`]
         - #link(repo + "releases/")[...]
       ][
         #show-page("cover")
@@ -146,7 +146,7 @@
 Import the latest version of MEANDER with:
 // @scrybe(jump import; grep preview; grep {{version}})
 #codesnippet[```typ
-#import "@preview/meander:0.3.1"
+#import "@preview/meander:0.4.0"
 ```]
 
 The main function provided by MEANDER is @cmd:meander:reflow,
@@ -1281,7 +1281,7 @@ made available as lower-level primitives.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.3.1": internals.fill-box
+#import "@preview/meander:0.4.0": internals.fill-box
 ```
 ]
 This grants you access to the primitive `fill-box`, which is the entry
@@ -1291,7 +1291,7 @@ content as fits in a specific box. See @cmd:bisect:fill-box for details.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.3.1": internals.geometry
+#import "@preview/meander:0.4.0": internals.geometry
 ```
 ]
 This grants you access to all the functions in the `geometry` module,

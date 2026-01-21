@@ -159,6 +159,8 @@
 
 /// Fetch all required answers to geometric queries.
 /// See @queries for details.
+/// #property(until: version(0, 4, 0))
+/// Deprecated in favor of `callback`-style interactivity
 /// -> dictionary
 #let unquery(
   /// Every field of this object that has an attribute #arg(type: query)
