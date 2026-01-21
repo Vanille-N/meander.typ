@@ -1120,34 +1120,58 @@ A selection of nontrivial examples of what is feasible,
 inspired mostly by requests on #link(typst-repo + "issues/5181")[issue \#5181].
 You can find the source code for these on the #link(repo + "tree/master/tests/examples")[repository].
 
+#revised.minor[== Side illustrations]
+
+#box(width: 49%)[
 #sourcecode[
-  #image("/tests/examples/typst-5181-a/ref/1.png", width: 7cm)
+  #align(center)[#image("/tests/examples/typst-5181-a/ref/1.png", width: 7cm)]
   #show: align.with(bottom)
+  #set text(size: 10pt)
   #link(repo + "tree/master/tests/examples/typst-5181-a/test.typ")[`tests/examples/typst-5181-a/test.typ`] \
   Motivated by #link(typst-repo + "issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (a)]
 ]
-
+]
+#box(width: 49%)[
 #sourcecode[
-  #image("/tests/examples/cow/ref/1.png", width: 7cm)
+  #align(center)[#image("/tests/examples/cow/ref/1.png", width: 7cm)]
   #show: align.with(bottom)
+  #set text(size: 10pt)
   #link(repo + "tree/master/tests/examples/cow/test.typ")[`tests/examples/cow/test.typ`] \
   Motivated by #link("https://forum.typst.app/t/is-there-an-equivalent-to-latex-s-parshape/1006/3")["Is there an equivalent to LaTeX's \\parshape?" (Typst forum)]
 ]
-
+]
+#box(width: 49%)[
 #sourcecode[
-  #image("/tests/examples/typst-5181-b/ref/1.png", width: 7.5cm)
+  #align(center)[#image("/tests/examples/typst-5181-b/ref/1.png", width: 6cm)]
   #show: align.with(bottom)
+  #set text(size: 10pt)
   #link(repo + "tree/master/tests/examples/typst-5181-b/test.typ")[`tests/examples/typst-5181-b/test.typ`] \
   Motivated by #link(typst-repo + "issues/5181#issue-2580297357")[`github:typst/typst` \#5181 (b)]
 ]
+]
 
+#revised.minor[== Paragraph packing]
+
+#box(width: 49%)[
 #sourcecode[
   #image("/tests/examples/talmudifier/ref/1.png", width: 7cm)
   #show: align.with(bottom)
+  #set text(size: 10pt)
   #link(repo + "tree/master/tests/examples/talmudifier/test.typ")[`tests/examples/talmudifier/test.typ`] \
   From #link("https://github.com/subalterngames/talmudifier")[`github:subalterngames/talmudifier`] \
   Motivated by #link(typst-repo + "issues/5181#issuecomment-2661180292")[`github:typst/typst` \#5181 (c)]
   ]
+]
+#box(width: 49%)[
+#sourcecode[
+  #image("/tests/examples/area-of-a-circle/ref/1.png", width: 7cm)
+  #show: align.with(bottom)
+  #set text(size: 9pt)
+  #link(repo + "tree/master/tests/examples/area-of-a-circle/test.typ")[`tests/examples/area-of-a-circle/test.typ`] \
+  Inspired by TeXBook, asked on #link("https://tex.stackexchange.com/questions/341550/how-was-this-circular-paragraph-made")[Stack Exchange]
+]
+]
+
 #revised.new[== Drop caps]
 
 #box(width: 49%)[
