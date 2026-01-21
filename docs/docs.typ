@@ -2,6 +2,8 @@
 #import "@preview/swank-tex:0.1.0": LaTeX
 #import "@preview/tidy:0.4.3"
 
+#import "revised.typ"
+
 #show regex("Introduced in "): "Since "
 #show regex("Available until "): "Until "
 
@@ -66,35 +68,7 @@
   table(columns: (frac, 100% - frac), stroke: none, l, r)
 }
 
-#let new-sections = state("new-sections", ())
-#let new(sec) = {
-  sec
-  new-sections.update(secs => {
-    let body = if sec.func() == heading {
-      sec.body
-    } else if sec.func() == [a:].func() {
-      sec.children.at(0).body
-    } else {
-      panic(sec)
-    }
-    secs.push(body)
-    secs
-  })
-}
-
-#show outline.entry: it => {
-  context {
-    if it.element.body in new-sections.final() {
-      show it.element.body.text: it => {
-        highlight(it)
-        text(fill: red, super[*(!)*])
-      }
-      it
-    } else {
-      it
-    }
-  }
-}
+#show: revised.highlight-outline-entries
 
 #show: mantys(
   ..toml("../typst.toml"),
@@ -146,14 +120,16 @@
     #place(box(width: 100%, height: 100%)[
       #place(bottom + right, dx: 1.5cm)[
         #box(width: 6.6cm, stroke: gray, radius: 5mm, inset: 5mm)[
-          #set text(fill: gray)
+          #set text(fill: gray, size: 10.5pt)
           #set linebreak(justify: true)
           #show: align.with(left)
           // @scrybe(jump latest; grep {{version}})
-          Chapters that are
-          #highlight[highlighted]#text(fill: red, super[*(!)*])
-          have received major
-          updates in the latest version `0.4.0`
+          Highlighted chapters denote
+          #(revised.styles.breaking)[breaking changes],
+          #(revised.styles.major)[major updates],
+          #(revised.styles.minor)[minor updates],
+          and #(revised.styles.new)[new additions],
+          in the latest version `0.4.0`
           // TODO: add major/minor distinction
         ]
       ]
@@ -368,7 +344,7 @@ Here is a comparison between old and new to help guide your migration.
   [discontinued],
 )
 
-#new[== 0.3.x Migration Guide <migration-0-4-0>]
+#revised.new[== 0.3.x Migration Guide <migration-0-4-0>]
 
 From 0.3.1 to 0.4.0, the `query` module received major reworks.
 Instead of using `query` functions directly in the layout elements,
@@ -1099,7 +1075,7 @@ you can make it unaffected by the obstacles in question.
   The innovation of #arg[invisible] is that this can be done on a per-container basis.
 ]
 
-== Callbacks and queries <querying>
+#revised.breaking[== Callbacks and queries <querying>]
 
 The module ```typ #query``` contains functions that allow referencing properties
 of other elements, as well as other properties that may be dynamically updated
@@ -1198,7 +1174,7 @@ These are the user-facing functions of MEANDER.
 #custom-type("size")
 #custom-type("overflow")
 
-== Elements <elem-doc>
+#revised.major[== Elements <elem-doc>]
 
 All constructs that are valid within a ```typ #meander.reflow({ .. })``` block.
 Note that they all produce an object that is a singleton dictionary,
@@ -1224,7 +1200,7 @@ They can be concatenated with `+` which will apply contours successively.
 
 #show-module("contour", module: true)
 
-== Queries <queries>
+#revised.breaking[== Queries <queries>]
 
 Enables interactively fetching properties from previous elements.
 See how to use them in @interactive.
@@ -1296,7 +1272,7 @@ which implement interesting 1D and 2D primitives. See @geometry for details.
 
 #show-module("internals", module: true)
 
-= Internal module details <internal>
+#revised.major[= Internal module details <internal>]
 
 == Utils
 
