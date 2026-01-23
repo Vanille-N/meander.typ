@@ -16,7 +16,22 @@
 }
 
 #let count-enums(seq) = {
-  // TODO: implement the actual transformation
+  let cur-number = 1
+  for (i, obj) in seq.enumerate() {
+    if obj.func() == enum.item {
+      let (body, ..fields) = obj.fields()
+      if "number" in fields {
+        cur-number = fields.remove("number")
+      }
+      obj = enum.item(cur-number, body, ..fields)
+      seq.at(i) = obj
+      cur-number += 1
+    } else if obj.func() in ([ ].func(), parbreak) {
+      continue
+    } else {
+      cur-number = 1
+    }
+  }
   seq
 }
 
