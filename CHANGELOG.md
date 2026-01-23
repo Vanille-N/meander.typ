@@ -1,6 +1,11 @@
 # Changelog
 
-## v0.3.1 -> dev
+## v0.4.0 -> dev
+
+### Bugfix
+- automatically box references to avoid #3
+
+## v0.3.1 -> v0.4.0
 
 ### Layout
 - new construct: `callback`
@@ -9,6 +14,9 @@
 ### Bugfixes
 - #5 appeared again
 - `display: false` parameter or `placed` was ignored
+
+### Internals
+- `geometry.unquery` is removed
 
 
 ## v0.3.0 -> v0.3.1

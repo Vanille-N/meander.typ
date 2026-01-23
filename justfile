@@ -27,7 +27,7 @@ upstream:
     git checkout meander && \
     git fetch upstream && \
     git reset --hard upstream/main
-  cp -r release/* $(cat .packages)/packages/preview/meander/$(cat .version)
+  cp -r release $(cat .packages)/packages/preview/meander/$(cat .version)
   cd $(cat .packages) && \
     git add . && \
     git commit -m "meander:$(cat /tmp/meander-version)" && \

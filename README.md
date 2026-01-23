@@ -5,6 +5,7 @@
 <!-- @scrybe(not version; panic Please specify a version number) -->
 <!-- @scrybe(if publish; grep https; grep {{version}}) -->
 See the [documentation](docs/docs.pdf).
+<!-- See the [documentation](https://github.com/Vanille-N/meander.typ/releases/download/v0.4.0/docs.pdf). -->
 
 ## Quick start
 
@@ -190,4 +191,5 @@ For a more in-depth introduction, including
 - tips to get better segmentation,
 <!-- @scrybe(if publish; grep https; grep {{version}}) -->
 please consult the [documentation](docs/docs.pdf).
+<!-- please consult the [documentation](https://github.com/Vanille-N/meander.typ/releases/download/v0.4.0/docs.pdf). -->
 

@@ -1,6 +1,7 @@
 /// Content splitting algorithm
 
 #import "geometry.typ"
+#import "normalize.typ"
 
 #let symbol_func = [#sym.chevron.l].func()
 
@@ -318,6 +319,7 @@
 ) = {
   let (inner, rebuild) = default-rebuild(ct, "children")
   if not fits-inside([]) { return (none, ct) }
+  inner = normalize.normalize(inner)
 
   if inner.len() == 0 {
     return (none, none)
