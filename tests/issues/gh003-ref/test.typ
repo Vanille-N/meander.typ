@@ -6,7 +6,7 @@
 
   placed(top + left, box1)
   container()
-  content[#lorem(10) @stacked_borrows @tree_borrows]
+  content[#lorem(10) @stacked_borrows @tree_borrows #lorem(5)]
 })
 
 #bibliography("lit.bib")

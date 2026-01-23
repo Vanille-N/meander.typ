@@ -6,13 +6,26 @@
 // - etc.
 
 #let box-refs(seq) = {
-  seq.map(obj => {
+  let ref-accum = []
+  for (i, obj) in seq.enumerate() {
     if obj.func() == ref {
-      box(obj)
+      ref-accum += obj
+      seq.at(i) = []
+    } else if ref-accum != [] and obj.func() == [ ].func() and i + 1 < seq.len() and seq.at(i + 1).func() == ref {
+      ref-accum += obj
+      seq.at(i) = []
     } else {
-      obj
+      if ref-accum != [] {
+        seq.at(i - 1) = box(ref-accum)
+        ref-accum = []
+      }
     }
-  })
+  }
+  if ref-accum != [] {
+    seq.last() = box(ref-accum)
+    ref-accum = []
+  }
+  seq
 }
 
 #let count-enums(seq) = {
