@@ -17,7 +17,7 @@
   import meander: *
   opt.placement.spacing(both: 0em)
   opt.debug.pre-thread()
-  callback(size: query.parent-size(), env => {
+  callback(env: (size: query.parent-size()), env => {
     placed(right)[
       #rect(width: 50%, height: env.size.height)
     ]

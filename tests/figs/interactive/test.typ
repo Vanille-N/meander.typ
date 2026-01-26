@@ -26,7 +26,7 @@
   ) = {
     callback(
       // fetch position of previous element.
-      pos: query.position(tag, at: bottom + left),
+      env: (pos: query.position(tag, at: bottom + left)),
       env => {
         placed(
           env.pos,

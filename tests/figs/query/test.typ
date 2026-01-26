@@ -24,10 +24,11 @@
     my-img-3,
     tags: <a>,
   )
-  callback(
-    align: query.position(<a>, at: center),
-    width: query.width(<a>, transform: 150%),
-    height: query.height(<a>, transform: 150%),
+  callback(env: (
+      align: query.position(<a>, at: center),
+      width: query.width(<a>, transform: 150%),
+      height: query.height(<a>, transform: 150%),
+    ),
     env => {
       container(
         align: env.align,
@@ -36,8 +37,9 @@
       )
     },
   )
-  callback(
-    pos: query.position(<b>, at: bottom + left),
+  callback(env: (
+      pos: query.position(<b>, at: bottom + left),
+    ),
     env => {
       placed(
         env.pos, anchor: top + left, dx: 5mm,

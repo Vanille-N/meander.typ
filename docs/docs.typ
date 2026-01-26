@@ -372,11 +372,12 @@ as below:
 
   ```],
   codesnippet[```typc
-  callback(
-    pos1: query.position(..),
-    align2: query.position(..),
-    width2: query.width(..),
-    heigth2: query.height(..),
+  callback(env: (
+      pos1: query.position(..),
+      align2: query.position(..),
+      width2: query.width(..),
+      heigth2: query.height(..),
+    ),
     env => {
       placed(
         env.pos1,

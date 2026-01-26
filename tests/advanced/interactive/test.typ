@@ -34,7 +34,9 @@
   colbreak()
 
   callback(
-    a: query.position(<A>, at: bottom + left),
+    env: (
+      a: query.position(<A>, at: bottom + left),
+    ),
     env => {
     placed(
       env.a,
@@ -44,9 +46,11 @@
     )
   })
   callback(
-    b: query.position(<B>),
-    bw: query.width(<B>, transform: 200%),
-    bh: query.height(<B>, transform: x => 3 * x),
+    env: (
+      b: query.position(<B>),
+      bw: query.width(<B>, transform: 200%),
+      bh: query.height(<B>, transform: x => 3 * x),
+    ),
     env => {
     container(
       align: env.b,

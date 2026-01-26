@@ -181,7 +181,7 @@
   /// Elements from the `query` module assigned to names.
   /// See @queries for a list of usable values.
   /// -> dictionary
-  ..env,
+  env: (:),
   /// A function that takes as input a dictionary of environment values
   /// and outputs elements for the layout.
   ///
@@ -193,7 +193,7 @@
 ) = {
   ((
     type: types.elt.callback,
-    env: env.named(),
+    env: env,
     fun: fun,
   ),)
 }
