@@ -319,7 +319,7 @@
 ) = {
   let (inner, rebuild) = default-rebuild(ct, "children")
   if not fits-inside([]) { return (none, ct) }
-  inner = normalize.normalize(inner)
+  inner = normalize.normalize(inner, cfg.normalize-seq)
 
   if inner.len() == 0 {
     return (none, none)
@@ -588,6 +588,12 @@
   ///   - #typ.v.false $->$ non-justified linebreak
   ///   - #typ.v.none $->$ no linebreak
   ///   - #typ.v.auto $->$ linebreak with the same justification as the current paragraph
+  /// - #arg(do-no-split: ()) list of items that should not be split.
+  ///   Accepts the following item identifiers:
+  ///   TODO
+  /// - #arg(normalize-seq: (:))
+  ///   is itself a dictionary that configures the normalization options on sequences.
+  ///   See @normalize for more information.
   ///
   /// -> dictionary
   cfg: (:),
@@ -608,6 +614,9 @@
   }
   if "linebreak" not in cfg {
     cfg.linebreak = auto
+  }
+  if "normalize-seq" not in cfg {
+    cfg.normalize-seq = (:)
   }
   cfg.insert("enum-depth", 0)
   // TODO: include vertical and horizontal spacing here.

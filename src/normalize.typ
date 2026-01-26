@@ -48,8 +48,20 @@
   seq
 }
 
-#let normalize(seq) = {
-  seq = box-refs(seq)
-  seq = count-enums(seq)
+#let subst-apply(cfg, func, arg) = {
+  let key = repr(func)
+  let resolved = cfg.at(key, default: func)
+  if resolved == none {
+    arg
+  } else if type(resolved) == function {
+    resolved(arg)
+  } else {
+    panic("Provided normalizer '" + repr(func) + "' is not a function.")
+  }
+}
+
+#let normalize(seq, cfg) = {
+  seq = subst-apply(cfg, box-refs, seq)
+  seq = subst-apply(cfg, count-enums, seq)
   seq
 }
