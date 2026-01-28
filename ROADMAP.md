@@ -15,6 +15,8 @@
 - [ ] raw code seems to possibly trigger an assertion error
 - [ ] improper justification when the split occurs in a sequence rather than in a `has-text`.
 - [ ] can't measure a `ref`
+- [ ] warning against trying to split a `page()`
+- [ ] normalization pass for `par`
 
 ## Page segmentation
 - [ ] layout save slots

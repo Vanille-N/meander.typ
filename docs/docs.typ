@@ -6,6 +6,7 @@
 
 #show regex("Introduced in "): "Since "
 #show regex("Available until "): "Until "
+#show regex("Changed in "): "Changed "
 
 #let repo = "https://github.com/Vanille-N/meander.typ/"
 #let typst-repo = "https://github.com/typst/typst/"
@@ -101,14 +102,15 @@
         #link(repo + "issues")[bug report],
         #link(repo + "issues")[feature request],
         or #link(repo)[pull request].
+        This includes submitting test cases.
 
         // @scrybe(jump releases; grep {{version}})
         *Versions*
         - #link(repo)[`dev`]
-        - #link(repo + "releases/tag/v0.4.0")[`0.4.0`]
+        - #link(repo + "releases/tag/v0.4.1")[`0.4.1`]
           (#link("https://typst.app/universe/package/meander")[`latest`])
+        - #link(repo + "releases/tag/v0.4.0")[`0.4.0`]
         - #link(repo + "releases/tag/v0.3.1")[`0.3.1`]
-        - #link(repo + "releases/tag/v0.3.0")[`0.3.0`]
         - #link(repo + "releases/tag/v0.2.5")[`0.2.5`]
         - #link(repo + "releases/")[...]
       ][
@@ -129,7 +131,7 @@
           #(revised.styles.major)[major updates],
           #(revised.styles.minor)[minor updates],
           and #(revised.styles.new)[new additions],
-          in the latest version `0.4.0`
+          in the latest version `0.4.1`
           // TODO: add major/minor distinction
         ]
       ]
@@ -146,7 +148,7 @@
 Import the latest version of MEANDER with:
 // @scrybe(jump import; grep preview; grep {{version}})
 #codesnippet[```typ
-#import "@preview/meander:0.4.0"
+#import "@preview/meander:0.4.1"
 ```]
 
 The main function provided by MEANDER is @cmd:meander:reflow,
@@ -344,7 +346,7 @@ Here is a comparison between old and new to help guide your migration.
   [discontinued],
 )
 
-#revised.new[== 0.3.x Migration Guide <migration-0-4-0>]
+== 0.3.x Migration Guide <migration-0-4-0>
 
 From 0.3.1 to 0.4.0, the `query` module received major reworks.
 Instead of using `query` functions directly in the layout elements,
@@ -578,7 +580,7 @@ so the next sections propose other methods.
   Too many obstacles too close together can impact performance.
 ]
 
-#revised.minor[== Boundaries as layers]
+== Boundaries as layers
 
 If your shape is not convenient to express through a grid function, but
 has some horizontal or vertical regularity, here are some other suggestions.
@@ -835,6 +837,61 @@ post-threading to the entire box. Future updates may lift this restriction.
   #show-page("post-style")
 ]
 
+#revised.new[== Lists, enums, sequences]
+
+There are a few subtleties with the specific treatment of "sequence"
+elements (specifically: #typ.list, #typ.enum, and #value([]) / `sequence`). Complications arise from the fact that these elements will frequently
+be contextual, and breaking them across boxes can introduce inconsistencies.
+
+To give one concrete example, there is by default in MEANDER a normalization pass
+that converts every numbered list into one that has explicitly numbered items.
+When you write
+#codesnippet[```
++ item
++ item
++ item
+```]
+MEANDER internally converts it to
+#codesnippet[```
+1. item
+2. item
+3. item
+```]
+because the alternative is the issue illustrated below:
+
+#twocols[
+  #show-page("enum-split")
+  With the default `count-enums` heuristic.
+][
+  #show-page("enum-split-bad")
+  After turning off `count-enums`.
+]
+
+This heuristic can be turned off by passing to
+`content` the parameter ```typc normalize-seq: (count-enums: none)```,
+though I don't know why you would want to turn it off.
+More realistically, if you find that the heuristic does not quite fit your
+needs, you can reimplement it and pass
+`normalize-seq: (count-enums: my-own-implementation)`.
+If you are indeed at that level of fine-tuning the layout,
+check out #link(repo + "tree/master/src/normalize.typ")[`normalize.typ:count-enums`] to learn about the
+expected interface of such a custom function.
+
+There are other similar problems you might encounter if you change default
+parameters related to enums and lists:
+- changing the `list` markers can cause incorrect indentation of items.
+  Use `list-markers: (..,)` to compensate.
+- changing the `enum` numbering can also cause incorrect indentation.
+  Use `enum-numbering: ".."` to compensate.
+- adjacent references are never separated from each other.
+  You can adjust or disable this behavior by passing a custom function
+  as `normalize: (box-refs: _)`.
+
+More generally, if you encounter any formatting glitch that occurs
+precisely at box boundaries, it is probably an oversight in the normalization
+procedure or the styling. You should report those on the
+#link(repo + "issues")[repository].
+
 = Multi-page setups <multi-page>
 
 == Pagebreak
@@ -1082,7 +1139,7 @@ you can make it unaffected by the obstacles in question.
   The innovation of #arg[invisible] is that this can be done on a per-container basis.
 ]
 
-#revised.breaking[== Callbacks and queries <querying>]
+#revised.minor[== Callbacks and queries <querying>]
 
 The module ```typ #query``` contains functions that allow referencing properties
 of other elements, as well as other properties that may be dynamically updated
@@ -1127,7 +1184,7 @@ A selection of nontrivial examples of what is feasible,
 inspired mostly by requests on #link(typst-repo + "issues/5181")[issue \#5181].
 You can find the source code for these on the #link(repo + "tree/master/tests/examples")[repository].
 
-#revised.minor[== Side illustrations]
+== Side illustrations
 
 #box(width: 49%)[
 #sourcecode[
@@ -1157,7 +1214,7 @@ You can find the source code for these on the #link(repo + "tree/master/tests/ex
 ]
 ]
 
-#revised.minor[== Paragraph packing]
+== Paragraph packing
 
 #box(width: 49%)[
 #sourcecode[
@@ -1179,7 +1236,7 @@ You can find the source code for these on the #link(repo + "tree/master/tests/ex
 ]
 ]
 
-#revised.new[== Drop caps]
+== Drop caps
 
 #box(width: 49%)[
 #sourcecode[
@@ -1205,7 +1262,7 @@ These are the user-facing functions of MEANDER.
 #custom-type("size")
 #custom-type("overflow")
 
-#revised.major[== Elements <elem-doc>]
+#revised.minor[== Elements <elem-doc>]
 
 All constructs that are valid within a ```typ #meander.reflow({ .. })``` block.
 Note that they all produce an object that is a singleton dictionary,
@@ -1231,7 +1288,7 @@ They can be concatenated with `+` which will apply contours successively.
 
 #show-module("contour", module: true)
 
-#revised.breaking[== Queries <queries>]
+== Queries <queries>
 
 Enables interactively fetching properties from previous elements.
 See how to use them in @interactive.
@@ -1282,7 +1339,7 @@ made available as lower-level primitives.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.4.0": internals.fill-box
+#import "@preview/meander:0.4.1": internals.fill-box
 ```
 ]
 This grants you access to the primitive `fill-box`, which is the entry
@@ -1292,7 +1349,7 @@ content as fits in a specific box. See @cmd:bisect:fill-box for details.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.4.0": internals.geometry
+#import "@preview/meander:0.4.1": internals.geometry
 ```
 ]
 This grants you access to all the functions in the `geometry` module,
@@ -1318,6 +1375,10 @@ which implement interesting 1D and 2D primitives. See @geometry for details.
 == Tiling
 
 #show-module("tiling", module: true)
+
+== Normalization
+
+#show-module("normalize", module: true)
 
 == Bisection
 

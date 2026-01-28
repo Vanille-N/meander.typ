@@ -5,7 +5,15 @@
 // - enumerations should not be left for automatic counting.
 // - etc.
 
-#let box-refs(seq) = {
+/// A normalization pass that groups adjacent references
+/// so that they are not separated and so that the citation style
+/// may print grouped references differently than multiple individual references.
+/// -> array(content)
+#let box-refs(
+  /// Sequence of content elements.
+  /// -> array(content)
+  seq
+) = {
   let ref-accum = []
   for (i, obj) in seq.enumerate() {
     if obj.func() == ref {
@@ -28,7 +36,25 @@
   seq
 }
 
-#let count-enums(seq) = {
+/// A normalization pass that turns
+/// #codesnippet[```
+/// enum.item(auto)[..]
+/// enum.item(auto)[..]
+/// enum.item(auto)[..]
+/// ```]
+/// into
+/// #codesnippet[```
+/// enum.item(1)[..]
+/// enum.item(2)[..]
+/// enum.item(3)[..]
+/// ```]
+/// to prevent the enumeration counter from resetting on every split.
+/// -> array(content)
+#let count-enums(
+  /// Sequence of content elements.
+  /// -> array(content)
+  seq,
+) = {
   let cur-number = 1
   for (i, obj) in seq.enumerate() {
     if obj.func() == enum.item {
@@ -48,7 +74,27 @@
   seq
 }
 
-#let group-enums(seq) = {
+/// A normalization pass that turns
+/// #codesnippet[```typc
+/// enum.item(..)
+/// enum.item(..)
+/// enum.item(..)
+/// ```]
+/// into
+/// #codesnippet[```typc
+/// enum(
+///   enum.item(..),
+///   enum.item(..),
+///   enum.item(..)
+/// )
+/// ```]
+/// to improve bisection heuristics on numbered lists.
+/// -> array(content)
+#let group-enums(
+  /// Sequence of content elements.
+  /// -> array(content)
+  seq,
+) = {
   let initial-item = 0
   let items = ()
   let tight = true
@@ -59,7 +105,7 @@
       }
       seq.at(i) = none
       items.push(obj)
-    } else if obj.func() == parbreak {
+    } else if items != () and obj.func() == parbreak {
       seq.at(i) = none
       tight = false
     } else if items != () and obj.func() == [ ].func() {
@@ -90,13 +136,25 @@
   }
 }
 
+/// Apply sequence normalization passes.
+/// All of these are heuristics, and may be imperfect.
+///
+/// Here we apply:
+/// - @cmd:normalize:box-refs
+/// - @cmd:normalize:group-enums
+/// - @cmd:normalize:count-enums
 #let normalize-seq(seq, cfg) = {
   seq = subst-apply(cfg, box-refs, seq)
-  //seq = subst-apply(cfg, group-enums, seq)
+  seq = subst-apply(cfg, group-enums, seq)
   seq = subst-apply(cfg, count-enums, seq)
   seq
 }
 
+/// Apply numbered lists normalization passes.
+/// All of these are heuristics, and may be imperfect.
+///
+/// Here we apply:
+/// - @cmd:normalize:count-enums
 #let normalize-enum(seq, cfg) = {
   seq = subst-apply(cfg, count-enums, seq)
   seq

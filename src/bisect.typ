@@ -383,7 +383,9 @@
       rebuild((inner.slice(i + 1),))
     } else {
       right
-      v(par.leading - par.spacing)
+      // TODO: there is still a spacing issue here, but
+      // it might require paragraph normalization.
+      //v(par.leading - par.spacing)
       rebuild((..inner.slice(i + 1),))
       //(right, ..inner.slice(i + 1))
     }

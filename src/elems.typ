@@ -155,33 +155,35 @@
   /// Applies ```typ #set par(leading: ..)```.
   /// -> length
   leading: auto,
+  /// Applies ```typ #set par(spacing: ..)```.
+  /// -> length
+  spacing: auto,
   /// Adjust this parameter if you change the default list markers
   /// so that MEANDER has the correct spacing.
   /// In practice, if your document defines a
-  /// ```
+  /// #codesnippet[```typ
   /// #set list(markers: (..,))
-  /// ```
+  /// ```]
   /// then you should probably have the matching parameter
-  /// ```
+  /// #codesnippet[```typ
   /// list-markers: (..,)
-  /// ```
+  /// ```]
   /// -> list(content)
   list-markers: auto,
   /// Adjust this parameter if you change the default list numbering
   /// so that MEANDER has the correct spacing.
   /// In practice, if your document defines a
-  /// ```
+  /// #codesnippet[```typ
   /// #set enum(numbering: "..")
-  /// ```
+  /// ```]
   /// then you should probably have the matching parameter
-  /// ```
+  /// #codesnippet[```typ
   /// enum-numbering: ".."
-  /// ```
+  /// ```]
   /// -> numbering
   enum-numbering: auto,
   /// This parameter lets you control how MEANDER performs some normalization
-  /// passes in lists and sequences. See normalize for details.
-  /// TODO
+  /// passes in lists and sequences. See @cmd:normalize:normalize-seq for details.
   /// -> dictionary
   normalize: auto,
 ) = {
@@ -212,6 +214,11 @@
 #let callback(
   /// Elements from the `query` module assigned to names.
   /// See @queries for a list of usable values.
+  /// #warning-alert[
+  /// Version 0.4.1 made this into a dictionary rather than a variadic
+  /// argument sink to avoid ambiguities.
+  /// ]
+  /// #property(changed: version(0, 4, 1))
   /// -> dictionary
   env: (:),
   /// A function that takes as input a dictionary of environment values

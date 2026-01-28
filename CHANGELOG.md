@@ -2,8 +2,13 @@
 
 ## v0.4.0 -> dev
 
+### Internals
+- introduced normalization passes to improve bisection
+
 ### Bugfix
 - automatically box references to avoid #3
+- resolve ambiguity in `callback`
+- enum numbering now correct
 
 ## v0.3.1 -> v0.4.0
 
