@@ -31,6 +31,12 @@
   /// Applies ```typ #set par(leading: ..)```.
   /// -> length
   leading: auto,
+  /// Applies ```typ #set par(spacing: ..)```.
+  /// -> length
+  spacing: auto,
+  /// Collects all the other garbage that is not relevant
+  /// for styling but might be in the global configuration.
+  ..garbage,
 ) = {
   if size != auto {
     data = text(size: size, data)
@@ -43,6 +49,9 @@
   }
   if leading != auto {
     data = [#set par(leading: leading); #data]
+  }
+  if spacing != auto {
+    data = [#set par(spacing: spacing); #data]
   }
   data
 }

@@ -112,6 +112,7 @@
   let fields = ct.fields()
   // These fields are positional, but stored in the dictionary as named.
   let inner = fields.remove(inner-field)
+  let splat-inner = (inner-field == "children" and ct.func() in (enum, list))
   let number = if "number" in fields { (fields.remove("number"),) } else { () }
   let alignment = if "alignment" in fields { (fields.remove("alignment"),) } else { () }
   let dest = if "dest" in fields { (fields.remove("dest"),) } else { () }
@@ -119,7 +120,12 @@
   // Construct the closure
   let rebuild(inner) = {
     assert(inner != none)
-    let pos = (..dest, inner, ..number, ..styles, ..alignment)
+    let inner = if splat-inner {
+      (..inner,)
+    } else {
+      (inner,)
+    }
+    let pos = (..dest, ..inner, ..number, ..styles, ..alignment)
     ct.func()(..fields, ..pos)
   }
   (inner, rebuild)
@@ -303,6 +309,89 @@
   (left, right)
 }
 
+/// Split an enum.
+/// This generally functions the same as @cmd:bisect:has-children,
+/// but the handling of numbers requires some extra trickery.
+///
+/// Strategy: take all children that fit.
+/// -> (content?, content?)
+#let is-enum(
+  /// Content to split. -> content
+  ct,
+  /// Recursively passed around (see @cmd:bisect:dispatch). -> function
+  split-dispatch,
+  /// Closure to determine if the content fits (see @cmd:bisect:fits-inside). -> function
+  fits-inside,
+  /// Extra configuration options. -> dictionary
+  cfg,
+) = {
+  let (inner, rebuild) = default-rebuild(ct, "children")
+  if not fits-inside([]) { return (none, ct) }
+  inner = normalize.normalize-enum(inner, cfg.normalize)
+
+  if inner.len() == 0 {
+    return (none, none)
+  }
+
+  let lo = 0
+  let hi = inner.len()
+  while true {
+    if lo + 1 == hi {
+      break
+    }
+    let mid = int((hi + lo) / 2)
+    if fits-inside(rebuild(inner.slice(0, mid + 1))) {
+      lo = mid
+    } else {
+      hi = mid
+    }
+  }
+
+  let final-i = none
+  for i in range(lo, calc.min(hi + 1, inner.len())) {
+    // If inner.at(i) fits, take it
+    if fits-inside(rebuild(inner.slice(0, i + 1))) {
+      continue
+    } else {
+      final-i = i
+      break
+    }
+  }
+  if final-i == none {
+    return (rebuild(inner), none)
+  }
+  assert(lo <= final-i)
+  assert(final-i <= hi)
+  let i = final-i
+  // Otherwise try to split it
+  let hanging = inner.at(i)
+  let (left, right) = split-dispatch(hanging, ct => fits-inside(rebuild((..inner.slice(0, i), ct))), cfg)
+  //assert(fits-inside(rebuild((..inner.slice(0, i), left))))
+  let left = {
+    if left == none {
+      if i == 0 {
+        return (none, rebuild(inner))
+      } else {
+        rebuild(inner.slice(0, i))
+      }
+    } else {
+      rebuild((..inner.slice(0, i), left))
+    }
+  }
+  let right = {
+    if right == none {
+      rebuild((inner.slice(i + 1),))
+    } else {
+      right
+      v(par.leading - par.spacing)
+      rebuild((..inner.slice(i + 1),))
+      //(right, ..inner.slice(i + 1))
+    }
+  }
+  return (left, right)
+}
+
+
 /// Split content with a ```typc "children"``` main field.
 ///
 /// Strategy: take all children that fit.
@@ -319,7 +408,7 @@
 ) = {
   let (inner, rebuild) = default-rebuild(ct, "children")
   if not fits-inside([]) { return (none, ct) }
-  inner = normalize.normalize(inner, cfg.normalize-seq)
+  inner = normalize.normalize-seq(inner, cfg.normalize)
 
   if inner.len() == 0 {
     return (none, none)
@@ -427,10 +516,6 @@
 
 /// Split an `enum.item`.
 ///
-/// #warning-alert[
-///   The numbering will reset on the split. I am developping a fix,
-///   in the meantime use explicit numbering.
-/// ]
 /// Strategy: recursively split the body, and do some magic to simulate
 /// a numbering indent.
 /// -> (content?, content?)
@@ -482,8 +567,6 @@
     }
     // TODO: improve the ad-hoc spacing
     [#set enum(full: true, numbering: numbering); #rebuild(right)]
-    //rebuild(right)
-    //right
   }
   (left, right)
 }
@@ -545,6 +628,8 @@
     has-text(ct, dispatch, fits-inside, cfg)
   } else if ct.has("child") {
     has-child(ct, dispatch, fits-inside, cfg)
+  } else if ct.func() == enum {
+    is-enum(ct, dispatch, fits-inside, cfg)
   } else if ct.has("children") {
     has-children(ct, dispatch, fits-inside, cfg)
   } else if ct.has("body") {
@@ -588,12 +673,15 @@
   ///   - #typ.v.false $->$ non-justified linebreak
   ///   - #typ.v.none $->$ no linebreak
   ///   - #typ.v.auto $->$ linebreak with the same justification as the current paragraph
+  /// - #arg(leading: auto) determines the paragraph leading.
+  /// - #arg(spacing: auto) determines the paragraph spacing.
   /// - #arg(do-no-split: ()) list of items that should not be split.
   ///   Accepts the following item identifiers:
   ///   TODO
-  /// - #arg(normalize-seq: (:))
+  /// - #arg(normalize: (:))
   ///   is itself a dictionary that configures the normalization options on sequences.
-  ///   See @normalize for more information.
+  ///   See normalize for more information.
+  ///   TODO
   ///
   /// -> dictionary
   cfg: (:),
@@ -615,8 +703,8 @@
   if "linebreak" not in cfg {
     cfg.linebreak = auto
   }
-  if "normalize-seq" not in cfg {
-    cfg.normalize-seq = (:)
+  if "normalize" not in cfg {
+    cfg.normalize = (:)
   }
   cfg.insert("enum-depth", 0)
   // TODO: include vertical and horizontal spacing here.

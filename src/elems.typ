@@ -155,12 +155,44 @@
   /// Applies ```typ #set par(leading: ..)```.
   /// -> length
   leading: auto,
+  /// Adjust this parameter if you change the default list markers
+  /// so that MEANDER has the correct spacing.
+  /// In practice, if your document defines a
+  /// ```
+  /// #set list(markers: (..,))
+  /// ```
+  /// then you should probably have the matching parameter
+  /// ```
+  /// list-markers: (..,)
+  /// ```
+  /// -> list(content)
+  list-markers: auto,
+  /// Adjust this parameter if you change the default list numbering
+  /// so that MEANDER has the correct spacing.
+  /// In practice, if your document defines a
+  /// ```
+  /// #set enum(numbering: "..")
+  /// ```
+  /// then you should probably have the matching parameter
+  /// ```
+  /// enum-numbering: ".."
+  /// ```
+  /// -> numbering
+  enum-numbering: auto,
+  /// This parameter lets you control how MEANDER performs some normalization
+  /// passes in lists and sequences. See normalize for details.
+  /// TODO
+  /// -> dictionary
+  normalize: auto,
 ) = {
   let style = (
     size: size,
     lang: lang,
     leading: leading,
     hyphenate: hyphenate,
+    list-markers: list-markers,
+    enum-numbering: enum-numbering,
+    normalize: normalize,
   )
   for (k,v) in style.pairs() {
     if v == auto {

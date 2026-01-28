@@ -48,6 +48,36 @@
   seq
 }
 
+#let group-enums(seq) = {
+  let initial-item = 0
+  let items = ()
+  let tight = true
+  for (i, obj) in seq.enumerate() {
+    if obj.func() == enum.item {
+      if items == () {
+        initial-item = i
+      }
+      seq.at(i) = none
+      items.push(obj)
+    } else if obj.func() == parbreak {
+      seq.at(i) = none
+      tight = false
+    } else if items != () and obj.func() == [ ].func() {
+      seq.at(i) = [ ]
+    } else {
+      if items != () {
+        seq.at(initial-item) = enum(..items, tight: tight)
+        items = ()
+      }
+    }
+  }
+  if items != () {
+    seq.at(initial-item) = enum(..items, tight: tight)
+    items = ()
+  }
+  seq.filter(e => e != none)
+}
+
 #let subst-apply(cfg, func, arg) = {
   let key = repr(func)
   let resolved = cfg.at(key, default: func)
@@ -60,8 +90,14 @@
   }
 }
 
-#let normalize(seq, cfg) = {
+#let normalize-seq(seq, cfg) = {
   seq = subst-apply(cfg, box-refs, seq)
+  //seq = subst-apply(cfg, group-enums, seq)
+  seq = subst-apply(cfg, count-enums, seq)
+  seq
+}
+
+#let normalize-enum(seq, cfg) = {
   seq = subst-apply(cfg, count-enums, seq)
   seq
 }
