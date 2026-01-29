@@ -143,6 +143,10 @@
   /// Inner content.
   /// -> content
   data,
+  /// Apply an arbitrary transformation #lambda(content, ret:content)
+  /// to the content before segmentation.
+  /// -> function
+  transform: ct => ct,
   /// Applies ```typ #set text(size: ..)```.
   /// -> length
   size: auto,
@@ -184,6 +188,7 @@
   enum-numbering: auto,
   /// This parameter lets you control how MEANDER performs some normalization
   /// passes in lists and sequences. See @cmd:normalize:normalize-seq for details.
+  /// #property-unstable()
   /// -> dictionary
   normalize: auto,
 ) = {
@@ -203,7 +208,7 @@
   }
   ((
     type: types.flow.content,
-    data: utils.apply-styles(data, ..style),
+    data: utils.apply-styles(transform(data), ..style),
     style: style,
   ),)
 }

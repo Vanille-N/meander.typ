@@ -109,17 +109,17 @@
       seq.at(i) = none
       tight = false
     } else if items != () and obj.func() == [ ].func() {
-      seq.at(i) = [ ]
+      //seq.at(i) = [ ]
     } else {
       if items != () {
         seq.at(initial-item) = enum(..items, tight: tight)
         items = ()
+        tight = true
       }
     }
   }
   if items != () {
     seq.at(initial-item) = enum(..items, tight: tight)
-    items = ()
   }
   seq.filter(e => e != none)
 }

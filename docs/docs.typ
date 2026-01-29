@@ -54,6 +54,16 @@
   )
 }
 
+#let property-unstable() = elements.note(
+  dy: -2em,
+  styles.pill(
+    "emph.deprecated",
+    (
+      sym.arrow.zigzag + sym.space.nobreak + "Unstable"
+    ),
+  ),
+)
+
 #let show-module(name, module: false, scope: (:), outlined: true) = {
   let path = "../src/" + name + ".typ"
   import path as mod
@@ -61,7 +71,10 @@
     name,
     module: if module == true { name } else if module == false { none } else { module },
     read(path),
-    scope: scope,
+    scope: (
+      property-unstable: property-unstable,
+      ..scope,
+    ),
   )
 }
 
@@ -70,6 +83,14 @@
 }
 
 #show: revised.highlight-outline-entries
+
+// @scrybe(skip 1; grep {{version}})
+#let versions = (
+  "0.4.1",
+  "0.4.0",
+  "0.3.1",
+  "0.2.5"
+)
 
 #show: mantys(
   ..toml("../typst.toml"),
@@ -104,14 +125,16 @@
         or #link(repo)[pull request].
         This includes submitting test cases.
 
-        // @scrybe(jump releases; grep {{version}})
         *Versions*
         - #link(repo)[`dev`]
-        - #link(repo + "releases/tag/v0.4.1")[`0.4.1`]
-          (#link("https://typst.app/universe/package/meander")[`latest`])
-        - #link(repo + "releases/tag/v0.4.0")[`0.4.0`]
-        - #link(repo + "releases/tag/v0.3.1")[`0.3.1`]
-        - #link(repo + "releases/tag/v0.2.5")[`0.2.5`]
+        #{
+          for (i, ver) in versions.enumerate() [
+            - #link(repo + "releases/tag/v" + ver)[#raw(ver)]
+              #{if i == 0 {
+                [(#link("https://typst.app/universe/package/meander")[`latest`])]
+              }}
+          ]
+        }
         - #link(repo + "releases/")[...]
       ][
         #show-page("cover")
@@ -125,14 +148,12 @@
           #set text(fill: gray, size: 10.5pt)
           #set linebreak(justify: true)
           #show: align.with(left)
-          // @scrybe(jump latest; grep {{version}})
           Highlighted chapters denote
           #(revised.styles.breaking)[breaking changes],
           #(revised.styles.major)[major updates],
           #(revised.styles.minor)[minor updates],
           and #(revised.styles.new)[new additions],
-          in the latest version `0.4.1`
-          // TODO: add major/minor distinction
+          in the latest version #raw(versions.at(0))
         ]
       ]
     ])
@@ -836,61 +857,6 @@ post-threading to the entire box. Future updates may lift this restriction.
 ][
   #show-page("post-style")
 ]
-
-#revised.new[== Lists, enums, sequences]
-
-There are a few subtleties with the specific treatment of "sequence"
-elements (specifically: #typ.list, #typ.enum, and #value([]) / `sequence`). Complications arise from the fact that these elements will frequently
-be contextual, and breaking them across boxes can introduce inconsistencies.
-
-To give one concrete example, there is by default in MEANDER a normalization pass
-that converts every numbered list into one that has explicitly numbered items.
-When you write
-#codesnippet[```
-+ item
-+ item
-+ item
-```]
-MEANDER internally converts it to
-#codesnippet[```
-1. item
-2. item
-3. item
-```]
-because the alternative is the issue illustrated below:
-
-#twocols[
-  #show-page("enum-split")
-  With the default `count-enums` heuristic.
-][
-  #show-page("enum-split-bad")
-  After turning off `count-enums`.
-]
-
-This heuristic can be turned off by passing to
-`content` the parameter ```typc normalize-seq: (count-enums: none)```,
-though I don't know why you would want to turn it off.
-More realistically, if you find that the heuristic does not quite fit your
-needs, you can reimplement it and pass
-`normalize-seq: (count-enums: my-own-implementation)`.
-If you are indeed at that level of fine-tuning the layout,
-check out #link(repo + "tree/master/src/normalize.typ")[`normalize.typ:count-enums`] to learn about the
-expected interface of such a custom function.
-
-There are other similar problems you might encounter if you change default
-parameters related to enums and lists:
-- changing the `list` markers can cause incorrect indentation of items.
-  Use `list-markers: (..,)` to compensate.
-- changing the `enum` numbering can also cause incorrect indentation.
-  Use `enum-numbering: ".."` to compensate.
-- adjacent references are never separated from each other.
-  You can adjust or disable this behavior by passing a custom function
-  as `normalize: (box-refs: _)`.
-
-More generally, if you encounter any formatting glitch that occurs
-precisely at box boundaries, it is probably an oversight in the normalization
-procedure or the styling. You should report those on the
-#link(repo + "issues")[repository].
 
 = Multi-page setups <multi-page>
 
