@@ -6,6 +6,7 @@
 // - etc.
 
 /// A normalization pass that groups adjacent references
+/// #property-unstable()
 /// so that they are not separated and so that the citation style
 /// may print grouped references differently than multiple individual references.
 /// -> array(content)
@@ -37,6 +38,7 @@
 }
 
 /// A normalization pass that turns
+/// #property-unstable()
 /// #codesnippet[```
 /// enum.item(auto)[..]
 /// enum.item(auto)[..]
@@ -75,6 +77,7 @@
 }
 
 /// A normalization pass that turns
+/// #property-unstable()
 /// #codesnippet[```typc
 /// enum.item(..)
 /// enum.item(..)
@@ -137,20 +140,21 @@
 }
 
 /// Apply sequence normalization passes.
+/// #property-unstable()
 /// All of these are heuristics, and may be imperfect.
 ///
 /// Here we apply:
 /// - @cmd:normalize:box-refs
-/// - @cmd:normalize:group-enums
 /// - @cmd:normalize:count-enums
 #let normalize-seq(seq, cfg) = {
   seq = subst-apply(cfg, box-refs, seq)
-  seq = subst-apply(cfg, group-enums, seq)
+  //seq = subst-apply(cfg, group-enums, seq)
   seq = subst-apply(cfg, count-enums, seq)
   seq
 }
 
 /// Apply numbered lists normalization passes.
+/// #property-unstable()
 /// All of these are heuristics, and may be imperfect.
 ///
 /// Here we apply:

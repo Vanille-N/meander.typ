@@ -1342,7 +1342,7 @@ which implement interesting 1D and 2D primitives. See @geometry for details.
 
 #show-module("tiling", module: true)
 
-== Normalization
+#revised.new[== Normalization]
 
 #show-module("normalize", module: true)
 
