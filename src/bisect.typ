@@ -449,7 +449,9 @@
   // Otherwise try to split it
   let hanging = inner.at(i)
   let (left, right) = split-dispatch(hanging, ct => fits-inside(rebuild((..inner.slice(0, i), ct))), cfg)
-  assert(fits-inside(rebuild((..inner.slice(0, i), left))))
+  if i > 0 and not fits-inside(rebuild((..inner.slice(0, i), left))) {
+    panic("Internal assertion failed during rebuild: while splitting `" + repr(ct.func()) + "`. Computed split index at " + str(i) + " in length " + str(inner.len()) + "; info: " + repr(ct))
+  }
   let left = {
     if left == none {
       if i == 0 {
