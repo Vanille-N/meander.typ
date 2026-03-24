@@ -1,16 +1,49 @@
 #import "/src/lib.typ" as meander
 
 #meander.reflow({
-	import meander: *
+  import meander: *
 
-	placed(top+right, rect(width: 6cm, height: 3cm, fill:red ))
+  placed(top+right, rect(width: 6cm, height: 3cm, fill:red ))
 
-	container()
+  container()
 
-	content[
-		#enum(
-			lorem(30),
-			lorem(30),
-		)
-	]
+  content[
+    #enum(
+      lorem(50),
+      lorem(50),
+    )
+  ]
+})
+
+#meander.reflow({
+  import meander: *
+
+  placed(top+right, rect(width: 6cm, height: 3cm, fill:red ))
+
+  container()
+
+  content[
+    #enum.item[#lorem(30)]
+    #enum.item[#lorem(30)]
+    #enum.item[#lorem(30)]
+    #enum.item[#lorem(30)]
+  ]
+})
+
+
+#meander.reflow({
+  import meander: *
+
+  placed(top+right, rect(width: 6cm, height: 3cm, fill:red ))
+
+  container()
+
+  content[
+    #enum(
+      lorem(30),
+      lorem(30),
+      lorem(30),
+      lorem(30),
+    )
+  ]
 })
