@@ -86,6 +86,7 @@
 
 // @scrybe(skip 1; grep {{version}})
 #let versions = (
+  "0.4.2",
   "0.4.1",
   "0.4.0",
   "0.3.1",
@@ -169,7 +170,7 @@
 Import the latest version of MEANDER with:
 // @scrybe(jump import; grep preview; grep {{version}})
 #codesnippet[```typ
-#import "@preview/meander:0.4.1"
+#import "@preview/meander:0.4.2"
 ```]
 
 The main function provided by MEANDER is @cmd:meander:reflow,
@@ -1105,7 +1106,7 @@ you can make it unaffected by the obstacles in question.
   The innovation of #arg[invisible] is that this can be done on a per-container basis.
 ]
 
-#revised.minor[== Callbacks and queries <querying>]
+== Callbacks and queries <querying>
 
 The module ```typ #query``` contains functions that allow referencing properties
 of other elements, as well as other properties that may be dynamically updated
@@ -1228,7 +1229,7 @@ These are the user-facing functions of MEANDER.
 #custom-type("size")
 #custom-type("overflow")
 
-#revised.minor[== Elements <elem-doc>]
+== Elements <elem-doc>
 
 All constructs that are valid within a ```typ #meander.reflow({ .. })``` block.
 Note that they all produce an object that is a singleton dictionary,
@@ -1305,7 +1306,7 @@ made available as lower-level primitives.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.4.1": internals.fill-box
+#import "@preview/meander:0.4.2": internals.fill-box
 ```
 ]
 This grants you access to the primitive `fill-box`, which is the entry
@@ -1315,7 +1316,7 @@ content as fits in a specific box. See @cmd:bisect:fill-box for details.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.4.1": internals.geometry
+#import "@preview/meander:0.4.2": internals.geometry
 ```
 ]
 This grants you access to all the functions in the `geometry` module,
@@ -1324,7 +1325,7 @@ which implement interesting 1D and 2D primitives. See @geometry for details.
 
 #show-module("internals", module: true)
 
-#revised.major[= Internal module details <internal>]
+= Internal module details <internal>
 
 == Utils
 
@@ -1342,7 +1343,7 @@ which implement interesting 1D and 2D primitives. See @geometry for details.
 
 #show-module("tiling", module: true)
 
-#revised.new[== Normalization]
+== Normalization
 
 #show-module("normalize", module: true)
 
