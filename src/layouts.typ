@@ -44,7 +44,7 @@
         }
         continue
       }
-      assert(elem.type == box)
+      assert(elem.type == box, message: "Internal error: Unhandled element type from `next-elem`: received " + repr(elem.type))
       if opts.debug.content {
         let (full, overflow) = threading.smart-fill-boxes(
           size: size,

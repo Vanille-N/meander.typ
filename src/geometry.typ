@@ -34,7 +34,7 @@
   /// -> length
   c,
 ) = {
-  assert(a <= c)
+  assert(a <= c, message: "Invalid parameters for `between`: lower bound is higher than upper bound")
   a <= b and b <= c
 }
 
@@ -52,8 +52,8 @@
 ) = {
   let (l1, r1) = i1
   let (l2, r2) = i2
-  assert(l1 <= r1)
-  assert(l2 <= r2)
+  assert(l1 <= r1, message: "Invalid parameters for `intersects`: first interval has negative width")
+  assert(l2 <= r2, message: "Invalid parameters for `intersects`: second interval has negative width")
   if r1 < l2 + tolerance { return false }
   if r2 < l1 + tolerance { return false }
   true

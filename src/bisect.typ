@@ -53,7 +53,7 @@
   /// -> (width: length, height: length)
   size: none,
 ) = {
-  assert(size != none)
+  assert(size != none, message: "Internal error: `fits-inside` received `size: none`.")
   let content = measure(box(width: dims.width)[#ct], ..size)
   let container = geometry.resolve(size, ..dims)
   content.height <= container.height
@@ -119,7 +119,7 @@
   let styles = if "styles" in fields { (fields.remove("styles"),) } else { () }
   // Construct the closure
   let rebuild(inner) = {
-    assert(inner != none)
+    assert(inner != none, message: "Internal error: `rebuild` operating on " + repr(ct.func()) + " received `inner: none`")
     let inner = if splat-inner {
       (..inner,)
     } else {
@@ -159,7 +159,7 @@
   /// Extra configuration options. -> dictionary
   cfg,
 ) = {
-  assert(cfg.hyphenate != false)
+  assert(cfg.hyphenate != false, message: "Internal error: `split-word` cannot be invoked when hypenation is not enabled.")
   import "@preview/hy-dro-gen:0.1.1" as hy
   let syllables = hy.syllables(ww, lang: cfg.lang, fallback: auto)
   for i in range(syllables.len()) {
@@ -173,7 +173,7 @@
       } else {
         let left = syllables.slice(0, i).join("") + "-"
         let right = syllables.slice(i).join("")
-        assert(fits-inside(left))
+        assert(fits-inside(left), message: "Internal error: edge case in `split-word` while handling '" + repr(ww) + "': does not fit in the allocated space")
         return (left, right)
       }
     }
@@ -259,7 +259,7 @@
     let left = if i == 0 { none } else {
       let left = rebuild(inner.slice(0, i).join(" "))
       left += lbreak
-      assert(fits-inside(left))
+      assert(fits-inside(left), message: "Internal error: edge case in `split-text` while handling '" + repr(ct) + "': does not fit in the allocated space")
       left
     }
     let right = rebuild(inner.slice(i).join(" "))
@@ -300,8 +300,9 @@
   let (inner, rebuild) = default-rebuild(ct, "child")
   let (left, right) = split-dispatch(inner, ct => fits-inside(rebuild(ct)), cfg)
   let left = if left == none { none } else {
-    assert(fits-inside(rebuild(left)))
-    rebuild(left)
+    let left = rebuild(left)
+    assert(fits-inside(left), message: "Internal error: edge case in `has-child` while handling '" + repr(ct) + "': does not fit in the allocated space")
+    left
   }
   let right = if right == none { none } else {
     rebuild(right)
@@ -360,8 +361,7 @@
   if final-i == none {
     return (rebuild(inner), none)
   }
-  assert(lo <= final-i)
-  assert(final-i <= hi)
+  assert(lo <= final-i and final-i <= hi, message: "Internal error: while trying to split numbered list, index is out of bounds")
   let i = final-i
   // Otherwise try to split it
   let hanging = inner.at(i)
@@ -443,15 +443,11 @@
   if final-i == none {
     return (rebuild(inner), none)
   }
-  assert(lo <= final-i)
-  assert(final-i <= hi)
+  assert(lo <= final-i and final-i <= hi, message: "Internal error: while trying to split item with children, index is out of bounds")
   let i = final-i
   // Otherwise try to split it
   let hanging = inner.at(i)
   let (left, right) = split-dispatch(hanging, ct => fits-inside(rebuild((..inner.slice(0, i), ct))), cfg)
-  if i > 0 and not fits-inside(rebuild((..inner.slice(0, i), left))) {
-    panic("Internal assertion failed during rebuild: while splitting `" + repr(ct.func()) + "`. Computed split index at " + str(i) + " in length " + str(inner.len()) + "; info: " + repr(ct))
-  }
   let left = {
     if left == none {
       if i == 0 {
@@ -463,6 +459,7 @@
       rebuild((..inner.slice(0, i), left))
     }
   }
+  assert(fits-inside(left), message: "Internal error: edge case in `has-children` while handling '" + repr(ct) + "': does not fit in the allocated space")
   let right = rebuild({
     if right == none {
       inner.slice(i + 1)
@@ -495,8 +492,9 @@
     split-dispatch(inner, ct => fits-inside(rebuild(ct)), cfg)
   }
   let left = if left == none { none } else {
-    assert(fits-inside(rebuild(left)))
-    rebuild(left)
+    let left = rebuild(left)
+    assert(fits-inside(left), message: "Internal error: edge case in `is-list-item` while handling '" + repr(ct) + "': does not fit in the allocated space")
+    left
   }
   let right = if right == none {
     none
@@ -540,8 +538,9 @@
     split-dispatch(inner, ct => fits-inside(rebuild(ct)), cfg)
   }
   let left = if left == none { none } else {
-    assert(fits-inside(rebuild(left)))
-    rebuild(left)
+    let left = rebuild(left)
+    assert(fits-inside(left), message: "Internal error: edge case in `is-enum-item` while handling '" + repr(ct) + "': does not fit in the allocated space")
+    left
   }
   let right = if right == none {
     none
@@ -600,8 +599,9 @@
     let (inner, rebuild) = default-rebuild(ct, "body")
     let (left, right) = split-dispatch(inner, ct => fits-inside(rebuild(ct)), cfg)
     let left = if left == none { none } else {
-      assert(fits-inside(rebuild(left)))
-      rebuild(left)
+      let left = rebuild(left)
+      assert(fits-inside(left), message: "Internal error: edge case in `is-enum-item` while handling '" + repr(ct) + "': does not fit in the allocated space")
+      left
     }
     let right = if right == none { none } else {
       rebuild(right)
