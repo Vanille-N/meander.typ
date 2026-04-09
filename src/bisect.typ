@@ -632,6 +632,13 @@
     has-text(ct, dispatch, fits-inside, cfg)
   } else if ct.has("child") {
     has-child(ct, dispatch, fits-inside, cfg)
+  } else if ct.func() == terms {
+    // Haven't implemented proper splitting of terms yet
+    take-it-or-leave-it(ct, fits-inside)
+  } else if ct.func() == table {
+    // Haven't implemented proper splitting of tables.
+    // This was the cause of Github issues #27
+    take-it-or-leave-it(ct, fits-inside)
   } else if ct.func() == enum {
     is-enum(ct, dispatch, fits-inside, cfg)
   } else if ct.has("children") {
