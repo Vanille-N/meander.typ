@@ -86,9 +86,9 @@
 
 // @scrybe(skip 1; grep {{version}})
 #let versions = (
+  "0.4.3",
   "0.4.2",
   "0.4.1",
-  "0.4.0",
   "0.3.1",
   "0.2.5"
 )
@@ -170,7 +170,7 @@
 Import the latest version of MEANDER with:
 // @scrybe(jump import; grep preview; grep {{version}})
 #codesnippet[```typ
-#import "@preview/meander:0.4.2"
+#import "@preview/meander:0.4.3"
 ```]
 
 The main function provided by MEANDER is @cmd:meander:reflow,
@@ -1306,7 +1306,7 @@ made available as lower-level primitives.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.4.2": internals.fill-box
+#import "@preview/meander:0.4.3": internals.fill-box
 ```
 ]
 This grants you access to the primitive `fill-box`, which is the entry
@@ -1316,7 +1316,7 @@ content as fits in a specific box. See @cmd:bisect:fill-box for details.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.4.2": internals.geometry
+#import "@preview/meander:0.4.3": internals.geometry
 ```
 ]
 This grants you access to all the functions in the `geometry` module,
