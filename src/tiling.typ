@@ -96,13 +96,19 @@
       }
     }
   }
-  // This hack helps solve a problem when the container has the height of the whole
-  // page: `measure(box(height: 100%), ..size).height` is equal to
-  // `measure(box(height: 200%), ..size).height`
-  if horizontal-marks.len() == 2 and dims.height == data.free-size.height {
-    dims.height -= 0.1pt
-  }
   horizontal-marks = horizontal-marks.sorted()
+
+  // Measure has a limitation: 
+  //   `measure(box(height: 100%), ..size).height` is equal to
+  //   `measure(box(height: 200%), ..size).height`
+  // i.e., it cannot distinguish between two heights that both exceed page size.
+  // We are affected by this issue if one of the containers is equal to the
+  // page height. We solve it by artificially shrinking the available space.
+  // In previous versions this fix was only applied if there are exactly
+  // 2 horizontal marks, but this fails to account for zero-height splits.
+  if dims.height >= data.free-size.height {
+    dims.height = data.free-size.height - 0.1pt
+  }
 
   let debug = []
   let all-zones = ()
