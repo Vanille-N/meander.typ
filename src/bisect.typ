@@ -118,7 +118,7 @@
   let dest = if "dest" in fields { (fields.remove("dest"),) } else { () }
   let styles = if "styles" in fields { (fields.remove("styles"),) } else { () }
   // Construct the closure
-  let rebuild(inner) = {
+  let rebuild(inner, is_right: false) = {
     assert(inner != none, message: "Internal error: `rebuild` operating on " + repr(ct.func()) + " received `inner: none`")
     let inner = if splat-inner {
       (..inner,)
