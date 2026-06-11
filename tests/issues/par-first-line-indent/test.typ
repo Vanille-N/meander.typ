@@ -3,6 +3,7 @@
 #let current-par = par(first-line-indent: (amount:2em, all: true), justify: true)[#lorem(200)]
 
 #meander.reflow({
+     meander.placed(center+horizon,box(width: 5cm,height: 5cm,fill:red))
     meander.container(width: 49%)
     meander.container()
     meander.pagebreak()

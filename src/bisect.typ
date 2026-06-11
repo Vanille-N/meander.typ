@@ -125,6 +125,25 @@
     } else {
       (inner,)
     }
+      // Edit the Fields if the rebuild inner is a "right rebuild" and a body.
+    let fields =  if is_right and inner-field == "body"{
+        // If there is an hanging indent, then add the indend to the first line indend.
+          if fields.keys().contains("hanging-indent"){
+              let indent = fields.hanging-indent
+              let tmp = fields
+              tmp.insert("first-line-indent", (amount: indent, all: true))
+              tmp
+              // If there is a first line indent, remove it. 
+          } else if fields.keys().contains("first-line-indent"){
+              let tmp= fields
+              let _ =tmp.remove("first-line-indent",default:none)
+              tmp
+          }else{
+              fields
+          }
+    }else{
+        fields
+    }
     let pos = (..dest, ..inner, ..number, ..styles, ..alignment)
     ct.func()(..fields, ..pos)
   }
@@ -604,7 +623,7 @@
       left
     }
     let right = if right == none { none } else {
-      rebuild(right)
+      rebuild(right,is_right:true)
     }
     (left, right)
   } else {
