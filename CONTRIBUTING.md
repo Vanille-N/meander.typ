@@ -126,8 +126,10 @@ after which `just upstream` will do the rest of the job and a PR can be opened r
 
 # Thanks to the following contributors
 
-- @Neo-Teyrall for implementing proper paragraph indentation splitting
-  in 08e67cf and #36
+- [@Neo-Teyrall](https://github.com/Neo-Teyrall)
+  for implementing proper paragraph indentation splitting
+  in [`08e67cf`](https://github.com/Vanille-N/meander.typ/commit/08e67cfb09fda83ecf7d341072fbc25a1aedbb40)
+  and [#36](https://github.com/Vanille-N/meander.typ/pull/36)
 
 
 [this_repo_issues]: https://github.com/Vanille-N/meander.typ/issues

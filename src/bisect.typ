@@ -621,6 +621,14 @@
 ) = {
   let (func, fields, inner, rebuild) = destruct("body")(ct)
   let (left, right) = split-dispatch(inner, ct => fits-inside(rebuild(ct)), cfg)
+
+  if not "first-line-indent" in fields {
+    fields.first-line-indent = cfg.par-first-line-indent
+  }
+  if not "hanging-indent" in fields {
+    fields.hanging-indent = cfg.par-hanging-indent
+  }
+
   // Left is normal.
   let left = if left == none { none } else {
     let left = rebuild(left)
@@ -789,6 +797,12 @@
     cfg.normalize = (:)
   }
   cfg.insert("enum-depth", 0)
+  if "par-first-line-indent" not in cfg {
+    cfg.par-first-line-indent = par.first-line-indent
+  }
+  if "par-hanging-indent" not in cfg {
+    cfg.par-hanging-indent = par.hanging-indent
+  }
   // TODO: include vertical and horizontal spacing here.
   dispatch([#ct], ct => fits-inside(dims, ct, size: size), cfg)
 }
