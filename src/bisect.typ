@@ -131,6 +131,35 @@
   (inner, rebuild)
 }
 
+#let construct(
+  func,
+  fields,
+  inner,
+) = {
+  let splat-inner = (func in (enum, list))
+
+  // Fields that have a special behavior
+  let number = if "number" in fields { (fields.remove("number"),) } else { () }
+  let alignment = if "alignment" in fields { (fields.remove("alignment"),) } else { () }
+  let dest = if "dest" in fields { (fields.remove("dest"),) } else { () }
+  let styles = if "styles" in fields { (fields.remove("styles"),) } else { () }
+  let inner = if splat-inner { (..inner,) } else { (inner,) }
+  let pos = (..dest, ..inner, ..number, ..styles, ..alignment)
+  func(..fields, ..pos)
+}
+
+#let destruct(
+  inner-field,
+) = (ct) => {
+  let func = ct.func()
+  let fields = ct.fields()
+  let inner = fields.remove(inner-field)
+
+  let rebuild(ct) = construct(func, fields, ct)
+
+  (func: func, fields: fields, inner: inner, rebuild: rebuild)
+}
+
 /// "Split" opaque content.
 /// -> (content?, content?)
 #let take-it-or-leave-it(
@@ -297,15 +326,17 @@
   /// Extra configuration options. -> dictionary
   cfg,
 ) = {
-  let (inner, rebuild) = default-rebuild(ct, "child")
+  let (func, fields, inner, rebuild) = destruct("child")(ct)
+  //let (inner, rebuild) = default-rebuild(ct, "child")
   let (left, right) = split-dispatch(inner, ct => fits-inside(rebuild(ct)), cfg)
   let left = if left == none { none } else {
-    let left = rebuild(left)
+    let left = construct(func, fields, left) //rebuild(left)
     assert(fits-inside(left), message: "Internal error: edge case in `has-child` while handling '" + repr(ct) + "': does not fit in the allocated space")
     left
   }
   let right = if right == none { none } else {
-    rebuild(right)
+    construct(func, fields, right)
+    //rebuild(right)
   }
   (left, right)
 }
@@ -574,6 +605,44 @@
   (left, right)
 }
 
+/// Split a paragraph that was explicitly delimited by `par`.
+/// This requires special handling due to leading and hanging indent.
+/// See https://github.com/Vanille-N/meander.typ/pull/36
+/// and https://github.com/Vanille-N/meander.typ/issues/32
+#let is-par(
+  // Content to split. -> content
+  ct,
+  /// Recursively passed around (see @cmd:bisect:dispatch). -> function
+  split-dispatch,
+  /// Closure to determine if the content fits (see @cmd:bisect:fits-inside). -> function
+  fits-inside,
+  /// Extra configuration options. -> dictionary
+  cfg,
+) = {
+  let (func, fields, inner, rebuild) = destruct("body")(ct)
+  let (left, right) = split-dispatch(inner, ct => fits-inside(rebuild(ct)), cfg)
+  // Left is normal.
+  let left = if left == none { none } else {
+    let left = rebuild(left)
+    assert(fits-inside(left), message: "Internal error: edge case in `is-enum-item` while handling '" + repr(ct) + "': does not fit in the allocated space")
+    left
+  }
+  // Right needs an update to its indentations.
+  let right = if right == none { none } else {
+    let rfields = fields
+    if "hanging-indent" in rfields {
+      rfields.insert("first-line-indent", (
+        amount: rfields.hanging-indent,
+        all: true,
+      ))
+    } else if "first-line-indent" in rfields {
+      let _ = rfields.remove("first-line-indent")
+    }
+    construct(func, rfields, right)
+  }
+  (left, right)
+}
+
 /// Split content with a ```typc "body"``` main field.
 /// There is a special strategy for ```typc list.item``` and ```typc enum.item```
 /// which are handled separately.
@@ -595,7 +664,9 @@
     is-list-item(ct, split-dispatch, fits-inside, cfg)
   } else if ct.func() == enum.item {
     is-enum-item(ct, split-dispatch, fits-inside, cfg)
-  } else if ct.func() in (strong, emph, underline, stroke, overline, highlight, par, align, link) {
+  } else if ct.func() == par {
+    is-par(ct, split-dispatch, fits-inside, cfg)
+  } else if ct.func() in (strong, emph, underline, stroke, overline, highlight, align, link) {
     let (inner, rebuild) = default-rebuild(ct, "body")
     let (left, right) = split-dispatch(inner, ct => fits-inside(rebuild(ct)), cfg)
     let left = if left == none { none } else {
