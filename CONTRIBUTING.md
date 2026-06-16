@@ -124,6 +124,12 @@ If you forget one of these, it will be caught by `just scrybe-publish`,
 after which `just upstream` will do the rest of the job and a PR can be opened right away.
 
 
+# Thanks to the following contributors
+
+- @Neo-Teyrall for implementing proper paragraph indentation splitting
+  in 08e67cf and #36
+
+
 [this_repo_issues]: https://github.com/Vanille-N/meander.typ/issues
 [forum_showcase]: https://forum.typst.app/t/meander-0-2-2-wrapping-text-around-images/6096
 [tytanic]: https://github.com/typst-community/tytanic

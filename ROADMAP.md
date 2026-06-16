@@ -37,7 +37,6 @@
 - [ ] very small text (4pt) is only ever threaded two lines at a time
 - [ ] send content to one specific container
 - [ ] priority levels to fill boxes in a different order than they were defined
-- [X] still a small issue with par spacing
 
 ## Performance
 - [ ] don't rebuild the entire array all the time
@@ -61,11 +60,10 @@
 
 ## Testing
 
-- [X] `exact` is now useless thanks to tiling improvements
-
 ## Refactoring
 
 ## Documentation
 
+- [ ] Proper par splitting method (IMPORTANT FOR NEXT RELEASE)
 - [ ] non-doc regular comments about the algorithm
 
