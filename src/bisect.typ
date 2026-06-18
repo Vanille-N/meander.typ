@@ -635,16 +635,22 @@
     assert(fits-inside(left), message: "Internal error: edge case in `is-enum-item` while handling '" + repr(ct) + "': does not fit in the allocated space")
     left
   }
-  // Right needs an update to its indentations.
+  // Right needs an update to its indentations:
+  // it is not the beginning of a paragraph even though it uses a new `par`
+  // invocation, so the first line indent is overwritten to the
+  // hanging indent.
+  // This is only done if `left` (the beginning of the paragraph) is not `none`.
   let right = if right == none { none } else {
     let rfields = fields
-    if "hanging-indent" in rfields {
-      rfields.insert("first-line-indent", (
-        amount: rfields.hanging-indent,
-        all: true,
-      ))
-    } else if "first-line-indent" in rfields {
-      let _ = rfields.remove("first-line-indent")
+    if left != none {
+      if "hanging-indent" in rfields {
+        rfields.insert("first-line-indent", (
+          amount: rfields.hanging-indent,
+          all: true,
+        ))
+      } else if "first-line-indent" in rfields {
+        let _ = rfields.remove("first-line-indent")
+      }
     }
     construct(func, rfields, right)
   }
