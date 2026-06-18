@@ -18,6 +18,7 @@
 
   let fill-page(elems, flow, size: (), page-offset: (x: 0pt, y: 0pt)) = {
     let output = []
+    let cuts = ()
     let maximum-height = 0pt
     let data = tiling.create-data(size: size, elems: elems, page-offset: page-offset)
     while true {
@@ -39,6 +40,7 @@
           output += place(dx: block.x, dy: block.y, {
             box(width: block.width, height: block.height, ..opts.debug.obstacle-contours)
           })
+          cuts.push((block: block))
           //maximum-height = calc.max(maximum-height, block.y + block.height)
           maximum-height = calc.max(maximum-height, block.y + block.height)
         }
@@ -68,6 +70,7 @@
               content
             })
           })
+          cuts.push((box: container, text: content))
           data = tiling.push-elem(data, (contour: (tiling.add-self-margin(container),)))
           maximum-height = calc.max(maximum-height, container.y + container.height)
         }
@@ -88,12 +91,13 @@
       let height = calc.min(maximum-height, size.height - page-offset.y)
       block(width: 100%, height: height)
     }
-    (content: output, overflow: flow, vspace: virtual-space)
+    (content: output, cuts: cuts, overflow: flow, vspace: virtual-space)
   }
 
   wrapper(size => {
     let first-page-offset = tiling.get-page-offset()
     let flow = flow
+    let page-cuts = ()
 
     for (idx, elems) in pages.enumerate() {
       let page-offset = if idx == 0 {
@@ -105,9 +109,10 @@
       if idx != 0 {
         colbreak()
       }
-      let (content, overflow, vspace) = fill-page(elems, flow, size: size, page-offset: page-offset)
+      let (content, cuts, overflow, vspace) = fill-page(elems, flow, size: size, page-offset: page-offset)
       content
       vspace
+      page-cuts.push(cuts)
       flow = overflow
     }
     // Prepare data for the overflow handler
@@ -161,6 +166,50 @@
         panic(opts.overflow)
       }
     }
+    state("meander-latest-bisection").update(_ => page-cuts)
   })
 }
 
+#let review() = context {
+  let pgs = state("meander-latest-bisection").get()
+  let rainbow(i) = {
+    let n = 13
+    let step = 3
+    color.hsl((360deg * step / n) * i, 100%, 50%)
+  }
+  for pg in pgs {
+    pagebreak()
+    rect(width: 100%, height: 100%)
+    let textid = 0
+    for elt in pg {
+      if "block" in elt {
+        let block = elt.block
+        place(top + left, dx: block.x, dy: block.y, {
+          rect(width: block.width, height: block.height, stroke: black, fill: gray.lighten(60%))
+        })
+      } else {
+        let block = elt.box
+        place(top + left, dx: block.x, dy: block.y, {
+          rect(width: block.width, height: block.height, stroke: none, inset: 0pt, fill: rainbow(textid), align(center + horizon)[#textid])
+        })
+        textid += 1
+      }
+    }
+    pagebreak()
+    {
+      set page(width: 3 * 12cm, columns: 3, margin: 5mm)
+      set par(first-line-indent: 0em, hanging-indent: 0em)
+      let textid = 0
+      for elt in pg {
+        if "text" in elt {
+          block(breakable: false)[
+            #box(stroke: rainbow(textid), fill: rainbow(textid), inset: 5pt)[#textid] \
+            #v(-par.spacing)
+            #box(stroke: rainbow(textid))[#raw(repr(elt.text))]
+          ]
+          textid += 1
+        }
+      }
+    }
+  }
+}

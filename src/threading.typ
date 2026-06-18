@@ -39,6 +39,8 @@
   let current-fill = none
   let force-break = false
 
+  let cuts = ()
+
   while true {
     if cont == none {
       if cont-queue.len() == 0 { break }
@@ -50,6 +52,7 @@
     }
 
     if body.type == types.flow.colfill {
+      cuts.push(current-fill)
       full.push((cont, current-fill))
       while cont-queue.len() > 0 {
         full.push((cont-queue.pop(), none))
@@ -130,6 +133,7 @@
     }
     cont.width = actual-dims.width
     cont.height = actual-dims.height
+    cuts.push(fits)
     full.push((cont, fits))
     current-fill = none
     body.data = overflow
@@ -139,6 +143,6 @@
   }
   let overflow = body-queue
   if body.data != none { overflow.push(body) }
-  (full: full, overflow: overflow.rev())
+  (full: full, overflow: overflow.rev(), cuts: cuts)
 }
 
