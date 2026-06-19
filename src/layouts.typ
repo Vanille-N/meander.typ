@@ -170,6 +170,10 @@
   })
 }
 
+/// Display layout data from the previous `reflow`.
+/// Obstacles and boxes are shown, as well as the `repr` of the bisected
+/// content. Useful for advanced debugging.
+/// -> content
 #let review() = context {
   let pgs = state("meander-latest-bisection").get()
   let rainbow(i) = {
