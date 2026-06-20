@@ -778,6 +778,10 @@
   ///   is itself a dictionary that configures the normalization options on sequences.
   ///   See normalize for more information.
   ///   TODO
+  /// - #arg(par-first-line-indent: (amount: 0em, all: true))
+  ///   the indentation of the first line of each paragraph.
+  /// - #arg(par-hanging-indent: 0em)
+  ///   the indentation of the following lines of each paragraph.
   ///
   /// -> dictionary
   cfg: (:),

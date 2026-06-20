@@ -1,4 +1,4 @@
-#import "@preview/mantys:1.0.2": *
+#import "@local/mantys:1.0.2": *
 #import "@preview/swank-tex:0.1.0": LaTeX
 #import "@preview/tidy:0.4.3"
 
@@ -86,6 +86,7 @@
 
 // @scrybe(skip 1; grep {{version}})
 #let versions = (
+  "0.4.4",
   "0.4.3",
   "0.4.2",
   "0.4.1",
@@ -170,7 +171,7 @@
 Import the latest version of MEANDER with:
 // @scrybe(jump import; grep preview; grep {{version}})
 #codesnippet[```typ
-#import "@preview/meander:0.4.3"
+#import "@preview/meander:0.4.4"
 ```]
 
 The main function provided by MEANDER is @cmd:meander:reflow,
@@ -430,21 +431,23 @@ it helps to have a basic understanding of MEANDER's algorithm(s).
 
 Even if you don't plan to contribute to the implementation of MEANDER,
 I suggest you nevertheless briefly read this section to have an intuition
-of what happens behind the scenes.
+of what happens behind the scenes, and in case something goes wrong an idea
+of what might be a reason for it.
 
 == Debugging <debug>
 
 The examples below use some options that are available for debugging.
 
-Debug configuration is a pre-layout option, which means it should be specified
-before any other elements.
-```typ
+To enable debugging, set the corresponding pre-layout option.
+This means it should be specified before any other elements.
+#codesnippet[```typ
 #meander.reflow({
   import meander: *
   opt.debug.pre-thread() // <- sets the debug mode to "pre-thread"
+  // Then put your layout `placed`, `container`, `content`, etc.
   // ...
 })
-```
+```]
 The debug modes available are as follows:
 - `release`: this is the default, having no visible debug markers.
 - `pre-thread`: includes obstacles (in red) and containers (in green) but not content.
@@ -490,7 +493,7 @@ The content bisection rules are all MEANDER's heuristics to split text and
 take as much as fits in a box.
 
 For example, consider the content ```typc bold(lorem(20))```
-which does not fit in the container ```typc box(width: 5cm, height: 5cm)```:
+which does not fit in the container ```typc box(width: 5cm, height: 1.5cm)```:
 
 #align(center)[
   #box(width: 5cm, height: 1.5cm, stroke: (paint: red, dash: "dashed"))[
@@ -540,6 +543,43 @@ The exact boundaries of containers may be altered in the process for better spac
   and therefore does not affect layout outside of @cmd:meander:reflow.
   See @placement for solutions.
 ]
+
+#revised.new[== Layout review <debug-review>]
+
+If the above lightweight options are not sufficient,
+there is an integral debugging view that shows the details of the computed
+layout and the ```typ #repr``` of the bisected content.
+
+This is invoked by calling ```typ #meander.review()``` after
+a ```typ #meander.reflow({...})```. This will automatically fetch
+layout metadata that was computed by `reflow`, and display it
+over the following pages.
+
+For example, the ```typ #meander.reflow({...})``` in the example below
+is followed by a ```typ #meander.review()```:
+#show-code("review", resize: -3pt)
+
+(rendered output on the following page)
+
+This will allow one to see in particular
+- the boundaries of the obstacles,
+- the space available for boxes,
+- the internal representation of the content in each.
+
+#twocols(frac: 50%)[
+  #show: align.with(center)
+  #show-page("review", page: 1, width: 5cm) \
+  *Rendered layout*
+][
+  #show: align.with(center)
+  #show-page("review", page: 2, width: 5cm) \
+  *Content boxes*
+]
+#align(center)[
+  #show-page("review", page: 3)
+  *Color-coded `repr` of the content in each box*
+]
+
 
 
 = Contouring <contouring>
@@ -764,6 +804,8 @@ not affect layout much.
 
 There are however styling parameters that have a consequence on layout,
 and some of them require special handling.
+Frequently, an approach that works for one styling option will not work
+identically for another.
 Some of these restrictions may be relaxed or entirely lifted by future updates.
 
 == Paragraph justification
@@ -790,6 +832,40 @@ rule outside of the invocation of @cmd:meander:reflow altogether.
   show-code("justify-outside", resize: -2pt),
   show-page("justify-outside", width: 3.2cm),
 )
+
+
+#revised.new[== Paragraph indentation]
+
+The properties `par.first-line-indent` and `par.hanging-indent`
+require a slightly different handling.
+
+It is recommended that you *do not* change the paragraph indentation in the
+middle of a `content` block.
+
+Instead, valid options are to either use a ```typ #set``` rule before
+the reflow, or to pass the parameters to ```typ #par``` explicitly.
+For now, you should not rely only on implicit paragraphs induced by ```typ #parbreak```,
+and you should not change the ```typ #set``` rule halfway.
+
+#wrong-way(
+  show-code("indent-bad", resize: -2pt),
+  show-page("indent-bad", width: 4cm),
+)
+
+#right-way(
+  show-code("indent-par", resize: -2pt),
+  show-page("indent-par", width: 4cm),
+)
+
+#right-way(
+  show-code("indent-set", resize: -2pt),
+  show-page("indent-set", width: 4cm),
+)
+
+#info-alert[
+  Additionally, a `par.first-line-indent` that does not specify
+  `all: true` may behave strangely.
+]
 
 == Font size and leading
 
@@ -1240,7 +1316,7 @@ instead of the internal representation `(dictionary,)`
 
 #show-module("elems")
 
-== Layouts
+#revised.minor[== Layouts]
 
 These are the toplevel invocations.
 They expect a sequence of `elem` as input, and produce `content`.
@@ -1306,7 +1382,7 @@ made available as lower-level primitives.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.4.3": internals.fill-box
+#import "@preview/meander:0.4.4": internals.fill-box
 ```
 ]
 This grants you access to the primitive `fill-box`, which is the entry
@@ -1316,7 +1392,7 @@ content as fits in a specific box. See @cmd:bisect:fill-box for details.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.4.3": internals.geometry
+#import "@preview/meander:0.4.4": internals.geometry
 ```
 ]
 This grants you access to all the functions in the `geometry` module,

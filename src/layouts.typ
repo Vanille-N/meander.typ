@@ -170,9 +170,10 @@
   })
 }
 
+/// #property(since: version(0, 4, 4))
 /// Display layout data from the previous `reflow`.
 /// Obstacles and boxes are shown, as well as the `repr` of the bisected
-/// content. Useful for advanced debugging.
+/// content. Useful for advanced debugging, as demonstrated in @debug-review.
 /// -> content
 #let review() = context {
   let pgs = state("meander-latest-bisection").get()

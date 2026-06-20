@@ -6,7 +6,7 @@
 <!-- @scrybe(jump https; grep {{version}}) -->
 <!-- @scrybe(if publish; grep https) -->
 See the [documentation](docs/docs.pdf).
-<!-- See the [documentation](https://github.com/Vanille-N/meander.typ/releases/download/v0.4.3/docs.pdf). -->
+<!-- See the [documentation](https://github.com/Vanille-N/meander.typ/releases/download/v0.4.4/docs.pdf). -->
 
 ## Quick start
 
@@ -27,7 +27,7 @@ The function `meander.reflow` takes a sequence of
 #let my-img-4 = box(width: 5cm, height: 5cm, fill: red)
 #let my-img-5 = box(width: 4cm, height: 3cm, fill: yellow)
 
-#import "@local/meander:0.4.3"
+#import "@local/meander:0.4.4"
 
 #meander.reflow({
   import meander: *
@@ -61,7 +61,7 @@ Use multiple `container`s to produce layouts in columns.
 #let my-img-2 = box(width: 5cm, height: 3cm, fill: blue)
 #let my-img-3 = box(width: 8cm, height: 4cm, fill: green)
 
-#import "@local/meander:0.4.3"
+#import "@local/meander:0.4.4"
 
 #meander.reflow({
   import meander: *
@@ -100,7 +100,7 @@ You can see this in effect in the example below:
 <!-- @scrybe(not publish; jump import; grep local; grep {{version}}) -->
 <!-- @scrybe(jump import; until ```; diff tests/gallery/placement/test.typ) -->
 ```typ
-#import "@local/meander:0.4.3"
+#import "@local/meander:0.4.4"
 #set par(justify: true)
 
 #text(fill: red)[#lorem(200)]
@@ -148,7 +148,7 @@ Meander allows precise control over the boundaries of obstacles, to draw complex
 <!-- @scrybe(if publish; jump import; grep preview; grep {{version}}) -->
 <!-- @scrybe(jump import; until ```; diff tests/gallery/circle-hole/test.typ) -->
 ```typ
-#import "@local/meander:0.4.3"
+#import "@local/meander:0.4.4"
 
 #meander.reflow({
   import meander: *
@@ -193,5 +193,5 @@ For a more in-depth introduction, including
 <!-- @scrybe(jump https; grep {{version}}) -->
 <!-- @scrybe(if publish; grep https) -->
 please consult the [documentation](docs/docs.pdf).
-<!-- please consult the [documentation](https://github.com/Vanille-N/meander.typ/releases/download/v0.4.3/docs.pdf). -->
+<!-- please consult the [documentation](https://github.com/Vanille-N/meander.typ/releases/download/v0.4.4/docs.pdf). -->
 
