@@ -16,7 +16,26 @@
   let (flow, pages, opts) = tiling.separate(seq)
   let wrapper = tiling.placement-mode(opts)
 
-  let fill-page(elems, flow, size: (), page-offset: (x: 0pt, y: 0pt)) = {
+  // The measure text carried out of a page will be set at: the width of the
+  // first box of the page that follows. It can be worked out before anything is
+  // filled, because the tiling depends only on a page's own elements and
+  // not on the text flowing through it.
+  let first-box-width(elems, size) = {
+    let data = tiling.create-data(size: size, elems: elems, page-offset: (x: 0pt, y: 0pt))
+    while true {
+      let (elem, _data) = tiling.next-elem(data)
+      data = _data
+      if elem == none { return size.width }
+      if elem == () { continue }
+      if elem.type == place {
+        data = tiling.push-elem(data, elem)
+        continue
+      }
+      if elem.contour.len() > 0 { return elem.contour.first().width }
+    }
+  }
+
+  let fill-page(elems, flow, size: (), page-offset: (x: 0pt, y: 0pt), next-width: none) = {
     let output = []
     let cuts = ()
     let maximum-height = 0pt
@@ -47,11 +66,16 @@
         continue
       }
       assert(elem.type == box, message: "Internal error: Unhandled element type from `next-elem`: received " + repr(elem.type))
+      // The last elem of this page: a split in its boxes ends the page or
+      // column, rather than handing the text on to more boxes further down.
+      let final = data.elems.len() == 0
       if opts.debug.content {
         let (full, overflow) = threading.smart-fill-boxes(
           size: size,
           avoid: data.obstacles,
           boxes: elem.contour,
+          final: final and opts.widows.avoid,
+          next-width: next-width,
           flow,
         )
         flow = overflow
@@ -109,7 +133,20 @@
       if idx != 0 {
         colbreak()
       }
-      let (content, cuts, overflow, vspace) = fill-page(elems, flow, size: size, page-offset: page-offset)
+      // Past the last declared page the remainder goes to the overflow
+      // handler and is set in ordinary flow, at the full width.
+      let next-width = if idx + 1 < pages.len() {
+        first-box-width(pages.at(idx + 1), size)
+      } else {
+        size.width
+      }
+      let (content, cuts, overflow, vspace) = fill-page(
+        elems,
+        flow,
+        size: size,
+        page-offset: page-offset,
+        next-width: next-width,
+      )
       content
       vspace
       page-cuts.push(cuts)
@@ -140,7 +177,12 @@
         while flow != () {
           colbreak()
           // TODO: make sure this is synchronized with above
-          let (content, overflow, vspace) = fill-page(last-pages-elems.at(calc.rem(num - 1, count)), flow, size: size)
+          let (content, overflow, vspace) = fill-page(
+            last-pages-elems.at(calc.rem(num - 1, count)),
+            flow,
+            size: size,
+            next-width: first-box-width(last-pages-elems.at(calc.rem(num, count)), size),
+          )
           content
           vspace
           flow = overflow

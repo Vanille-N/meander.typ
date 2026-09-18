@@ -359,6 +359,7 @@
     (opt.placement, "virtual-spacing"),
     (opt.placement, "spacing"),
     (opt.overflow, "overflow"),
+    (opt.widows, "widows"),
     //(opt.placement, "full-page"),
   ) {
     if field not in opts {
