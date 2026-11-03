@@ -7,9 +7,9 @@
   /// -> length
   sz,
 ) = tiling(size: (sz, sz))[
-  #place(box(width: 100%, height: 100%, stroke: none, fill: red.transparentize(95%)))
-  #place(line(start: (25%, 25%), end: (75%, 75%), stroke: red + 0.1pt))
-  #place(line(start: (25%, 75%), end: (75%, 25%), stroke: red + 0.1pt))
+  #place(top + left, box(width: 100%, height: 100%, stroke: none, fill: red.transparentize(95%)))
+  #place(top + left, line(start: (25%, 25%), end: (75%, 75%), stroke: red + 0.1pt))
+  #place(top + left, line(start: (25%, 75%), end: (75%, 25%), stroke: red + 0.1pt))
 ]
 
 // Pattern with green pluses to display allowed zones.
@@ -19,9 +19,9 @@
   /// -> length
   sz,
 ) = tiling(size: (sz, sz))[
-  #place(box(width: 100%, height: 100%, stroke: none, fill: green.transparentize(95%)))
-  #place(line(start: (25%, 50%), end: (75%, 50%), stroke: green + 0.1pt))
-  #place(line(start: (50%, 25%), end: (50%, 75%), stroke: green + 0.1pt))
+  #place(top + left, box(width: 100%, height: 100%, stroke: none, fill: green.transparentize(95%)))
+  #place(top + left, line(start: (25%, 50%), end: (75%, 50%), stroke: green + 0.1pt))
+  #place(top + left, line(start: (50%, 25%), end: (50%, 75%), stroke: green + 0.1pt))
 ]
 
 #let new-config(..opts) = {

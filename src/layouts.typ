@@ -37,7 +37,7 @@
         //if debug { output += elem.debug }
         data = tiling.push-elem(data, elem)
         for block in elem.contour {
-          output += place(dx: block.x, dy: block.y, {
+          output += place(top + left, dx: block.x, dy: block.y, {
             box(width: block.width, height: block.height, ..opts.debug.obstacle-contours)
           })
           cuts.push((block: block))
@@ -65,7 +65,7 @@
               panic("Container does not support the styling option '" + key + "'")
             }
           }
-          output += place(dx: container.x, dy: container.y, {
+          output += place(top + left, dx: container.x, dy: container.y, {
             box(width: container.width, height: container.height, ..opts.debug.container-contours, {
               content
             })
@@ -76,7 +76,7 @@
         }
       } else {
         for container in elem.contour {
-          output += place(dx: container.x, dy: container.y, {
+          output += place(top + left, dx: container.x, dy: container.y, {
             box(width: container.width, height: container.height, ..opts.debug.container-contours, {})
           })
           data = tiling.push-elem(data, (contour: (tiling.add-self-margin(container),)))

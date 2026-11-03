@@ -22,7 +22,7 @@
   let (x, y) = geometry.align(obj.align, dx: obj.dx, dy: obj.dy, width: width, height: height, anchor: obj.anchor)
   let obj-dims = geometry.resolve(data.full-size, width: width, height: height)
   let dims = geometry.resolve(data.free-size, x: x, y: y, ..obj-dims)
-  let content = place[#move(dx: dims.x, dy: dims.y)[#{obj.content}]]
+  let content = place(top + left)[#move(dx: dims.x, dy: dims.y)[#{obj.content}]]
 
   // Apply the boundary redrawing functions in order to know the true
   // footprint of the object in the layout.
