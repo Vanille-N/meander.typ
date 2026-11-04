@@ -187,6 +187,8 @@
   fits-inside,
   /// Extra configuration options. -> dictionary
   cfg,
+  /// See explanation in @cmd:bisect:fits-inside. -> bool
+  can-take-everything: true,
 ) = {
   assert(cfg.hyphenate != false, message: "Internal error: `split-word` cannot be invoked when hypenation is not enabled.")
   import "@preview/hy-dro-gen:0.1.1" as hy
@@ -211,6 +213,7 @@
       }
     }
   }
+  panic(left, "Internal error: split-word has a problem, please report this")
   // TODO: assert that left fits and find test case that hits this
   return (left, none)
 }
@@ -233,6 +236,8 @@
   fits-inside,
   /// Extra configuration options. -> dictionary
   cfg,
+  /// See explanation in @cmd:bisect:dispatch. -> bool
+  can-take-everything: true,
 ) = {
   let (inner, rebuild) = default-rebuild(ct, "text")
   let inner = inner.split(" ")
@@ -275,7 +280,7 @@
     }
   }
   let final-i = none
-  for i in (lo, lo + 1) {
+  for i in (lo, calc.min(lo + 1, inner.len() - 1)) {
     if fits-inside(rebuild(inner.slice(0, i + 1).join(" ")) + atom) {
       continue
     } else {
@@ -284,8 +289,24 @@
     }
   }
   if final-i == none {
-    // TODO: assert that left fits and find test case that hits this
-    return (rebuild(inner.join(" ")), none)
+    if can-take-everything {
+      return (rebuild(inner.join(" ")), none)
+    } else {
+      let last = inner.pop()
+      if cfg.hyphenate == false {
+        return (rebuild(inner.join(" ")), rebuild(last))
+      } else {
+        let (left-rec, right-rec) = split-word(last, ww => fits-inside(rebuild((..inner, ww).join(" ")) + atom), cfg, can-take-everything: false)
+        let left-words = if left-rec == none { before } else {
+          (..inner, left-rec)
+        }
+        let left = if left-words == () { none } else {
+          rebuild(left-words.join(" ")) + lbreak
+        }
+        let right = rebuild(right-rec)
+        return (left, right)
+      }
+    }
   }
   let i = final-i
   if cfg.hyphenate == false {
@@ -428,10 +449,17 @@
   return (left, right)
 }
 
+#let split-is-legal(before, after) = {
+  // Non-breaking space
+  if before == [~] or after == [~] { return false }
+  true
+}
 
 /// Split content with a ```typc "children"``` main field.
 ///
 /// Strategy: take all children that fit.
+/// Fix for #40 and #45: not allowed to split between children that have
+/// one of a few determined forms.
 /// -> (content?, content?)
 #let has-children(
   /// Content to split. -> content
@@ -442,6 +470,8 @@
   fits-inside,
   /// Extra configuration options. -> dictionary
   cfg,
+  /// See explanation in @cmd:bisect:dispatch. -> bool
+  can-take-everything: true,
 ) = {
   let (inner, rebuild) = default-rebuild(ct, "children")
   if not fits-inside([]) { return (none, ct) }
@@ -476,33 +506,51 @@
     }
   }
   if final-i == none {
-    return (rebuild(inner), none)
+    if can-take-everything {
+      return (rebuild(inner), none)
+    } else {
+      panic()
+    }
   }
   assert(lo <= final-i and final-i <= hi, message: "Internal error: while trying to split item with children, index is out of bounds")
   let i = final-i
-  // Otherwise try to split it
-  let hanging = inner.at(i)
-  let (left, right) = split-dispatch(hanging, ct => fits-inside(rebuild((..inner.slice(0, i), ct))), cfg)
-  let left = {
-    if left == none {
-      if i == 0 {
-        return (none, rebuild(inner))
-      } else {
-        rebuild(inner.slice(0, i))
-      }
-    } else {
-      rebuild((..inner.slice(0, i), left))
+  assert(i < inner.len(), message: "Internal error: no splitting occurred")
+  // We now know that [0,...,i-1] fits, while [0,...,i] does not.
+  // We should see if we can fit more, e.g. [0,...,i-1] + fraction(i),
+  // while keeping in mind that if the additional fraction is 0
+  // *and* the split between i-1 and i is illegal,
+  // then we should decrement i and start over.
+  let can-take-everything = true
+  while i >= 0 {
+    let hanging = inner.at(i)
+    // See if a fraction of i still fits
+    let (left, right) = split-dispatch(hanging, ct => fits-inside(rebuild((..inner.slice(0, i), ct))), cfg, can-take-everything: can-take-everything)
+    if left != none {
+      let left = rebuild((..inner.slice(0,i), left))
+      assert(fits-inside(left), message: "Internal error: edge case in `has-children` while handling '" + repr(ct) + "': does not fit in the allocated space")
+      let right = rebuild({
+        if right == none {
+          inner.slice(i + 1)
+        } else {
+          (right, ..inner.slice(i+1))
+        }
+      })
+      return (left, right)
     }
+    // Left is `none`, means that none of the overhang fits.
+    if i == 0 {
+      return (none, rebuild(inner))
+    }
+    if split-is-legal(inner.at(i - 1), inner.at(i)) {
+      let left = inner.slice(0, i)
+      let right = (hanging, ..inner.slice(i + 1))
+      return (rebuild(left), rebuild(right))
+    }
+    // We move the cut further left until the split is valid.
+    i -= 1
+    can-take-everything = false
   }
-  assert(fits-inside(left), message: "Internal error: edge case in `has-children` while handling '" + repr(ct) + "': does not fit in the allocated space")
-  let right = rebuild({
-    if right == none {
-      inner.slice(i + 1)
-    } else {
-      (right, ..inner.slice(i + 1))
-    }
-  })
-  return (left, right)
+  panic("Internal error: entered code that should be unreachable")
 }
 
 /// Split a `list.item`.
@@ -712,13 +760,21 @@
   fits-inside,
   /// Extra configuration options. -> dictionary
   cfg,
+  /// Is this split allowed to take the entire content, or should
+  /// there be at least one atom not kept ?
+  /// The use-case for this is that if you have the content
+  /// `something~:`, with a non-breaking space, then Typst will split it
+  /// as `([something], [~], [:])`, but when determining where `[something]`
+  /// can be split, we can't ask to split at the end.
+  /// -> bool
+  can-take-everything: true
 ) = {
   //panic(cfg)
   if ct.func() == parbreak {
     // TODO: this is very ad-hoc
     take-it-or-leave-it(v(1em), fits-inside)
   } else if ct.has("text") and ct.func() != raw and ct.func() != symbol_func {
-    has-text(ct, dispatch, fits-inside, cfg)
+    has-text(ct, dispatch, fits-inside, cfg, can-take-everything: can-take-everything)
   } else if ct.has("child") {
     has-child(ct, dispatch, fits-inside, cfg)
   } else if ct.func() == terms {
