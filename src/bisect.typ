@@ -450,8 +450,20 @@
 }
 
 #let split-is-legal(before, after) = {
-  // Non-breaking space
-  if before == [~] or after == [~] { return false }
+  if before == () { return true }
+  if after == () { return true }
+
+  // Next to a non-breaking space
+  if before.last() == [~] { return false }
+  if after.first() == [~] { return false }
+
+  // Next to an apostrophe
+  // Our heuristics for detecting an apostrophe is that the element
+  // on the other side of the split should be text.
+  if before.last() == ['] and after.first().has("text") { return false }
+  if after.first() == ['] and before.last().has("text") { return false }
+
+  // Default
   true
 }
 
@@ -526,6 +538,10 @@
     // See if a fraction of i still fits
     let (left, right) = split-dispatch(hanging, ct => fits-inside(rebuild((..inner.slice(0, i), ct))), cfg, can-take-everything: can-take-everything)
     if left != none {
+      if not can-take-everything and right == none {
+        i -= 1
+        continue
+      }
       let left = rebuild((..inner.slice(0,i), left))
       assert(fits-inside(left), message: "Internal error: edge case in `has-children` while handling '" + repr(ct) + "': does not fit in the allocated space")
       let right = rebuild({
@@ -541,7 +557,7 @@
     if i == 0 {
       return (none, rebuild(inner))
     }
-    if split-is-legal(inner.at(i - 1), inner.at(i)) {
+    if split-is-legal(inner.slice(0, i), inner.slice(i)) {
       let left = inner.slice(0, i)
       let right = (hanging, ..inner.slice(i + 1))
       return (rebuild(left), rebuild(right))
