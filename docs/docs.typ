@@ -86,10 +86,10 @@
 
 // @scrybe(skip 1; grep {{version}})
 #let versions = (
+  "0.4.5",
   "0.4.4",
   "0.4.3",
   "0.4.2",
-  "0.4.1",
   "0.3.1",
   "0.2.5"
 )
@@ -171,7 +171,7 @@
 Import the latest version of MEANDER with:
 // @scrybe(jump import; grep preview; grep {{version}})
 #codesnippet[```typ
-#import "@preview/meander:0.4.4"
+#import "@preview/meander:0.4.5"
 ```]
 
 The main function provided by MEANDER is @cmd:meander:reflow,
@@ -544,7 +544,7 @@ The exact boundaries of containers may be altered in the process for better spac
   See @placement for solutions.
 ]
 
-#revised.new[== Layout review <debug-review>]
+== Layout review <debug-review>
 
 If the above lightweight options are not sufficient,
 there is an integral debugging view that shows the details of the computed
@@ -834,7 +834,7 @@ rule outside of the invocation of @cmd:meander:reflow altogether.
 )
 
 
-#revised.new[== Paragraph indentation]
+== Paragraph indentation
 
 The properties `par.first-line-indent` and `par.hanging-indent`
 require a slightly different handling.
@@ -1316,7 +1316,7 @@ instead of the internal representation `(dictionary,)`
 
 #show-module("elems")
 
-#revised.minor[== Layouts]
+== Layouts
 
 These are the toplevel invocations.
 They expect a sequence of `elem` as input, and produce `content`.
@@ -1382,7 +1382,7 @@ made available as lower-level primitives.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.4.4": internals.fill-box
+#import "@preview/meander:0.4.5": internals.fill-box
 ```
 ]
 This grants you access to the primitive `fill-box`, which is the entry
@@ -1392,7 +1392,7 @@ content as fits in a specific box. See @cmd:bisect:fill-box for details.
 // @scrybe(jump import; grep {{version}})
 #codesnippet[
 ```typ
-#import "@preview/meander:0.4.4": internals.geometry
+#import "@preview/meander:0.4.5": internals.geometry
 ```
 ]
 This grants you access to all the functions in the `geometry` module,

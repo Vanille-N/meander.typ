@@ -4,6 +4,9 @@
 
 ### Bugfix
 - words that contain a hyphen should not get an extra one
+- partial handling of rtl text (object placement is good, text alignment needs improvements)
+- forbid breaks on non-breaking spaces
+- forbid breaks on apostrophes
 
 ## v0.4.3 -> v0.4.4
 
