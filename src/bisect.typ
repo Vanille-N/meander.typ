@@ -213,9 +213,18 @@
       }
     }
   }
-  panic(left, "Internal error: split-word has a problem, please report this")
-  // TODO: assert that left fits and find test case that hits this
-  return (left, none)
+  // We hit this path when the word fits actually, since
+  // all prefixes of syllables fit. This usually happens
+  // when we have `can-take-everything: false`.
+  if can-take-everything {
+    // Hitting this path is a sign that the parent caller didn't do a great
+    // job (there was no need to split the word), but this is fine.
+    (ww, none)
+  } else if syllables.len() > 1 {
+    (rebuild-left(syllables.len() - 1), syllables.last())
+  } else {
+    (none, ww)
+  }
 }
 
 /// Split content with a ```typc "text"``` main field.
@@ -297,7 +306,7 @@
         return (rebuild(inner.join(" ")), rebuild(last))
       } else {
         let (left-rec, right-rec) = split-word(last, ww => fits-inside(rebuild((..inner, ww).join(" ")) + atom), cfg, can-take-everything: false)
-        let left-words = if left-rec == none { before } else {
+        let left-words = if left-rec == none { inner } else {
           (..inner, left-rec)
         }
         let left = if left-words == () { none } else {
